@@ -1,11 +1,11 @@
-# Рекомендации фильмов с Qdrant
+# Movie recommendations with Qdrant
 
-Локальный учебный пример: 250 фильмов, ручные векторы, REST API, движок, загрузчик и веб-интерфейс Flask. Требуются Docker с Compose и Python 3.9+. Движок и загрузчик используют requests (>=2.32,<3) для HTTP-запросов к Qdrant; веб-интерфейс также требует Flask 3.1. Перед запуском загрузчика, проверок или веб-интерфейса установите зависимости из requirements.txt в виртуальном окружении.
+A local learning demo with 250 movies, manually assigned vectors, a REST API, an engine, a loader, and a Flask web interface. Requires Docker with Compose and Python 3.9+. The engine and loader use requests (>=2.32,<3) for Qdrant HTTP requests; the web interface also requires Flask 3.1. Install requirements.txt in a virtual environment before running the loader, checks, or web interface.
 
-## Запуск
+## Getting started
 
 ```sh
-cd /Users/andreibiarniak/qdrant-movies-demo
+cd /path/to/project
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -16,59 +16,59 @@ curl --fail http://localhost:6333/readyz
 python -m engine.load
 ```
 
-Если `readyz` ещё не отвечает, повторите проверку через несколько секунд. Dashboard: http://localhost:6333/dashboard. REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. Порты опубликованы только на loopback.
+If `readyz` does not respond yet, retry after a few seconds. Dashboard: http://localhost:6333/dashboard. REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. Ports are published on loopback only.
 
-Образ Qdrant v1.20.0 закреплён digest в `compose.yaml`. Контейнер: `qdrant-movies`, политика перезапуска: `unless-stopped`. Данные хранятся в отдельном Docker volume `qdrant-movies-demo_movies-storage`, смонтированном в `/qdrant/storage`.
+The Qdrant v1.20.0 image is pinned by digest in `compose.yaml`. Container: `qdrant-movies`, restart policy: `unless-stopped`. Data lives in the separate Docker volume `qdrant-movies-demo_movies-storage`, mounted at `/qdrant/storage`.
 
-## Веб-интерфейс
+## Web interface
 
-После проверки готовности Qdrant и загрузки данных запустите:
+After checking Qdrant readiness and loading the data, run:
 
 ```sh
 source .venv/bin/activate
 python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
 ```
 
-Откройте http://127.0.0.1:5000. Введите ID, например `1`, название «Матрица» или уникальную часть названия. Регистр и крайние пробелы не учитываются. При нескольких совпадениях нужно уточнить название. Выберите количество похожих фильмов: 5, 10, 20 или 50 (по умолчанию 5). Ниже формы появятся рекомендации с годом, жанрами, описанием и cosine similarity. Ошибки отображаются под формой, запрос и количество сохраняются в URL (параметры `q` и `limit`), в том числе после ошибок; отправка формы перенаправляет на GET, поэтому обновление страницы повторяет только чтение.
+Open http://127.0.0.1:5000. Enter an ID such as `1`, a title such as “Матрица”, or a unique title fragment. Matching ignores case and leading/trailing whitespace. Multiple matches require a more specific title. Choose 5, 10, 20, or 50 similar movies (default: 5). Recommendations appear below the form with year, genres, description, and cosine similarity. Errors appear below the form. The query and count remain in the URL (`q` and `limit`), including after errors. Form submission redirects to GET, so refreshing only repeats a read.
 
-URL Qdrant задаётся переменной окружения `QDRANT_URL` (по умолчанию `http://127.0.0.1:6333`):
+Set the Qdrant URL with `QDRANT_URL` (default: `http://127.0.0.1:6333`):
 
 ```sh
 QDRANT_URL=http://127.0.0.1:6333 python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
 ```
 
-Создание приложения не загружает данные: для загрузки используйте `python -m engine.load`. Каталог определяется относительно файлов проекта, а не текущей директории.
+Creating the application does not load data: use `python -m engine.load`. The catalog path is relative to the project files, regardless of the working directory.
 
-Структура:
+Structure:
 
-- `engine/services.py` — валидация, разрешение названий и класс `QdrantMovieStore(base_url)` для HTTP-запросов, загрузки коллекции и рекомендаций.
-- `engine/load.py` — консольный загрузчик с параметрами `--url` и `--data`.
-- `engine/__init__.py` — общий путь к корневому `movies.json`, вычисленный относительно файлов пакета.
-- `web/app.py` — фабрика Flask, конфигурация и создание хранилища в `app.extensions['movie_store']` без сетевых запросов; `web/routes.py` — обработчики; `web/router.py` — регистрация маршрутов через `register_routes(app)`; `web/templates/` и `web/static/` — интерфейс без JavaScript и сборки.
-- `engine/tests/` — тесты движка и загрузчика, `web/tests/` — тесты Flask.
+- `engine/services.py`: validation, title resolution, and `QdrantMovieStore(base_url)` for HTTP requests, collection loading, and recommendations.
+- `engine/load.py`: command-line loader with `--url` and `--data` options.
+- `engine/__init__.py`: shared path to the root `movies.json`, resolved relative to package files.
+- `web/app.py`: Flask factory, configuration, and store creation in `app.extensions['movie_store']` without network requests; `web/routes.py`: handlers; `web/router.py`: route registration through `register_routes(app)`; `web/templates/` and `web/static/`: interface without JavaScript or a build step.
+- `engine/tests/`: engine and loader tests; `web/tests/`: Flask tests.
 
-Консольные рекомендации удалены; поиск рекомендаций доступен через веб-интерфейс.
+Console recommendations have been removed; recommendation search is available through the web interface.
 
-## Данные и признаки
+## Data and features
 
-`movies.json` содержит постоянные числовые ID 1–250, название, год, жанры, русское описание и вектор. Исходные 30 фильмов и их данные сохранены; новые фильмы имеют ID 31–250. Это подборка известных фильмов разных жанров, а не рейтинг популярности. ID сохраняются при повторных загрузках. Порядок 10 признаков:
+`movies.json` contains stable numeric IDs 1–250, titles, years, genres, Russian descriptions, and vectors. The original 30 movies and their data are preserved; additional movies have IDs 31–250. This is a selection of familiar movies across genres, not a popularity ranking. IDs remain stable across reloads. The 10 features, in order:
 
-1. Научная фантастика.
-2. Экшен.
-3. Драма.
-4. Комедия.
-5. Романтика.
-6. Напряжение / триллер.
-7. Фэнтези / волшебство.
-8. Анимация.
-9. Мрачность.
-10. Оптимизм.
+1. Science fiction.
+2. Action.
+3. Drama.
+4. Comedy.
+5. Romance.
+6. Suspense / thriller.
+7. Fantasy / magic.
+8. Animation.
+9. Darkness.
+10. Optimism.
 
-Каждое значение лежит в диапазоне 0–1 и задаёт субъективную выраженность признака. Векторы ненулевые. Это учебная разметка, а не результат модели: описания и названия не преобразуются в эмбеддинги и не участвуют непосредственно в поиске.
+Each value ranges from 0 to 1 and represents a subjective feature strength. Vectors are nonzero. These are educational annotations, not model output: descriptions and titles are not converted to embeddings and do not directly participate in similarity search.
 
-`QdrantMovieStore.load(path)` проверяет все данные до обращения к API, создаёт коллекцию `movies` с безымянным вектором размерности 10 и метрикой Cosine, затем выполняет upsert с `wait=true`. Повторная загрузка обновляет те же ID: после двух загрузок остаются 250 записей. Существующий каталог из 30 фильмов расширяется обычным запуском загрузчика. Несовместимая коллекция вызывает ошибку до записи; автоматически она не удаляется. Посторонние ID тоже не удаляются; если из-за них записей больше 250, команда сообщает об этом и возвращает код 1.
+`QdrantMovieStore.load(path)` validates all data before calling the API, creates the `movies` collection with one unnamed 10-dimensional vector and the Cosine metric, then upserts with `wait=true`. Reloading updates the same IDs: two loads leave 250 records. An existing 30-movie catalog is expanded by running the loader normally. An incompatible collection causes an error before writes and is never deleted automatically. Unrelated IDs are preserved too; if they increase the count above 250, the command reports this and exits with code 1.
 
-## Рекомендации и проверки
+## Recommendations and checks
 
 ```sh
 python -m engine.load --url http://127.0.0.1:6333 --data movies.json
@@ -76,13 +76,13 @@ python -m unittest -v
 python -m engine.tests.verify
 ```
 
-Веб-интерфейс запрашивает выбранное количество ближайших фильмов через Query Points API с фильтром, исключающим исходный ID. Cosine similarity — мера сходства векторов, а не вероятность предпочтения пользователя. Qdrant нормализует векторы для Cosine; в JSON хранятся исходные значения.
+The web interface requests the selected number of nearest movies through the Query Points API with a filter excluding the source ID. Cosine similarity measures vector similarity, not the probability that a user will like a movie. Qdrant normalizes vectors for Cosine; JSON retains the original values.
 
-Движок поддерживает `services.search(store, query, catalog, limit=5)` и `store.recommend(movie_id, limit=5)`, где `store` — экземпляр `QdrantMovieStore`: целое число от 1 до 249. Некорректное количество вызывает `DemoError` до обращения к Qdrant. Веб-интерфейс принимает только четыре варианта списка; ссылки без `limit` возвращают пять рекомендаций.
+The engine supports `services.search(store, query, catalog, limit=5)` and `store.recommend(movie_id, limit=5)`, where `store` is a `QdrantMovieStore` instance and `limit` is an integer from 1 to 249. Invalid counts raise `DemoError` before contacting Qdrant. The web interface accepts only the four listed counts; links without `limit` return five recommendations.
 
-`engine/tests/verify.py` проверяет 250 записей, 5, 10, 20 и 50 результатов для трёх разных фильмов, исключение исходного ID и совпадение результатов с независимым расчётом cosine по JSON. Проверяет неизвестный ID через API и несовместимые схемы через подмену ответов без изменения коллекции.
+`engine/tests/verify.py` checks 250 records, 5/10/20/50 results for three movies, source-ID exclusion, and agreement with independently calculated cosine scores from JSON. It checks unknown IDs through the API and incompatible schemas through mocked responses without changing the collection.
 
-Проверка сохранности:
+Persistence check:
 
 ```sh
 docker compose restart
@@ -90,10 +90,10 @@ curl --fail http://localhost:6333/readyz
 python -m engine.tests.verify
 ```
 
-При необходимости дождитесь готовности перед проверкой.
+Wait for readiness before verification if necessary.
 
-Остановка: `docker compose stop`. Удаление контейнера с сохранением данных: `docker compose down`. Команда `docker compose down -v` удаляет также volume и все данные.
+Stop: `docker compose stop`. Remove the container while keeping data: `docker compose down`. `docker compose down -v` also deletes the volume and all data.
 
-Официальная документация: [Docker-установка](https://qdrant.tech/documentation/installation/), [Query Points API](https://api.qdrant.tech/api-reference/search/query-points).
+Official documentation: [Docker installation](https://qdrant.tech/documentation/installation/), [Query Points API](https://api.qdrant.tech/api-reference/search/query-points).
 
-Автономные тесты `python -m unittest -v` проверяют движок, загрузчик и Flask test client с mock, без запущенного Qdrant. Интеграционная проверка не запускается при обнаружении автономных тестов. Для проверки двух загрузок выполните `python -m engine.load` дважды, затем `python -m engine.tests.verify`: в коллекции должно остаться ровно 250 записей.
+Offline tests (`python -m unittest -v`) cover the engine, loader, and Flask test client with mocks, without a running Qdrant. Integration verification is excluded from offline test discovery. To verify two loads, run `python -m engine.load` twice, then `python -m engine.tests.verify`: the collection must contain exactly 250 records.

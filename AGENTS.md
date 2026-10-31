@@ -36,6 +36,10 @@ python -m engine.tests.verify          # Run verification against local Qdrant
 
 Wait for readiness before loading or verifying. Install requirements in a virtual environment for the engine, loader, web interface, and all checks. The engine and loader require requests; the web interface also requires Flask. Use `python -m engine.load --url http://127.0.0.1:6333 --data movies.json` to specify the endpoint explicitly.
 
+## Language Policy
+
+Documentation, code, and comments must be in English. Communicate with the user in Russian. User-facing text must support English and Russian localizations. Translating existing user-facing text and the movie catalog is separate task 2, following the documentation translation.
+
 ## Coding Style & Naming Conventions
 
 Use four-space indentation, `snake_case` functions and variables, and `PascalCase` exception classes. Follow the existing single-quoted string style where practical. Use requests for HTTP calls instead of urllib. The engine and loader depend on requests; Flask is the web dependency. Preserve Russian loader messages. Report expected failures through `DemoError`. No formatter or linter is configured.
