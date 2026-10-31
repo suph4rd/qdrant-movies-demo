@@ -3,9 +3,23 @@ import math
 from pathlib import Path
 import requests
 
+from engine.i18n import localize_movie, translate
+
 
 class DemoError(Exception):
-    pass
+    def __init__(self, key, **params):
+        self.key = key
+        self.params = params
+        super().__init__(key)
+
+    def format(self, lang='en'):
+        params = dict(self.params)
+        if self.key == 'ambiguous':
+            params['titles'] = ', '.join(localize_movie(m, lang)['title'] for m in params.pop('movies'))
+        return translate(self.key, lang, **params)
+
+    def __str__(self):
+        return self.format()
 
 
 class QdrantMovieStore:
@@ -20,11 +34,11 @@ class QdrantMovieStore:
             response.raise_for_status()
             return response.json()['result']
         except requests.exceptions.HTTPError as exc:
-            raise DemoError(f'Qdrant HTTP {exc.response.status_code}: {exc.response.text}') from exc
+            raise DemoError('http', status=exc.response.status_code, detail=exc.response.text) from exc
         except (ValueError, KeyError, TypeError) as exc:
-            raise DemoError('Некорректный ответ Qdrant.') from exc
+            raise DemoError('response') from exc
         except (requests.exceptions.RequestException, OSError) as exc:
-            raise DemoError(f'Нет соединения с Qdrant ({self.base_url}): {exc}') from exc
+            raise DemoError('connection', url=self.base_url, detail=exc) from exc
 
     def load(self, path):
         movies = read_movies(path)
@@ -34,12 +48,12 @@ class QdrantMovieStore:
         info = self.request('GET', '/collections/movies')
         vectors = info['config']['params']['vectors']
         if not isinstance(vectors, dict) or vectors.get('size') != 10 or vectors.get('distance') != 'Cosine' or vectors.get('multivector_config'):
-            raise DemoError('Несовместимая коллекция movies: требуется один безымянный вектор размерности 10, метрика Cosine. Существующие данные не изменены.')
+            raise DemoError('schema')
         points = [{'id': m['id'], 'vector': m['vector'], 'payload': {k: v for k, v in m.items() if k != 'vector'}} for m in movies]
         self.request('PUT', '/collections/movies/points?wait=true', {'points': points})
         count = self.request('POST', '/collections/movies/points/count', {'exact': True})['count']
         if count != 250:
-            raise DemoError('В movies есть дополнительные записи; они сохранены. Для демо ожидается 250.')
+            raise DemoError('count')
 
         return {'loaded': len(points), 'count': count}
 
@@ -48,7 +62,7 @@ class QdrantMovieStore:
         validate_id(movie_id)
         points = self.request('POST', '/collections/movies/points', {'ids': [movie_id], 'with_payload': True})
         if not points:
-            raise DemoError(f'Неизвестный ID фильма: {movie_id}. Посмотрите ID в movies.json.')
+            raise DemoError('unknown_id', id=movie_id)
         result = self.request('POST', '/collections/movies/points/query', {
             'query': movie_id, 'filter': {'must_not': [{'has_id': [movie_id]}]},
             'limit': limit, 'with_payload': True, 'params': {'exact': True}})['points']
@@ -59,66 +73,79 @@ def read_movies(path):
     try:
         movies = json.loads(Path(path).read_text(encoding='utf-8'))
     except (OSError, ValueError) as exc:
-        raise DemoError(f'Не удалось прочитать каталог фильмов: {exc}') from exc
+        raise DemoError('read', detail=exc) from exc
     if not isinstance(movies, list) or len(movies) != 250:
-        raise DemoError('В JSON должно быть ровно 250 фильмов.')
+        raise DemoError('size')
     ids = set()
     for m in movies:
         if not isinstance(m, dict):
-            raise DemoError('Каждый фильм должен быть объектом.')
+            raise DemoError('object')
         i, v = m.get('id'), m.get('vector')
         if type(i) is not int or not 0 <= i < 2**64 or i in ids:
-            raise DemoError(f'Некорректный или повторяющийся ID: {i}')
+            raise DemoError('duplicate_id', id=i)
         ids.add(i)
         if (not isinstance(v, list) or len(v) != 10 or
             not all(type(x) in (int, float) and math.isfinite(x) and 0 <= x <= 1 for x in v)
             or not any(v)):
-            raise DemoError(f'Фильм {i}: нужен ненулевой вектор из 10 чисел в диапазоне 0–1.')
-        if not all(isinstance(m.get(k), str) and m[k].strip() for k in ('title', 'description')):
-            raise DemoError(f'Фильм {i}: нужны название и описание.')
-        if type(m.get('year')) is not int or not isinstance(m.get('genres'), list) or not m['genres'] or not all(isinstance(g, str) and g.strip() for g in m['genres']):
-            raise DemoError(f'Фильм {i}: некорректные год или жанры.')
+            raise DemoError('vector', id=i)
+        translations = m.get('translations')
+        english = translations.get('en') if isinstance(translations, dict) else None
+        if not valid_metadata(m) or not valid_metadata(english):
+            raise DemoError('metadata', id=i)
+        if type(m.get('year')) is not int:
+            raise DemoError('year', id=i)
     return movies
 
 
 def validate_id(movie_id):
     if type(movie_id) is not int or not 0 <= movie_id < 2**64:
-        raise DemoError('ID должен быть целым числом от 0 до 2^64−1.')
+        raise DemoError('id')
 
 
 def resolve_movie(query, catalog):
     query = query.strip()
     if not query:
-        raise DemoError('Введите название или ID фильма.')
+        raise DemoError('empty')
     movie_id = None
     if query.lstrip('+-').isdecimal():
         try:
             movie_id = int(query)
         except ValueError as exc:
-            raise DemoError('ID должен быть целым числом от 0 до 2^64−1.') from exc
+            raise DemoError('id') from exc
         validate_id(movie_id)
         matches = [m for m in catalog if m['id'] == movie_id]
         if matches:
             return matches[0]
     title = query.casefold()
-    matches = [m for m in catalog if m['title'].casefold() == title]
+    matches = [m for m in catalog if any(t.casefold() == title for t in movie_titles(m))]
     if not matches:
-        matches = [m for m in catalog if title in m['title'].casefold()]
+        matches = [m for m in catalog if any(title in t.casefold() for t in movie_titles(m))]
     if not matches:
         if movie_id is not None:
-            raise DemoError(f'Неизвестный ID фильма: {movie_id}. Посмотрите ID в movies.json.')
-        raise DemoError('Фильм не найден. Введите другое название или ID.')
+            raise DemoError('unknown_id', id=movie_id)
+        raise DemoError('not_found')
     if len(matches) > 1:
-        raise DemoError('Найдено несколько фильмов. Уточните название: ' +
-                        ', '.join(m['title'] for m in matches) + '.')
+        raise DemoError('ambiguous', movies=matches)
     return matches[0]
 
 
 def validate_limit(limit):
     if type(limit) is not int or not 1 <= limit <= 249:
-        raise DemoError('Количество рекомендаций должно быть целым числом от 1 до 249.')
+        raise DemoError('limit')
 
 
 def search(store, query, catalog, limit=5):
     validate_limit(limit)
     return store.recommend(resolve_movie(query, catalog)['id'], limit=limit)
+
+
+def valid_metadata(movie):
+    return (isinstance(movie, dict)
+            and all(isinstance(movie.get(k), str) and movie[k].strip()
+                    for k in ('title', 'description'))
+            and isinstance(movie.get('genres'), list) and bool(movie['genres'])
+            and all(isinstance(g, str) and g.strip() for g in movie['genres']))
+
+
+def movie_titles(movie):
+    return [movie['title'], localize_movie(movie, 'en')['title']]

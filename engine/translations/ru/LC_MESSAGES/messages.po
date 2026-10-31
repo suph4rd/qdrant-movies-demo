@@ -1,0 +1,203 @@
+# Russian translations for qdrant-movies-demo.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the qdrant-movies-demo
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: qdrant-movies-demo VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-01 02:03+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "Qdrant HTTP %(status)s: %(detail)s"
+msgstr "Qdrant HTTP %(status)s: %(detail)s"
+
+msgid "Invalid Qdrant response."
+msgstr "Некорректный ответ Qdrant."
+
+#, python-format
+msgid "Cannot connect to Qdrant (%(url)s): %(detail)s"
+msgstr "Нет соединения с Qdrant (%(url)s): %(detail)s"
+
+msgid ""
+"Incompatible movies collection: one unnamed 10-dimensional vector with "
+"Cosine distance is required. Existing data is unchanged."
+msgstr ""
+"Несовместимая коллекция movies: требуется один безымянный вектор "
+"размерности 10, метрика Cosine. Существующие данные не изменены."
+
+msgid ""
+"The movies collection contains additional records; they are preserved. "
+"This demo expects 250."
+msgstr ""
+"В movies есть дополнительные записи; они сохранены. Для демо ожидается "
+"250."
+
+#, python-format
+msgid "Unknown movie ID: %(id)s. See movies.json for IDs."
+msgstr "Неизвестный ID фильма: %(id)s. Посмотрите ID в movies.json."
+
+#, python-format
+msgid "Cannot read the movie catalog: %(detail)s"
+msgstr "Не удалось прочитать каталог фильмов: %(detail)s"
+
+msgid "JSON must contain exactly 250 movies."
+msgstr "В JSON должно быть ровно 250 фильмов."
+
+msgid "Each movie must be an object."
+msgstr "Каждый фильм должен быть объектом."
+
+#, python-format
+msgid "Invalid or duplicate ID: %(id)s"
+msgstr "Некорректный или повторяющийся ID: %(id)s"
+
+#, python-format
+msgid "Movie %(id)s: a nonzero vector of 10 numbers in the range 0–1 is required."
+msgstr "Фильм %(id)s: нужен ненулевой вектор из 10 чисел в диапазоне 0–1."
+
+#, python-format
+msgid ""
+"Movie %(id)s: title, description, and genres are required in both "
+"languages."
+msgstr "Фильм %(id)s: нужны название, описание и жанры на обоих языках."
+
+#, python-format
+msgid "Movie %(id)s: invalid year or genres."
+msgstr "Фильм %(id)s: некорректные год или жанры."
+
+msgid "ID must be an integer from 0 to 2^64−1."
+msgstr "ID должен быть целым числом от 0 до 2^64−1."
+
+msgid "Enter a movie title or ID."
+msgstr "Введите название или ID фильма."
+
+msgid "Movie not found. Enter another title or ID."
+msgstr "Фильм не найден. Введите другое название или ID."
+
+#, python-format
+msgid "Multiple movies found. Please specify the title: %(titles)s."
+msgstr "Найдено несколько фильмов. Уточните название: %(titles)s."
+
+msgid "The recommendation count must be an integer from 1 to 249."
+msgstr "Количество рекомендаций должно быть целым числом от 1 до 249."
+
+msgid "Choose the number of similar movies: 5, 10, 20, or 50."
+msgstr "Выберите количество похожих фильмов: 5, 10, 20 или 50."
+
+msgid "Your next movie"
+msgstr "Следующий фильм"
+
+msgid "MOVIE CATALOG · 250 MOVIES"
+msgstr "КИНОКАТАЛОГ · 250 ФИЛЬМОВ"
+
+msgid "What to watch next?"
+msgstr "Что посмотреть дальше?"
+
+msgid "Choose a familiar movie to find similar movies by mood and genre."
+msgstr "Выберите знакомый фильм — найдём похожие фильмы по настроению и жанру."
+
+msgid "Movie title or ID"
+msgstr "Название или ID фильма"
+
+msgid "For example, The Matrix or 1"
+msgstr "Например, Матрица или 1"
+
+msgid "Find similar movies"
+msgstr "Найти похожие"
+
+msgid "Number of similar movies"
+msgstr "Количество похожих фильмов"
+
+#, python-format
+msgid "Invalid value: %(value)s"
+msgstr "Некорректное значение: %(value)s"
+
+msgid ""
+"You can enter part of a title in English or Russian. Matching ignores "
+"case."
+msgstr ""
+"Можно ввести часть названия на русском или английском. Регистр букв не "
+"важен."
+
+#, python-format
+msgid "Similar to “%(title)s”"
+msgstr "Похожие на «%(title)s»"
+
+msgid ""
+"Cosine similarity measures manually assigned vector similarity, not the "
+"probability that you will like a movie."
+msgstr ""
+"Cosine similarity — сходство ручных векторов, а не вероятность того, что "
+"фильм понравится."
+
+msgid "Cosine similarity"
+msgstr "Косинусное сходство"
+
+msgid "No similar movies yet."
+msgstr "Похожих фильмов пока нет."
+
+msgid "Start with a favorite movie. Recommendations will appear here."
+msgstr "Начните с любимого фильма. Рекомендации появятся здесь."
+
+msgid "Interface language"
+msgstr "Язык интерфейса"
+
+#, python-format
+msgid "Loaded %(loaded)s movies. Total in movies: %(count)s."
+msgstr "Загружено %(loaded)s фильмов. Всего в movies: %(count)s."
+
+#, python-format
+msgid "Error: %(detail)s"
+msgstr "Ошибка: %(detail)s"
+
+msgid "Validate and load the movie catalog into Qdrant."
+msgstr "Проверить и загрузить каталог фильмов в Qdrant."
+
+msgid "Qdrant REST URL"
+msgstr "REST URL Qdrant"
+
+msgid "Path to the JSON catalog of 250 movies"
+msgstr "Путь к JSON с 250 фильмами"
+
+msgid "Output language (default: en)"
+msgstr "Язык вывода (по умолчанию: en)"
+
+msgid "Show this help message and exit"
+msgstr "Показать справку и выйти"
+
+msgid "usage: "
+msgstr "использование: "
+
+msgid "options"
+msgstr "параметры"
+
+#, python-format
+msgid "unrecognized arguments: %(value)s"
+msgstr "нераспознанные аргументы: %(value)s"
+
+#, python-format
+msgid "argument %(value)s: expected one argument"
+msgstr "аргумент %(value)s: требуется одно значение"
+
+#, python-format
+msgid "argument %(argument)s: ignored explicit argument %(value)s"
+msgstr "аргумент %(argument)s: явное значение %(value)s не допускается"
+
+#, python-format
+msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
+msgstr ""
+"аргумент %(argument)s: недопустимое значение: %(value)s (выберите из "
+"%(choices)s)"
+
