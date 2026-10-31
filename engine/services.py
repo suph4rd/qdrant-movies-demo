@@ -31,8 +31,8 @@ def read_movies(path):
         movies = json.loads(Path(path).read_text(encoding='utf-8'))
     except (OSError, ValueError) as exc:
         raise DemoError(f'Не удалось прочитать каталог фильмов: {exc}') from exc
-    if not isinstance(movies, list) or len(movies) != 30:
-        raise DemoError('В JSON должно быть ровно 30 фильмов.')
+    if not isinstance(movies, list) or len(movies) != 250:
+        raise DemoError('В JSON должно быть ровно 250 фильмов.')
     ids = set()
     for m in movies:
         if not isinstance(m, dict):
@@ -64,20 +64,21 @@ def load(base, path):
     points = [{'id': m['id'], 'vector': m['vector'], 'payload': {k: v for k, v in m.items() if k != 'vector'}} for m in movies]
     request(base, 'PUT', '/collections/movies/points?wait=true', {'points': points})
     count = request(base, 'POST', '/collections/movies/points/count', {'exact': True})['count']
-    if count != 30:
-        raise DemoError('В movies есть дополнительные записи; они сохранены. Для демо ожидается 30.')
+    if count != 250:
+        raise DemoError('В movies есть дополнительные записи; они сохранены. Для демо ожидается 250.')
 
     return {'loaded': len(points), 'count': count}
 
 
-def recommend(base, movie_id):
+def recommend(base, movie_id, limit=5):
+    validate_limit(limit)
     validate_id(movie_id)
     points = request(base, 'POST', '/collections/movies/points', {'ids': [movie_id], 'with_payload': True})
     if not points:
         raise DemoError(f'Неизвестный ID фильма: {movie_id}. Посмотрите ID в movies.json.')
     result = request(base, 'POST', '/collections/movies/points/query', {
         'query': movie_id, 'filter': {'must_not': [{'has_id': [movie_id]}]},
-        'limit': 5, 'with_payload': True, 'params': {'exact': True}})['points']
+        'limit': limit, 'with_payload': True, 'params': {'exact': True}})['points']
     return {'source': points[0]['payload'], 'recommendations': result}
 
 
@@ -112,5 +113,11 @@ def resolve_movie(query, catalog):
     return matches[0]
 
 
-def search(base, query, catalog):
-    return recommend(base, resolve_movie(query, catalog)['id'])
+def validate_limit(limit):
+    if type(limit) is not int or not 1 <= limit <= 249:
+        raise DemoError('Количество рекомендаций должно быть целым числом от 1 до 249.')
+
+
+def search(base, query, catalog, limit=5):
+    validate_limit(limit)
+    return recommend(base, resolve_movie(query, catalog)['id'], limit=limit)
