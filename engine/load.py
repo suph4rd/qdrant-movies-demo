@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Проверка каталога и загрузка 30 фильмов через REST Qdrant."""
+"""Проверка каталога и загрузка 250 фильмов через REST Qdrant."""
 import argparse
 from pathlib import Path
 import sys
@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--url', default='http://127.0.0.1:6333', help='REST URL Qdrant')
     parser.add_argument('--data', type=Path, default=DEFAULT_DATA_PATH,
-                        help='Путь к JSON с 30 фильмами')
+                        help='Путь к JSON с 250 фильмами')
     args = parser.parse_args()
     try:
         result = services.load(args.url, args.data)

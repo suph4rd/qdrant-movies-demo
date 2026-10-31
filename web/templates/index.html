@@ -8,9 +8,9 @@
 </head>
 <body>
 <main>
-  <header><p class="eyebrow">КИНОКАТАЛОГ · 30 ФИЛЬМОВ</p>
+  <header><p class="eyebrow">КИНОКАТАЛОГ · 250 ФИЛЬМОВ</p>
     <h1>Что посмотреть дальше?</h1>
-    <p>Выберите знакомый фильм — найдём пять похожих по настроению и жанру.</p>
+    <p>Выберите знакомый фильм — найдём похожие фильмы по настроению и жанру.</p>
   </header>
   <form action="{{ url_for('search') }}" method="post">
     <label for="query">Название или ID фильма</label>
@@ -19,6 +19,15 @@
              placeholder="Например, Матрица или 1" aria-describedby="hint">
       <button type="submit">Найти похожие</button>
     </div>
+    <label for="limit">Количество похожих фильмов</label>
+    <select id="limit" name="limit">
+      {% if limit not in ('5', '10', '20', '50') %}
+      <option value="{{ limit }}" selected>Некорректное значение: {{ limit }}</option>
+      {% endif %}
+      {% for value in ('5', '10', '20', '50') %}
+      <option value="{{ value }}"{% if limit == value %} selected{% endif %}>{{ value }}</option>
+      {% endfor %}
+    </select>
     <datalist id="titles">{% for movie in catalog %}<option value="{{ movie.title }}">{% endfor %}</datalist>
     <p id="hint" class="muted">Можно ввести часть названия. Регистр букв не важен.</p>
   </form>

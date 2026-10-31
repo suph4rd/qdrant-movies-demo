@@ -37,13 +37,45 @@ class WebTests(unittest.TestCase):
             self.assertEqual(response.status_code, 303)
             search.assert_not_called()
             response = self.client.get(response.headers['Location'])
-            search.assert_called_once_with('http://test:6333', ' Матрица ', self.catalog)
+            search.assert_called_once_with('http://test:6333', ' Матрица ', self.catalog, limit=5)
         html = response.get_data(as_text=True)
         self.assertIn('value=" Матрица "', html)
         self.assertLess(html.index('</form>'), html.index('Похожие на'))
         self.assertEqual(html.count('<article>'), 5)
         self.assertIn('0.9000', html)
         self.assertIn(self.catalog[1]['description'], html)
+
+    def test_limit_options_and_persistence(self):
+        html = self.client.get('/').get_data(as_text=True)
+        self.assertIn('<option value="5" selected>', html)
+        for value in ('5', '10', '20', '50'):
+            self.assertIn(f'<option value="{value}"', html)
+            with patch.object(services, 'search', side_effect=services.DemoError('Нет соединения')) as search:
+                redirect = self.client.post('/search', data={'query': '1', 'limit': value})
+                self.assertEqual(redirect.status_code, 303)
+                self.assertIn('limit=' + value, redirect.headers['Location'])
+                for _ in range(2):
+                    html = self.client.get(redirect.headers['Location']).get_data(as_text=True)
+                    self.assertIn(f'<option value="{value}" selected>', html)
+                    self.assertIn('Нет соединения', html)
+                search.assert_called_with('http://test:6333', '1', self.catalog, limit=int(value))
+            with patch.object(services, 'search', return_value={
+                'source': self.catalog[0], 'recommendations': [],
+            }) as search:
+                html = self.client.get('/', query_string={'q': '1', 'limit': value}).get_data(as_text=True)
+                self.assertIn(f'<option value="{value}" selected>', html)
+                search.assert_called_once_with('http://test:6333', '1', self.catalog, limit=int(value))
+
+    def test_invalid_limits(self):
+        for value in ('', '0', '6', '249', '250', '-1', '5.0', 'abc', '<script>'):
+            with self.subTest(value=value), patch.object(services, 'search') as search:
+                response = self.client.post('/search', data={'query': 'Матрица', 'limit': value})
+                html = self.client.get(response.headers['Location']).get_data(as_text=True)
+                self.assertIn('Выберите количество', html)
+                self.assertIn('value="Матрица"', html)
+                self.assertIn('Некорректное значение:', html)
+                self.assertNotIn('<script>', html)
+                search.assert_not_called()
 
     def test_input_errors_do_not_call_qdrant(self):
         with patch.object(services, 'request') as api:
