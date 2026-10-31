@@ -1,4 +1,3 @@
-"""Автономные проверки модульного загрузчика."""
 import contextlib
 import io
 import os
@@ -22,7 +21,7 @@ class LoaderTests(unittest.TestCase):
     def test_success_and_default_path_from_other_directory(self):
         original = os.getcwd()
         with tempfile.TemporaryDirectory() as directory, patch.object(
-            services, 'load', return_value={'loaded': 250, 'count': 250}
+            services.QdrantMovieStore, 'load', return_value={'loaded': 250, 'count': 250}
         ) as loader:
             try:
                 os.chdir(directory)
@@ -30,19 +29,21 @@ class LoaderTests(unittest.TestCase):
                 self.assertEqual(len(services.read_movies(DEFAULT_DATA_PATH)), 250)
             finally:
                 os.chdir(original)
-        loader.assert_called_once_with('http://127.0.0.1:6333', DEFAULT_DATA_PATH)
+        loader.assert_called_once_with(DEFAULT_DATA_PATH)
         self.assertEqual(code, 0)
         self.assertEqual(output, 'Загружено 250 фильмов. Всего в movies: 250.\n')
         self.assertEqual(errors, '')
 
     def test_connection_and_data_options(self):
-        with patch.object(services, 'load', return_value={'loaded': 250, 'count': 250}) as loader:
+        with patch.object(services, 'QdrantMovieStore') as store_class:
+            store_class.return_value.load.return_value = {'loaded': 250, 'count': 250}
             self.assertEqual(self.run_loader(['--url', 'http://test:6333', '--data', 'custom.json'])[0], 0)
-        loader.assert_called_once_with('http://test:6333', Path('custom.json'))
+        store_class.assert_called_once_with('http://test:6333')
+        store_class.return_value.load.assert_called_once_with(Path('custom.json'))
 
     def test_errors(self):
         for error in (services.DemoError('Нет соединения'), ValueError('данные'), OSError('файл'), KeyError('count'), TypeError('ответ')):
-            with self.subTest(error=error), patch.object(services, 'load', side_effect=error):
+            with self.subTest(error=error), patch.object(services.QdrantMovieStore, 'load', side_effect=error):
                 code, output, errors = self.run_loader([])
                 self.assertEqual(code, 1)
                 self.assertEqual(output, '')
@@ -50,7 +51,7 @@ class LoaderTests(unittest.TestCase):
                 self.assertIn(str(error), errors)
 
     def test_invalid_arguments(self):
-        with patch.object(services, 'load') as loader:
+        with patch.object(services.QdrantMovieStore, 'load') as loader:
             for arguments in (['recommend', '1'], ['--url'], ['--unknown']):
                 with self.subTest(arguments=arguments), self.assertRaises(SystemExit) as raised:
                     self.run_loader(arguments)

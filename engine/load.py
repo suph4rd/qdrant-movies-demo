@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Проверка каталога и загрузка 250 фильмов через REST Qdrant."""
 import argparse
 from pathlib import Path
 import sys
@@ -15,7 +14,7 @@ def main():
                         help='Путь к JSON с 250 фильмами')
     args = parser.parse_args()
     try:
-        result = services.load(args.url, args.data)
+        result = services.QdrantMovieStore(args.url).load(args.data)
         print(f'Загружено {result["loaded"]} фильмов. Всего в movies: {result["count"]}.')
     except (DemoError, ValueError, OSError, KeyError, TypeError) as exc:
         print(f'Ошибка: {exc}', file=sys.stderr)

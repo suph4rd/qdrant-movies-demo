@@ -1,4 +1,3 @@
-"""Автономные проверки движка."""
 import contextlib
 import io
 import json
@@ -6,7 +5,8 @@ import tempfile
 from pathlib import Path
 import unittest
 from unittest.mock import patch
-from urllib.error import URLError
+
+import requests
 
 from engine import DEFAULT_DATA_PATH, services
 
@@ -16,6 +16,7 @@ DATA = DEFAULT_DATA_PATH
 
 class ServiceTests(unittest.TestCase):
     def setUp(self):
+        self.store = services.QdrantMovieStore('http://test:6333/')
         self.catalog = services.read_movies(DATA)
 
     def test_catalog(self):
@@ -47,24 +48,24 @@ class ServiceTests(unittest.TestCase):
                 data = json.loads(DATA.read_text())
                 mutate(data)
                 path.write_text(json.dumps(data))
-                with self.subTest(mutation=mutate), patch.object(services, 'request') as api:
+                with self.subTest(mutation=mutate), patch.object(self.store, 'request') as api:
                     with self.assertRaises(services.DemoError):
-                        services.load('endpoint', path)
+                        self.store.load(path)
                     api.assert_not_called()
 
     def test_limits(self):
         for limit in (1, 5, 10, 20, 50, 249):
-            with self.subTest(limit=limit), patch.object(services, 'request', side_effect=[
+            with self.subTest(limit=limit), patch.object(self.store, 'request', side_effect=[
                 [{'payload': self.catalog[0]}], {'points': []},
             ]) as api:
-                services.search('endpoint', '1', self.catalog, limit=limit)
-                body = api.call_args.args[3]
+                services.search(self.store, '1', self.catalog, limit=limit)
+                body = api.call_args.args[2]
                 self.assertEqual(body['limit'], limit)
                 self.assertEqual(body['filter']['must_not'], [{'has_id': [1]}])
         for limit in (0, -1, 250, True, False, 5.0, '5', None):
-            for function, args in ((services.recommend, ('endpoint', 1)),
-                                   (services.search, ('endpoint', '1', self.catalog))):
-                with self.subTest(limit=limit, function=function), patch.object(services, 'request') as api:
+            for function, args in ((self.store.recommend, (1,)),
+                                   (services.search, (self.store, '1', self.catalog))):
+                with self.subTest(limit=limit, function=function), patch.object(self.store, 'request') as api:
                     with self.assertRaisesRegex(services.DemoError, 'Количество'):
                         function(*args, limit=limit)
                     api.assert_not_called()
@@ -80,6 +81,14 @@ class ServiceTests(unittest.TestCase):
             with self.subTest(query=query), self.assertRaisesRegex(services.DemoError, message):
                 services.resolve_movie(query, self.catalog)
 
+    def test_numeric_title(self):
+        for query in ('1917', ' 1917 ', '77'):
+            with self.subTest(query=query):
+                self.assertEqual(services.resolve_movie(query, self.catalog)['id'], 77)
+        with patch.object(self.store, 'recommend', return_value={}) as recommend:
+            services.search(self.store, '1917', self.catalog)
+            recommend.assert_called_once_with(77, limit=5)
+
     def test_exact_precedes_partial_and_ambiguity(self):
         catalog = [{'id': 1, 'title': 'Фильм'}, {'id': 2, 'title': 'Фильм второй'}]
         self.assertEqual(services.resolve_movie('фильм', catalog)['id'], 1)
@@ -89,13 +98,13 @@ class ServiceTests(unittest.TestCase):
     def test_search_same_id_and_title_without_output(self):
         source = self.catalog[0]
         responses = [[{'payload': source}], {'points': []}] * 2
-        with patch.object(services, 'request', side_effect=responses) as api:
+        with patch.object(self.store, 'request', side_effect=responses) as api:
             with contextlib.redirect_stdout(io.StringIO()) as output:
-                by_id = services.search('endpoint', '1', self.catalog)
-                by_title = services.search('endpoint', 'Матрица', self.catalog)
+                by_id = services.search(self.store, '1', self.catalog)
+                by_title = services.search(self.store, 'Матрица', self.catalog)
             self.assertEqual(by_id, by_title)
             self.assertEqual(output.getvalue(), '')
-            query = api.call_args_list[1].args[3]
+            query = api.call_args_list[1].args[2]
             self.assertEqual(query['filter']['must_not'], [{'has_id': [1]}])
             self.assertEqual(query['limit'], 5)
             self.assertTrue(query['params']['exact'])
@@ -107,34 +116,76 @@ class ServiceTests(unittest.TestCase):
             {'size': 10, 'distance': 'Cosine', 'multivector_config': {'comparator': 'max_sim'}},
         ):
             with self.subTest(vectors=vectors), patch.object(
-                services, 'request', side_effect=[
+                self.store, 'request', side_effect=[
                     {'collections': [{'name': 'movies'}]},
                     {'config': {'params': {'vectors': vectors}}},
                 ],
             ) as api:
                 with self.assertRaisesRegex(services.DemoError, 'Несовместимая'):
-                    services.load('endpoint', DATA)
-                self.assertTrue(all(call.args[1] == 'GET' for call in api.call_args_list))
+                    self.store.load(DATA)
+                self.assertTrue(all(call.args[0] == 'GET' for call in api.call_args_list))
 
     def test_load_result_and_no_stdout(self):
-        with patch.object(services, 'request', side_effect=[
+        with patch.object(self.store, 'request', side_effect=[
             {'collections': []}, {},
             {'config': {'params': {'vectors': {'size': 10, 'distance': 'Cosine'}}}},
             {}, {'count': 250},
         ]) as api, contextlib.redirect_stdout(io.StringIO()) as output:
-            self.assertEqual(services.load('endpoint', DATA), {'loaded': 250, 'count': 250})
-            self.assertEqual(len(api.call_args_list[3].args[3]['points']), 250)
+            self.assertEqual(self.store.load(DATA), {'loaded': 250, 'count': 250})
+            self.assertEqual(len(api.call_args_list[3].args[2]['points']), 250)
             self.assertEqual(output.getvalue(), '')
 
     def test_network_failure(self):
-        with patch.object(services, 'urlopen', side_effect=URLError('offline')):
-            with self.assertRaisesRegex(services.DemoError, 'Нет соединения'):
-                services.recommend('http://127.0.0.1:6333', 1)
+        for error in (requests.exceptions.ConnectionError('offline'),
+                      requests.exceptions.ConnectTimeout('timed out'),
+                      requests.exceptions.ReadTimeout('timed out')):
+            with self.subTest(error=error), patch.object(
+                services.requests, 'request', side_effect=error,
+            ):
+                with self.assertRaisesRegex(services.DemoError, 'Нет соединения'):
+                    self.store.recommend(1)
+
+    def test_http_error(self):
+        response = requests.Response()
+        response.status_code = 503
+        response.encoding = 'utf-8'
+        response._content = 'недоступно'.encode('utf-8')
+        with patch.object(services.requests, 'request', return_value=response):
+            with self.assertRaisesRegex(services.DemoError, 'Qdrant HTTP 503: недоступно'):
+                self.store.recommend(1)
+
+    def test_request_and_malformed_responses(self):
+        for body in (b'invalid', b'{}', b'null', b'[]'):
+            response = requests.Response()
+            response.status_code = 200
+            response._content = body
+            with self.subTest(body=body), patch.object(
+                services.requests, 'request', return_value=response,
+            ):
+                with self.assertRaisesRegex(services.DemoError, 'Некорректный ответ'):
+                    self.store.request('GET', '/collections')
+        response = requests.Response()
+        response.status_code = 200
+        response._content = b'{"result": {}}'
+        for method, body in (('POST', {'exact': True}), ('GET', None)):
+            with self.subTest(method=method), patch.object(
+                services.requests, 'request', return_value=response,
+            ) as api:
+                self.assertEqual(self.store.request(method, '/collections', body), {})
+                api.assert_called_once_with(
+                    method, 'http://test:6333/collections', json=body,
+                    headers={'Content-Type': 'application/json'}, timeout=15)
+
+    def test_unknown_id(self):
+        with patch.object(self.store, 'request', return_value=[]) as api:
+            with self.assertRaisesRegex(services.DemoError, 'Неизвестный ID'):
+                self.store.recommend(999)
+            api.assert_called_once()
 
     def test_invalid_id_does_not_call_api(self):
-        with patch.object(services, 'request') as api:
+        with patch.object(self.store, 'request') as api:
             with self.assertRaises(services.DemoError):
-                services.recommend('endpoint', -1)
+                self.store.recommend(-1)
             api.assert_not_called()
 
 

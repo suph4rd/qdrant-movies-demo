@@ -1,9 +1,9 @@
-"""Локальный веб-интерфейс рекомендаций."""
 import os
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask
 
 from engine import DEFAULT_DATA_PATH, services
+from web.router import register_routes
 
 
 def create_app(test_config=None):
@@ -15,25 +15,7 @@ def create_app(test_config=None):
     if test_config is not None:
         app.config.update(test_config)
 
-    @app.get('/')
-    def index():
-        query = request.args.get('q', '')
-        limit = request.args.get('limit', '5')
-        result, error, catalog = None, None, []
-        try:
-            catalog = services.read_movies(app.config['MOVIES_PATH'])
-            if limit not in ('5', '10', '20', '50'):
-                raise services.DemoError('Выберите количество похожих фильмов: 5, 10, 20 или 50.')
-            if 'q' in request.args:
-                result = services.search(app.config['QDRANT_URL'], query, catalog, limit=int(limit))
-        except services.DemoError as exc:
-            error = str(exc)
-        return render_template('index.html', query=query, result=result,
-                               error=error, catalog=catalog, limit=limit)
-
-    @app.post('/search')
-    def search():
-        return redirect(url_for('index', q=request.form.get('query', ''),
-                                limit=request.form.get('limit', '5')), code=303)
+    app.extensions['movie_store'] = services.QdrantMovieStore(app.config['QDRANT_URL'])
+    register_routes(app)
 
     return app
