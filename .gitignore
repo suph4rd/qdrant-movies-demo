@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Local environment settings
+.env
+.env.*
+!.env.example
+
+# Editors and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
