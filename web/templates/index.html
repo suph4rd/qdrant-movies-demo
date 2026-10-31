@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Следующий фильм</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main>
+  <header><p class="eyebrow">КИНОКАТАЛОГ · 250 ФИЛЬМОВ</p>
+    <h1>Что посмотреть дальше?</h1>
+    <p>Выберите знакомый фильм — найдём похожие фильмы по настроению и жанру.</p>
+  </header>
+  <form action="{{ url_for('search') }}" method="post">
+    <label for="query">Название или ID фильма</label>
+    <div class="search">
+      <input id="query" name="query" value="{{ query }}" list="titles"
+             placeholder="Например, Матрица или 1" aria-describedby="hint">
+      <button type="submit">Найти похожие</button>
+    </div>
+    <label for="limit">Количество похожих фильмов</label>
+    <select id="limit" name="limit">
+      {% if limit not in ('5', '10', '20', '50') %}
+      <option value="{{ limit }}" selected>Некорректное значение: {{ limit }}</option>
+      {% endif %}
+      {% for value in ('5', '10', '20', '50') %}
+      <option value="{{ value }}"{% if limit == value %} selected{% endif %}>{{ value }}</option>
+      {% endfor %}
+    </select>
+    <datalist id="titles">{% for movie in catalog %}<option value="{{ movie.title }}">{% endfor %}</datalist>
+    <p id="hint" class="muted">Можно ввести часть названия. Регистр букв не важен.</p>
+  </form>
+  {% if error %}
+    <p class="error" role="alert">{{ error }}</p>
+  {% elif result is not none %}
+    <section aria-labelledby="results">
+      <h2 id="results">Похожие на «{{ result.source.title }}»</h2>
+      <p class="muted">Cosine similarity — сходство ручных векторов, а не вероятность того, что фильм понравится.</p>
+      <div class="cards">
+      {% for point in result.recommendations %}
+        <article>
+          <p class="muted">{{ point.payload.year }} · {{ point.payload.genres | join(' / ') }}</p>
+          <h3>{{ point.payload.title }}</h3>
+          <p>{{ point.payload.description }}</p>
+          <p class="score">Cosine similarity: {{ '%.4f' | format(point.score) }}</p>
+        </article>
+      {% else %}
+        <p>Похожих фильмов пока нет.</p>
+      {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <p class="initial">Начните с любимого фильма. Рекомендации появятся здесь.</p>
+  {% endif %}
+</main>
+</body>
+</html>
