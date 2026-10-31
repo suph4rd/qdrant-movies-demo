@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-"""Учебные рекомендации через REST Qdrant; только стандартная библиотека."""
-import argparse
+"""Каталог и рекомендации через REST Qdrant, без вывода в консоль."""
 import json
 import math
 from pathlib import Path
-import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -20,6 +17,8 @@ def request(base, method, path, body=None):
     try:
         with urlopen(req, timeout=15) as response:
             return json.load(response)['result']
+    except (ValueError, KeyError, TypeError) as exc:
+        raise DemoError('Некорректный ответ Qdrant.') from exc
     except HTTPError as exc:
         detail = exc.read().decode('utf-8', errors='replace')
         raise DemoError(f'Qdrant HTTP {exc.code}: {detail}') from exc
@@ -28,11 +27,16 @@ def request(base, method, path, body=None):
 
 
 def read_movies(path):
-    movies = json.loads(path.read_text(encoding='utf-8'))
+    try:
+        movies = json.loads(Path(path).read_text(encoding='utf-8'))
+    except (OSError, ValueError) as exc:
+        raise DemoError(f'Не удалось прочитать каталог фильмов: {exc}') from exc
     if not isinstance(movies, list) or len(movies) != 30:
         raise DemoError('В JSON должно быть ровно 30 фильмов.')
     ids = set()
     for m in movies:
+        if not isinstance(m, dict):
+            raise DemoError('Каждый фильм должен быть объектом.')
         i, v = m.get('id'), m.get('vector')
         if type(i) is not int or not 0 <= i < 2**64 or i in ids:
             raise DemoError(f'Некорректный или повторяющийся ID: {i}')
@@ -60,45 +64,53 @@ def load(base, path):
     points = [{'id': m['id'], 'vector': m['vector'], 'payload': {k: v for k, v in m.items() if k != 'vector'}} for m in movies]
     request(base, 'PUT', '/collections/movies/points?wait=true', {'points': points})
     count = request(base, 'POST', '/collections/movies/points/count', {'exact': True})['count']
-    print(f'Загружено {len(points)} фильмов. Всего в movies: {count}.')
     if count != 30:
         raise DemoError('В movies есть дополнительные записи; они сохранены. Для демо ожидается 30.')
 
+    return {'loaded': len(points), 'count': count}
+
 
 def recommend(base, movie_id):
+    validate_id(movie_id)
     points = request(base, 'POST', '/collections/movies/points', {'ids': [movie_id], 'with_payload': True})
     if not points:
         raise DemoError(f'Неизвестный ID фильма: {movie_id}. Посмотрите ID в movies.json.')
     result = request(base, 'POST', '/collections/movies/points/query', {
         'query': movie_id, 'filter': {'must_not': [{'has_id': [movie_id]}]},
         'limit': 5, 'with_payload': True, 'params': {'exact': True}})['points']
-    print(f'Похожие на «{points[0]["payload"]["title"]}» (ID {movie_id}):')
-    for p in result:
-        print(f'{p["id"]:2d}  {p["payload"]["title"]} ({p["payload"]["year"]}) — {p["score"]:.4f}')
-    return result
+    return {'source': points[0]['payload'], 'recommendations': result}
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--url', default='http://127.0.0.1:6333', help='REST URL Qdrant')
-    sub = parser.add_subparsers(dest='command', required=True)
-    loader = sub.add_parser('load', help='Проверить JSON и загрузить 30 фильмов')
-    loader.add_argument('--data', type=Path, default=Path(__file__).with_name('movies.json'))
-    rec = sub.add_parser('recommend', help='Найти пять похожих фильмов')
-    rec.add_argument('id', type=int)
-    args = parser.parse_args()
-    try:
-        if args.command == 'load':
-            load(args.url, args.data)
-        else:
-            if not 0 <= args.id < 2**64:
-                raise DemoError('ID должен быть целым числом от 0 до 2^64−1.')
-            recommend(args.url, args.id)
-    except (DemoError, ValueError, OSError, KeyError, TypeError) as exc:
-        print(f'Ошибка: {exc}', file=sys.stderr)
-        return 1
-    return 0
+def validate_id(movie_id):
+    if type(movie_id) is not int or not 0 <= movie_id < 2**64:
+        raise DemoError('ID должен быть целым числом от 0 до 2^64−1.')
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+def resolve_movie(query, catalog):
+    query = query.strip()
+    if not query:
+        raise DemoError('Введите название или ID фильма.')
+    if query.lstrip('+-').isdecimal():
+        try:
+            movie_id = int(query)
+        except ValueError as exc:
+            raise DemoError('ID должен быть целым числом от 0 до 2^64−1.') from exc
+        validate_id(movie_id)
+        matches = [m for m in catalog if m['id'] == movie_id]
+        if not matches:
+            raise DemoError(f'Неизвестный ID фильма: {movie_id}. Посмотрите ID в movies.json.')
+    else:
+        title = query.casefold()
+        matches = [m for m in catalog if m['title'].casefold() == title]
+        if not matches:
+            matches = [m for m in catalog if title in m['title'].casefold()]
+        if not matches:
+            raise DemoError('Фильм не найден. Введите другое название или ID.')
+    if len(matches) > 1:
+        raise DemoError('Найдено несколько фильмов. Уточните название: ' +
+                        ', '.join(m['title'] for m in matches) + '.')
+    return matches[0]
+
+
+def search(base, query, catalog):
+    return recommend(base, resolve_movie(query, catalog)['id'])
