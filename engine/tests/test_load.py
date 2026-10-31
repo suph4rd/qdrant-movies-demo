@@ -31,7 +31,7 @@ class LoaderTests(unittest.TestCase):
                 os.chdir(original)
         loader.assert_called_once_with(DEFAULT_DATA_PATH)
         self.assertEqual(code, 0)
-        self.assertEqual(output, 'Загружено 250 фильмов. Всего в movies: 250.\n')
+        self.assertEqual(output, 'Loaded 250 movies. Total in movies: 250.\n')
         self.assertEqual(errors, '')
 
     def test_connection_and_data_options(self):
@@ -42,12 +42,12 @@ class LoaderTests(unittest.TestCase):
         store_class.return_value.load.assert_called_once_with(Path('custom.json'))
 
     def test_errors(self):
-        for error in (services.DemoError('Нет соединения'), ValueError('данные'), OSError('файл'), KeyError('count'), TypeError('ответ')):
+        for error in (services.DemoError('response'), ValueError('данные'), OSError('файл'), KeyError('count'), TypeError('ответ')):
             with self.subTest(error=error), patch.object(services.QdrantMovieStore, 'load', side_effect=error):
                 code, output, errors = self.run_loader([])
                 self.assertEqual(code, 1)
                 self.assertEqual(output, '')
-                self.assertIn('Ошибка:', errors)
+                self.assertIn('Error:', errors)
                 self.assertIn(str(error), errors)
 
     def test_invalid_arguments(self):
@@ -64,7 +64,7 @@ class LoaderTests(unittest.TestCase):
             capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 1)
-        self.assertIn('Ошибка: Не удалось прочитать каталог', result.stderr)
+        self.assertIn('Error: Cannot read the movie catalog', result.stderr)
         self.assertEqual(result.stdout, '')
 
 

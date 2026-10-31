@@ -19,7 +19,17 @@
       0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Matrix",
+        "description": "A hacker discovers that the familiar world is a computer simulation.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 2,
@@ -41,7 +51,17 @@
       0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Inception",
+        "description": "A team enters dreams to plant an idea in someone else's mind.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 3,
@@ -63,7 +83,17 @@
       0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Interstellar",
+        "description": "Astronauts search for a new home for humanity.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 4,
@@ -85,7 +115,17 @@
       0,
       0.2,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Martian",
+        "description": "An astronaut uses science to survive on Mars.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 5,
@@ -107,7 +147,17 @@
       0,
       1,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Blade Runner 2049",
+        "description": "An officer investigates the origins of artificial humans.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 6,
@@ -129,7 +179,17 @@
       0,
       0.5,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Arrival",
+        "description": "A linguist tries to understand the language of extraterrestrial visitors.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 7,
@@ -151,7 +211,17 @@
       0,
       0.7,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Terminator 2: Judgment Day",
+        "description": "A cyborg protects a teenager from a machine sent from the future.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 8,
@@ -173,7 +243,17 @@
       0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Mad Max: Fury Road",
+        "description": "Fugitives cross a wasteland to escape a tyrant.",
+        "genres": [
+          "action",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 9,
@@ -195,7 +275,17 @@
       0,
       0.6,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Die Hard",
+        "description": "A police officer faces skyscraper hijackers alone.",
+        "genres": [
+          "action",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 10,
@@ -217,7 +307,17 @@
       0,
       1,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "John Wick",
+        "description": "A former hitman returns to the criminal underworld.",
+        "genres": [
+          "action",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 11,
@@ -238,7 +338,16 @@
       0,
       0.6,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Shawshank Redemption",
+        "description": "A wrongly convicted man holds on to hope and friendship.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 12,
@@ -260,7 +369,17 @@
       0,
       0.3,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Forrest Gump",
+        "description": "A kindhearted man takes part in major historical events.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 13,
@@ -282,7 +401,17 @@
       0,
       0.9,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Green Mile",
+        "description": "A prison guard meets an inmate with an extraordinary gift.",
+        "genres": [
+          "drama",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 14,
@@ -304,7 +433,17 @@
       0,
       0.2,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Intouchables",
+        "description": "An aristocrat and his caregiver form an unexpected friendship.",
+        "genres": [
+          "drama",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 15,
@@ -325,7 +464,16 @@
       0,
       0.5,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Dead Poets Society",
+        "description": "A literature teacher helps his students find their own voices.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 16,
@@ -347,7 +495,17 @@
       0,
       0.1,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Groundhog Day",
+        "description": "A television presenter relives the same day again and again.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 17,
@@ -369,7 +527,17 @@
       0,
       0.1,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Some Like It Hot",
+        "description": "Musicians hide from gangsters in an all-female band.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 18,
@@ -391,7 +559,17 @@
       0,
       0.4,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Grand Budapest Hotel",
+        "description": "A concierge and a lobby boy find themselves at the center of an adventure.",
+        "genres": [
+          "comedy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 19,
@@ -413,7 +591,17 @@
       0,
       0.1,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Amélie",
+        "description": "A young Parisian secretly changes the lives of those around her for the better.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 20,
@@ -435,7 +623,17 @@
       0,
       0.3,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "La La Land",
+        "description": "An actress and a jazz musician choose between their dreams and love.",
+        "genres": [
+          "musical",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 21,
@@ -457,7 +655,17 @@
       0,
       1,
       0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Se7en",
+        "description": "Two detectives investigate murders inspired by the deadly sins.",
+        "genres": [
+          "thriller",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 22,
@@ -479,7 +687,17 @@
       0,
       1,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Shutter Island",
+        "description": "A marshal investigates a patient's disappearance at an isolated hospital.",
+        "genres": [
+          "thriller",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 23,
@@ -501,7 +719,17 @@
       0,
       1,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Silence of the Lambs",
+        "description": "An FBI trainee asks a dangerous inmate for help with an investigation.",
+        "genres": [
+          "thriller",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 24,
@@ -523,7 +751,17 @@
       0,
       0.7,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Lord of the Rings: The Fellowship of the Ring",
+        "description": "A hobbit sets out to destroy a ring that threatens the world.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 25,
@@ -545,7 +783,17 @@
       0,
       0.3,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Philosopher's Stone",
+        "description": "A boy discovers a magical world and makes friends at a school of witchcraft and wizardry.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 26,
@@ -567,7 +815,17 @@
       1,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Spirited Away",
+        "description": "A girl searches for a way to save her parents in the spirit world.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 27,
@@ -589,7 +847,17 @@
       1,
       0.2,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "WALL·E",
+        "description": "A lonely robot finds love and helps humanity return to Earth.",
+        "genres": [
+          "animation",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 28,
@@ -611,7 +879,17 @@
       1,
       0.1,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Toy Story",
+        "description": "Toys learn to be friends and return to their owner together.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 29,
@@ -633,7 +911,17 @@
       1,
       0.4,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Coco",
+        "description": "A young musician travels to the land of his ancestors and discovers his family's history.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 30,
@@ -655,7 +943,17 @@
       1,
       0.3,
       1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Inside Out",
+        "description": "A girl's emotions try to help her cope with moving home.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 31,
@@ -677,7 +975,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Terminator",
+        "description": "A cyborg from the future hunts a woman whose son will lead the resistance.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 32,
@@ -699,7 +1007,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Alien",
+        "description": "The crew of a cargo ship encounters a predator from space.",
+        "genres": [
+          "science fiction",
+          "horror"
+        ]
+      }
+    }
   },
   {
     "id": 33,
@@ -721,7 +1039,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Aliens",
+        "description": "Ripley returns to the aliens' planet with a squad of marines.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 34,
@@ -743,7 +1071,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Blade Runner",
+        "description": "A replicant hunter questions the boundary between humans and machines.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 35,
@@ -764,7 +1102,16 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "2001: A Space Odyssey",
+        "description": "An expedition to Jupiter encounters the mystery of extraterrestrial intelligence.",
+        "genres": [
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 36,
@@ -786,7 +1133,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Solaris",
+        "description": "A psychologist aboard a space station meets an embodiment of his memories.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 37,
@@ -808,7 +1165,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Stalker",
+        "description": "A guide leads two travelers through the forbidden Zone in search of wish fulfillment.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 38,
@@ -830,7 +1197,17 @@
       0.0,
       0.0,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Back to the Future",
+        "description": "A teenager travels into the past and must help his parents meet.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 39,
@@ -852,7 +1229,17 @@
       0.0,
       0.0,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Fifth Element",
+        "description": "A taxi driver helps a mysterious woman save Earth from cosmic evil.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 40,
@@ -874,7 +1261,17 @@
       0.0,
       0.0,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Men in Black",
+        "description": "A new secret agent monitors aliens living among humans.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 41,
@@ -896,7 +1293,17 @@
       0.0,
       0.5,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Jurassic Park",
+        "description": "Visitors to a park find themselves among escaped dinosaurs.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 42,
@@ -918,7 +1325,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Avatar",
+        "description": "A marine learns about the people of Pandora and joins the defense of their world.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 43,
@@ -940,7 +1357,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Dune",
+        "description": "The heir to a great house becomes caught in a struggle for a desert planet.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 44,
@@ -962,7 +1389,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Star Wars: A New Hope",
+        "description": "A young farmer joins the rebels against the galactic Empire.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 45,
@@ -984,7 +1421,17 @@
       0.0,
       0.6,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Star Wars: The Empire Strikes Back",
+        "description": "Luke trains with Master Yoda while his friends flee the imperial fleet.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 46,
@@ -1006,7 +1453,17 @@
       0.0,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Star Wars: Return of the Jedi",
+        "description": "The rebels prepare a decisive attack while Luke tries to save his father.",
+        "genres": [
+          "science fiction",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 47,
@@ -1028,7 +1485,17 @@
       0.0,
       0.6,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Gravity",
+        "description": "An astronaut tries to return to Earth after a space station is destroyed.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 48,
@@ -1050,7 +1517,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ex Machina",
+        "description": "A programmer tests a robot's consciousness at an inventor's secluded home.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 49,
@@ -1072,7 +1549,17 @@
       0.0,
       0.3,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Her",
+        "description": "A lonely writer falls in love with an operating system.",
+        "genres": [
+          "science fiction",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 50,
@@ -1094,7 +1581,17 @@
       0.0,
       0.4,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Eternal Sunshine of the Spotless Mind",
+        "description": "A man tries to preserve memories of love as they are erased.",
+        "genres": [
+          "science fiction",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 51,
@@ -1116,7 +1613,17 @@
       0.0,
       0.7,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Minority Report",
+        "description": "A police officer is accused of a murder he has not yet committed.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 52,
@@ -1138,7 +1645,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "District 9",
+        "description": "An alien relocation worker becomes an outsider himself.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 53,
@@ -1160,7 +1677,17 @@
       0.0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Children of Men",
+        "description": "In a world of universal infertility, a man protects a pregnant woman.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 54,
@@ -1182,7 +1709,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Snowpiercer",
+        "description": "Passengers in the rear carriages rebel against a train's rulers in a frozen world.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 55,
@@ -1204,7 +1741,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Edge of Tomorrow",
+        "description": "A soldier relives a battle against aliens, learning how to win.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 56,
@@ -1226,7 +1773,17 @@
       0.0,
       0.5,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Source Code",
+        "description": "A soldier relives the final minutes of another man's life to find a terrorist.",
+        "genres": [
+          "science fiction",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 57,
@@ -1248,7 +1805,17 @@
       0.0,
       0.7,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Moon",
+        "description": "A lunar base worker discovers the secret of his mission.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 58,
@@ -1270,7 +1837,17 @@
       0.0,
       0.2,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Contact",
+        "description": "A radio astronomer receives a signal with instructions for meeting another civilization.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 59,
@@ -1292,7 +1869,17 @@
       0.0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Gattaca",
+        "description": "A man without genetic advantages fights for the right to travel into space.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 60,
@@ -1314,7 +1901,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "RoboCop",
+        "description": "A dead police officer is turned into a crime-fighting cyborg.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 61,
@@ -1336,7 +1933,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Predator",
+        "description": "A squad in the jungle becomes the prey of an alien hunter.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 62,
@@ -1358,7 +1965,17 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Dark Knight",
+        "description": "Batman confronts the Joker, who wants to plunge Gotham into chaos.",
+        "genres": [
+          "action",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 63,
@@ -1380,7 +1997,17 @@
       0.0,
       0.7,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Batman Begins",
+        "description": "Bruce Wayne returns to Gotham and becomes the city's protector.",
+        "genres": [
+          "action",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 64,
@@ -1402,7 +2029,17 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Iron Man",
+        "description": "An industrialist builds an armored suit and reconsiders his attitude toward weapons.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 65,
@@ -1424,7 +2061,17 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Avengers",
+        "description": "A team of superheroes unites against an invasion of New York.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 66,
@@ -1446,7 +2093,17 @@
       0.0,
       0.7,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Avengers: Infinity War",
+        "description": "Heroes try to stop Thanos from gathering the Infinity Stones.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 67,
@@ -1468,7 +2125,17 @@
       0.0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Avengers: Endgame",
+        "description": "The surviving heroes seek a way to bring back the vanished half of the universe.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 68,
@@ -1490,7 +2157,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Guardians of the Galaxy",
+        "description": "Space outcasts unite to save the galaxy.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 69,
@@ -1512,7 +2189,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Spider-Man",
+        "description": "A schoolboy gains unusual powers and learns to take responsibility for his choices.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 70,
@@ -1534,7 +2221,17 @@
       0.0,
       0.4,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Spider-Man: No Way Home",
+        "description": "A spell brings enemies from other universes into Peter's world.",
+        "genres": [
+          "science fiction",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 71,
@@ -1556,7 +2253,17 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Logan",
+        "description": "An aging Wolverine protects a girl who is like him.",
+        "genres": [
+          "science fiction",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 72,
@@ -1578,7 +2285,17 @@
       0.0,
       0.6,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Deadpool",
+        "description": "A regenerating mercenary with a sharp sense of humor hunts the man responsible for his suffering.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 73,
@@ -1600,7 +2317,17 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Wonder Woman",
+        "description": "An Amazon travels to the front lines of World War I to stop the god of war.",
+        "genres": [
+          "fantasy",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 74,
@@ -1622,7 +2349,17 @@
       0.0,
       0.8,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Gladiator",
+        "description": "A betrayed general becomes a gladiator and challenges the emperor.",
+        "genres": [
+          "drama",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 75,
@@ -1644,7 +2381,17 @@
       0.0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Braveheart",
+        "description": "William Wallace leads a rebellion for Scottish independence.",
+        "genres": [
+          "drama",
+          "history"
+        ]
+      }
+    }
   },
   {
     "id": 76,
@@ -1666,7 +2413,17 @@
       0.0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Saving Private Ryan",
+        "description": "An American squad searches for a soldier behind enemy lines.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 77,
@@ -1688,7 +2445,17 @@
       0.0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "1917",
+        "description": "Two soldiers carry orders across dangerous territory to prevent an attack.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 78,
@@ -1710,7 +2477,17 @@
       0.0,
       0.7,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Dunkirk",
+        "description": "Soldiers, sailors, and pilots take part in evacuating a surrounded army.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 79,
@@ -1732,7 +2509,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Apocalypse Now",
+        "description": "An officer travels upriver in Vietnam to find a rogue colonel.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 80,
@@ -1754,7 +2541,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Full Metal Jacket",
+        "description": "Recruits endure brutal training before entering the Vietnam War.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 81,
@@ -1776,7 +2573,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Platoon",
+        "description": "A young soldier confronts the moral divisions within his unit.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 82,
@@ -1798,7 +2605,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Come and See",
+        "description": "A Belarusian teenager witnesses the horrors of Nazi occupation.",
+        "genres": [
+          "war",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 83,
@@ -1820,7 +2637,17 @@
       0.0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Schindler's List",
+        "description": "A businessman saves Jews from extermination by employing them at his factory.",
+        "genres": [
+          "drama",
+          "history"
+        ]
+      }
+    }
   },
   {
     "id": 84,
@@ -1842,7 +2669,17 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Pianist",
+        "description": "A Warsaw musician tries to survive in the occupied city.",
+        "genres": [
+          "drama",
+          "war"
+        ]
+      }
+    }
   },
   {
     "id": 85,
@@ -1864,7 +2701,17 @@
       0.0,
       0.8,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Life Is Beautiful",
+        "description": "A father invents a game to shield his son from the horrors of a concentration camp.",
+        "genres": [
+          "drama",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 86,
@@ -1886,7 +2733,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Godfather",
+        "description": "A young heir gradually takes control of a mafia family.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 87,
@@ -1908,7 +2765,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Godfather Part II",
+        "description": "The stories of a father and son show the rise and decline of a criminal dynasty.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 88,
@@ -1930,7 +2797,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Goodfellas",
+        "description": "A young gangster rises through the mafia hierarchy and loses everything.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 89,
@@ -1952,7 +2829,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Casino",
+        "description": "A casino manager tries to hold on to his business, friendship, and marriage in Las Vegas.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 90,
@@ -1974,7 +2861,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Once Upon a Time in America",
+        "description": "An aging gangster recalls the friendships and betrayals of his youth.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 91,
@@ -1996,7 +2893,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Pulp Fiction",
+        "description": "The stories of gangsters, a boxer, and accidental criminals intertwine in Los Angeles.",
+        "genres": [
+          "crime",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 92,
@@ -2018,7 +2925,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Reservoir Dogs",
+        "description": "After a failed robbery, criminals search for a traitor among them.",
+        "genres": [
+          "crime",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 93,
@@ -2040,7 +2957,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Departed",
+        "description": "A police officer and a mafia informant try to expose each other.",
+        "genres": [
+          "crime",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 94,
@@ -2062,7 +2989,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Scarface",
+        "description": "A Cuban immigrant builds a drug empire in Miami.",
+        "genres": [
+          "crime",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 95,
@@ -2084,7 +3021,17 @@
       0.0,
       0.7,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Heat",
+        "description": "An experienced detective pursues a professional robbery crew.",
+        "genres": [
+          "crime",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 96,
@@ -2106,7 +3053,17 @@
       0.0,
       0.6,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Snatch",
+        "description": "A diamond, underground boxing, and hapless criminals link several schemes.",
+        "genres": [
+          "crime",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 97,
@@ -2128,7 +3085,17 @@
       0.0,
       0.6,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Lock, Stock and Two Smoking Barrels",
+        "description": "Four friends plan a robbery to repay a gambling debt.",
+        "genres": [
+          "crime",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 98,
@@ -2150,7 +3117,17 @@
       0.0,
       0.6,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Gentlemen",
+        "description": "The sale of a drug business triggers blackmail and elaborate deals.",
+        "genres": [
+          "crime",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 99,
@@ -2172,7 +3149,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "No Country for Old Men",
+        "description": "Found money makes a hunter the target of a ruthless killer.",
+        "genres": [
+          "crime",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 100,
@@ -2194,7 +3181,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Fargo",
+        "description": "A pregnant police officer investigates the aftermath of a botched kidnapping.",
+        "genres": [
+          "crime",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 101,
@@ -2216,7 +3213,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Zodiac",
+        "description": "Journalists and police spend years hunting a serial killer through his letters.",
+        "genres": [
+          "mystery",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 102,
@@ -2238,7 +3245,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Gone Girl",
+        "description": "A wife's disappearance makes her husband the prime suspect.",
+        "genres": [
+          "thriller",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 103,
@@ -2260,7 +3277,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Prisoners",
+        "description": "The father of a missing girl takes the investigation into his own hands.",
+        "genres": [
+          "thriller",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 104,
@@ -2282,7 +3309,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Prestige",
+        "description": "The rivalry between two magicians becomes a dangerous obsession.",
+        "genres": [
+          "thriller",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 105,
@@ -2304,7 +3341,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Memento",
+        "description": "A man with memory loss investigates his wife's murder using notes and tattoos.",
+        "genres": [
+          "thriller",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 106,
@@ -2326,7 +3373,17 @@
       0.0,
       0.7,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Game",
+        "description": "A wealthy banker is invited into a game that takes over his entire life.",
+        "genres": [
+          "thriller",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 107,
@@ -2348,7 +3405,17 @@
       0.0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Sixth Sense",
+        "description": "A child psychologist helps a boy who sees the dead.",
+        "genres": [
+          "thriller",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 108,
@@ -2370,7 +3437,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Others",
+        "description": "A mother protects her light-sensitive children in a house plagued by unexplained events.",
+        "genres": [
+          "horror",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 109,
@@ -2392,7 +3469,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Psycho",
+        "description": "A secretary on the run stays at a motel with a mysterious owner.",
+        "genres": [
+          "horror",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 110,
@@ -2414,7 +3501,17 @@
       0.0,
       0.7,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Rear Window",
+        "description": "A photographer with a broken leg begins to suspect his neighbor of murder.",
+        "genres": [
+          "mystery",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 111,
@@ -2436,7 +3533,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Vertigo",
+        "description": "A former police officer follows a woman and falls into an obsessive trap.",
+        "genres": [
+          "mystery",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 112,
@@ -2458,7 +3565,17 @@
       0.0,
       0.4,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Knives Out",
+        "description": "A private detective investigates a writer's death among his feuding heirs.",
+        "genres": [
+          "mystery",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 113,
@@ -2479,7 +3596,16 @@
       0.0,
       0.5,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Murder on the Orient Express",
+        "description": "Hercule Poirot searches for a killer aboard a snowbound train.",
+        "genres": [
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 114,
@@ -2501,7 +3627,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Fight Club",
+        "description": "An office worker starts an underground club that spirals out of control.",
+        "genres": [
+          "drama",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 115,
@@ -2522,7 +3658,16 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "American History X",
+        "description": "A former neo-Nazi tries to save his younger brother from hatred.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 116,
@@ -2543,7 +3688,16 @@
       0.0,
       0.6,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "American Beauty",
+        "description": "A midlife crisis leads a family man to rethink his life.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 117,
@@ -2564,7 +3718,16 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Requiem for a Dream",
+        "description": "Addiction destroys the dreams of four people.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 118,
@@ -2586,7 +3749,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Black Swan",
+        "description": "A ballerina loses the boundary between her stage role and reality.",
+        "genres": [
+          "drama",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 119,
@@ -2608,7 +3781,17 @@
       0.0,
       0.7,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Whiplash",
+        "description": "A young drummer comes under the harsh guidance of an ambitious teacher.",
+        "genres": [
+          "drama",
+          "music"
+        ]
+      }
+    }
   },
   {
     "id": 120,
@@ -2630,7 +3813,17 @@
       0.0,
       0.5,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Social Network",
+        "description": "Building a social network brings its founder into conflict with friends and partners.",
+        "genres": [
+          "drama",
+          "biography"
+        ]
+      }
+    }
   },
   {
     "id": 121,
@@ -2652,7 +3845,17 @@
       0.0,
       0.5,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "A Beautiful Mind",
+        "description": "A gifted mathematician learns to live with mental illness.",
+        "genres": [
+          "drama",
+          "biography"
+        ]
+      }
+    }
   },
   {
     "id": 122,
@@ -2673,7 +3876,16 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Good Will Hunting",
+        "description": "A young janitor with a gift for mathematics learns to trust people and choose his future.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 123,
@@ -2694,7 +3906,16 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Rain Man",
+        "description": "A businessman takes a road trip with a brother he never knew existed.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 124,
@@ -2715,7 +3936,16 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Scent of a Woman",
+        "description": "A schoolboy accompanies a blind retired officer on a trip to New York.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 125,
@@ -2736,7 +3966,16 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "12 Angry Men",
+        "description": "One juror persuades the others to examine the case against a teenager carefully.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 126,
@@ -2757,7 +3996,16 @@
       0.0,
       0.6,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "To Kill a Mockingbird",
+        "description": "A lawyer defends a Black man who has been wrongly accused.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 127,
@@ -2778,7 +4026,16 @@
       0.0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "One Flew Over the Cuckoo's Nest",
+        "description": "A new patient challenges the rules of a psychiatric hospital.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 128,
@@ -2800,7 +4057,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Taxi Driver",
+        "description": "A lonely veteran sinks deeper into New York's night life.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 129,
@@ -2822,7 +4089,17 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Raging Bull",
+        "description": "Jealousy and a violent temper destroy a boxer's career and family.",
+        "genres": [
+          "drama",
+          "sport"
+        ]
+      }
+    }
   },
   {
     "id": 130,
@@ -2844,7 +4121,17 @@
       0.0,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Rocky",
+        "description": "An unknown boxer gets the chance to fight the champion.",
+        "genres": [
+          "drama",
+          "sport"
+        ]
+      }
+    }
   },
   {
     "id": 131,
@@ -2866,7 +4153,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Million Dollar Baby",
+        "description": "A trainer agrees to prepare a determined woman for professional boxing.",
+        "genres": [
+          "drama",
+          "sport"
+        ]
+      }
+    }
   },
   {
     "id": 132,
@@ -2888,7 +4185,17 @@
       0.0,
       0.5,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Rush",
+        "description": "Two racing drivers with contrasting personalities compete for the Formula One championship.",
+        "genres": [
+          "drama",
+          "sport"
+        ]
+      }
+    }
   },
   {
     "id": 133,
@@ -2910,7 +4217,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ford v Ferrari",
+        "description": "A designer and a racing driver build a car to win Le Mans.",
+        "genres": [
+          "drama",
+          "sport"
+        ]
+      }
+    }
   },
   {
     "id": 134,
@@ -2932,7 +4249,17 @@
       0.0,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Pursuit of Happyness",
+        "description": "A single father takes an unpaid internship while trying to escape poverty.",
+        "genres": [
+          "drama",
+          "biography"
+        ]
+      }
+    }
   },
   {
     "id": 135,
@@ -2954,7 +4281,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Terminal",
+        "description": "A traveler is stranded at an airport after a political coup in his homeland.",
+        "genres": [
+          "drama",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 136,
@@ -2976,7 +4313,17 @@
       0.0,
       0.6,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Cast Away",
+        "description": "After a plane crash, a man learns to survive on a deserted island.",
+        "genres": [
+          "drama",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 137,
@@ -2998,7 +4345,17 @@
       0.0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Life of Pi",
+        "description": "A young man crosses the ocean in a lifeboat with a tiger.",
+        "genres": [
+          "drama",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 138,
@@ -3020,7 +4377,17 @@
       0.0,
       0.5,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Slumdog Millionaire",
+        "description": "A young quiz show contestant recalls the events that taught him the answers.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 139,
@@ -3041,7 +4408,16 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Billy Elliot",
+        "description": "A miner's son discovers ballet against his family's expectations.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 140,
@@ -3063,7 +4439,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Secret Life of Walter Mitty",
+        "description": "A quiet magazine employee sets out to find a missing photographic negative.",
+        "genres": [
+          "adventure",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 141,
@@ -3085,7 +4471,17 @@
       0.0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Truman Show",
+        "description": "A man discovers that his entire life is a television show.",
+        "genres": [
+          "drama",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 142,
@@ -3107,7 +4503,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Parasite",
+        "description": "A poor family finds work in a wealthy household while concealing their relationship.",
+        "genres": [
+          "drama",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 143,
@@ -3129,7 +4535,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Oldboy",
+        "description": "After fifteen years of captivity, a man seeks whoever destroyed his life.",
+        "genres": [
+          "thriller",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 144,
@@ -3151,7 +4567,17 @@
       0.0,
       0.8,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Memories of Murder",
+        "description": "Provincial detectives investigate a series of murders of women.",
+        "genres": [
+          "mystery",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 145,
@@ -3173,7 +4599,17 @@
       0.0,
       0.8,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Train to Busan",
+        "description": "Passengers on a high-speed train flee a zombie outbreak.",
+        "genres": [
+          "horror",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 146,
@@ -3195,7 +4631,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Handmaiden",
+        "description": "A con artist becomes a wealthy heiress's maid and changes her plans.",
+        "genres": [
+          "thriller",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 147,
@@ -3217,7 +4663,17 @@
       0.0,
       0.6,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Rashomon",
+        "description": "Witnesses give conflicting accounts of the same crime.",
+        "genres": [
+          "drama",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 148,
@@ -3239,7 +4695,17 @@
       0.0,
       0.7,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Seven Samurai",
+        "description": "Farmers hire samurai to defend their village from bandits.",
+        "genres": [
+          "drama",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 149,
@@ -3260,7 +4726,16 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harakiri",
+        "description": "A samurai asks permission to commit ritual suicide at a powerful clan's residence.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 150,
@@ -3281,7 +4756,16 @@
       0.0,
       0.5,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Tokyo Story",
+        "description": "Elderly parents visit their busy adult children in Tokyo.",
+        "genres": [
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 151,
@@ -3303,7 +4787,17 @@
       0.0,
       0.5,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "In the Mood for Love",
+        "description": "Neighbors grow close after discovering their spouses' infidelity.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 152,
@@ -3325,7 +4819,17 @@
       0.0,
       0.3,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Crouching Tiger, Hidden Dragon",
+        "description": "The theft of a legendary sword intertwines the lives of martial arts masters.",
+        "genres": [
+          "action",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 153,
@@ -3347,7 +4851,17 @@
       0.0,
       0.6,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Hero",
+        "description": "A warrior tells a ruler how he defeated three dangerous opponents.",
+        "genres": [
+          "action",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 154,
@@ -3369,7 +4883,17 @@
       0.0,
       0.7,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Lord of the Rings: The Two Towers",
+        "description": "The scattered fellowship continues its journey while Rohan prepares for a siege.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 155,
@@ -3391,7 +4915,17 @@
       0.0,
       0.7,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Lord of the Rings: The Return of the King",
+        "description": "The armies of Middle-earth distract the enemy as Frodo approaches Mount Doom.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 156,
@@ -3413,7 +4947,17 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Hobbit: An Unexpected Journey",
+        "description": "Bilbo joins the dwarves on a quest to reclaim their lost kingdom.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 157,
@@ -3435,7 +4979,17 @@
       0.0,
       0.5,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Chamber of Secrets",
+        "description": "Attacks at Hogwarts are linked to an ancient secret of the school.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 158,
@@ -3457,7 +5011,17 @@
       0.0,
       0.6,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Prisoner of Azkaban",
+        "description": "Harry learns the truth about an escaped prisoner and his parents' past.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 159,
@@ -3479,7 +5043,17 @@
       0.0,
       0.7,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Goblet of Fire",
+        "description": "Harry unexpectedly becomes a contestant in the dangerous Triwizard Tournament.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 160,
@@ -3501,7 +5075,17 @@
       0.0,
       0.7,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Order of the Phoenix",
+        "description": "Students secretly practice defensive magic under pressure from the Ministry.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 161,
@@ -3523,7 +5107,17 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Deathly Hallows: Part 1",
+        "description": "Three friends leave school to find and destroy Horcruxes.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 162,
@@ -3545,7 +5139,17 @@
       0.0,
       0.8,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Harry Potter and the Deathly Hallows: Part 2",
+        "description": "The final battle for Hogwarts decides the fate of the wizarding world.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 163,
@@ -3567,7 +5171,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Pirates of the Caribbean: The Curse of the Black Pearl",
+        "description": "A blacksmith and an eccentric pirate rescue a woman from a cursed crew.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 164,
@@ -3589,7 +5203,17 @@
       0.0,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Chronicles of Narnia: The Lion, the Witch and the Wardrobe",
+        "description": "Four children enter an enchanted land of eternal winter.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 165,
@@ -3611,7 +5235,17 @@
       0.0,
       0.9,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Pan's Labyrinth",
+        "description": "A girl seeks refuge in a magical world amid the brutality of postwar Spain.",
+        "genres": [
+          "fantasy",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 166,
@@ -3633,7 +5267,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Big Fish",
+        "description": "A son tries to understand his father through his incredible tales about his own life.",
+        "genres": [
+          "fantasy",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 167,
@@ -3655,7 +5299,17 @@
       0.0,
       0.6,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Edward Scissorhands",
+        "description": "An artificial young man with scissors for hands tries to live among people.",
+        "genres": [
+          "fantasy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 168,
@@ -3677,7 +5331,17 @@
       0.0,
       0.7,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Beetlejuice",
+        "description": "Ghosts turn to an unreliable specialist to evict their home's new owners.",
+        "genres": [
+          "fantasy",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 169,
@@ -3699,7 +5363,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ghostbusters",
+        "description": "Scientists open a ghost-catching service in New York.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 170,
@@ -3721,7 +5395,17 @@
       0.0,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Mummy",
+        "description": "Treasure hunters awaken an ancient priest in an Egyptian city of the dead.",
+        "genres": [
+          "fantasy",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 171,
@@ -3743,7 +5427,17 @@
       0.0,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Raiders of the Lost Ark",
+        "description": "An archaeologist races to find a biblical relic before the Nazis.",
+        "genres": [
+          "adventure",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 172,
@@ -3765,7 +5459,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Indiana Jones and the Last Crusade",
+        "description": "Indiana and his father search for the Holy Grail.",
+        "genres": [
+          "adventure",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 173,
@@ -3787,7 +5491,17 @@
       0.0,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Princess Bride",
+        "description": "A hero overcomes traps and battles to rescue his beloved bride.",
+        "genres": [
+          "fantasy",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 174,
@@ -3809,7 +5523,17 @@
       0.0,
       0.7,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Titanic",
+        "description": "Two young people from different social classes fall in love on an ocean liner's doomed voyage.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 175,
@@ -3831,7 +5555,17 @@
       0.0,
       0.4,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Notebook",
+        "description": "A love story endures separation, social barriers, and memory loss.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 176,
@@ -3853,7 +5587,17 @@
       0.0,
       0.2,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Pride & Prejudice",
+        "description": "Elizabeth Bennet and Mr. Darcy overcome prejudice and mutual distrust.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 177,
@@ -3875,7 +5619,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Roman Holiday",
+        "description": "A princess secretly spends a day in Rome with an American journalist.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 178,
@@ -3897,7 +5651,17 @@
       0.0,
       0.3,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Breakfast at Tiffany's",
+        "description": "A young writer meets an eccentric neighbor who dreams of wealth.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 179,
@@ -3919,7 +5683,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Pretty Woman",
+        "description": "A businessman and his companion unexpectedly find a deep connection.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 180,
@@ -3941,7 +5715,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Notting Hill",
+        "description": "A bookshop owner falls in love with a famous actress.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 181,
@@ -3963,7 +5747,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Love Actually",
+        "description": "Several love stories intertwine in London before Christmas.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 182,
@@ -3985,7 +5779,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "When Harry Met Sally...",
+        "description": "Years of friendship lead a man and a woman to reconsider their feelings.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 183,
@@ -4007,7 +5811,17 @@
       0.0,
       0.3,
       0.6
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "500 Days of Summer",
+        "description": "A young man recalls a romance and learns to accept mismatched expectations.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 184,
@@ -4029,7 +5843,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "About Time",
+        "description": "A young man uses time travel to improve his love life.",
+        "genres": [
+          "fantasy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 185,
@@ -4051,7 +5875,17 @@
       0.0,
       0.1,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Before Sunrise",
+        "description": "Two strangers spend a night in Vienna talking about life.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 186,
@@ -4073,7 +5907,17 @@
       0.0,
       0.5,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Moulin Rouge!",
+        "description": "A poet falls in love with the star of a Parisian cabaret.",
+        "genres": [
+          "musical",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 187,
@@ -4095,7 +5939,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Singin' in the Rain",
+        "description": "Silent film stars learn to work in the new era of sound.",
+        "genres": [
+          "musical",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 188,
@@ -4117,7 +5971,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Sound of Music",
+        "description": "A governess brings music and joy back to a widower's household with seven children.",
+        "genres": [
+          "musical",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 189,
@@ -4139,7 +6003,17 @@
       0.0,
       0.5,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Chicago",
+        "description": "Two women accused of murder compete for press attention.",
+        "genres": [
+          "musical",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 190,
@@ -4161,7 +6035,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Bohemian Rhapsody",
+        "description": "Freddie Mercury and Queen rise to worldwide fame.",
+        "genres": [
+          "drama",
+          "music"
+        ]
+      }
+    }
   },
   {
     "id": 191,
@@ -4183,7 +6067,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Home Alone",
+        "description": "A boy left behind at home defends it against two burglars.",
+        "genres": [
+          "comedy",
+          "family"
+        ]
+      }
+    }
   },
   {
     "id": 192,
@@ -4205,7 +6099,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Mask",
+        "description": "A timid bank clerk finds a mask that turns him into an unstoppable prankster.",
+        "genres": [
+          "comedy",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 193,
@@ -4227,7 +6131,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Bruce Almighty",
+        "description": "A dissatisfied reporter gains divine powers and a lesson in responsibility.",
+        "genres": [
+          "comedy",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 194,
@@ -4249,7 +6163,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ace Ventura: Pet Detective",
+        "description": "An eccentric detective searches for a kidnapped dolphin, a football team's mascot.",
+        "genres": [
+          "comedy",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 195,
@@ -4271,7 +6195,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Liar Liar",
+        "description": "A lawyer suddenly loses the ability to lie after his son makes a wish.",
+        "genres": [
+          "comedy",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 196,
@@ -4293,7 +6227,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Yes Man",
+        "description": "A withdrawn man decides to accept every offer.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 197,
@@ -4314,7 +6258,16 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Hangover",
+        "description": "Friends try to reconstruct the events of a night and find a missing groom.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 198,
@@ -4335,7 +6288,16 @@
       0.0,
       0.2,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Superbad",
+        "description": "Two schoolboys try to get into a party before graduation.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 199,
@@ -4356,7 +6318,16 @@
       0.0,
       0.2,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Election Day",
+        "description": "A radio station crew organizes an election campaign aboard a riverboat.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 200,
@@ -4377,7 +6348,16 @@
       0.0,
       0.2,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "What Men Talk About",
+        "description": "Four friends travel to a concert and discuss love, work, and growing older.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 201,
@@ -4399,7 +6379,17 @@
       0.0,
       0.0,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ivan Vasilievich Changes His Profession",
+        "description": "A time machine swaps a building manager with Tsar Ivan the Terrible.",
+        "genres": [
+          "comedy",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 202,
@@ -4420,7 +6410,16 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Operation Y and Shurik's Other Adventures",
+        "description": "Student Shurik gets into comic situations at a construction site, an exam, and a warehouse.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 203,
@@ -4441,7 +6440,16 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Kidnapping, Caucasian Style",
+        "description": "Shurik unwittingly helps kidnap a woman and then tries to rescue her.",
+        "genres": [
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 204,
@@ -4463,7 +6471,17 @@
       0.0,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Diamond Arm",
+        "description": "An ordinary tourist accidentally becomes a courier for smugglers.",
+        "genres": [
+          "comedy",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 205,
@@ -4485,7 +6503,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Gentlemen of Fortune",
+        "description": "A kindergarten principal impersonates a criminal to find a stolen helmet.",
+        "genres": [
+          "comedy",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 206,
@@ -4507,7 +6535,17 @@
       0.0,
       0.2,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Irony of Fate, or Enjoy Your Bath!",
+        "description": "After a bathhouse visit, a Muscovite ends up in a Leningrad apartment with the same address.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 207,
@@ -4529,7 +6567,17 @@
       0.0,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Office Romance",
+        "description": "A timid employee unexpectedly grows close to his strict boss.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 208,
@@ -4551,7 +6599,17 @@
       0.0,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Moscow Does Not Believe in Tears",
+        "description": "Three friends build their lives in Moscow through love and disappointment.",
+        "genres": [
+          "drama",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 209,
@@ -4573,7 +6631,17 @@
       0.0,
       0.3,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Love and Doves",
+        "description": "A holiday affair disrupts the familiar life of a rural family.",
+        "genres": [
+          "comedy",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 210,
@@ -4595,7 +6663,17 @@
       0.0,
       0.5,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Kin-dza-dza!",
+        "description": "Two Earthlings end up on a desert planet with a strange social hierarchy.",
+        "genres": [
+          "science fiction",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 211,
@@ -4617,7 +6695,17 @@
       0.0,
       0.8,
       0.2
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Brother",
+        "description": "A young man returning from military service enters the criminal world of St. Petersburg.",
+        "genres": [
+          "drama",
+          "crime"
+        ]
+      }
+    }
   },
   {
     "id": 212,
@@ -4639,7 +6727,17 @@
       0.0,
       0.8,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Cranes Are Flying",
+        "description": "War separates two lovers and changes a young woman's fate.",
+        "genres": [
+          "drama",
+          "war"
+        ]
+      }
+    }
   },
   {
     "id": 213,
@@ -4661,7 +6759,17 @@
       0.0,
       0.6,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ballad of a Soldier",
+        "description": "A young soldier travels home on short leave to see his mother and helps people along the way.",
+        "genres": [
+          "drama",
+          "war"
+        ]
+      }
+    }
   },
   {
     "id": 214,
@@ -4683,7 +6791,17 @@
       0.0,
       0.5,
       0.7
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "White Sun of the Desert",
+        "description": "A Red Army soldier protects women abandoned by a Basmachi fighter in the desert.",
+        "genres": [
+          "adventure",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 215,
@@ -4705,7 +6823,17 @@
       0.9,
       0.5,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Lion King",
+        "description": "Simba the lion cub grows up far from home and returns to claim his place.",
+        "genres": [
+          "animation",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 216,
@@ -4727,7 +6855,17 @@
       0.9,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Shrek",
+        "description": "An ogre sets out to rescue a princess to restore peace to his swamp.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 217,
@@ -4749,7 +6887,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Finding Nemo",
+        "description": "A clownfish crosses the ocean in search of his kidnapped son.",
+        "genres": [
+          "animation",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 218,
@@ -4771,7 +6919,17 @@
       0.9,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Up",
+        "description": "An elderly widower lifts his house with balloons and sets off to fulfill a dream.",
+        "genres": [
+          "animation",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 219,
@@ -4793,7 +6951,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ratatouille",
+        "description": "A rat with culinary talent helps a young worker at a Paris restaurant.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 220,
@@ -4815,7 +6983,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Incredibles",
+        "description": "A superhero family returns to saving the world after years of ordinary life.",
+        "genres": [
+          "animation",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 221,
@@ -4837,7 +7015,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Zootopia",
+        "description": "A rabbit police officer and a fox investigate the disappearance of predators.",
+        "genres": [
+          "animation",
+          "mystery"
+        ]
+      }
+    }
   },
   {
     "id": 222,
@@ -4859,7 +7047,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Frozen",
+        "description": "Anna searches for her sister, whose ice magic has plunged the kingdom into winter.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 223,
@@ -4881,7 +7079,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Moana",
+        "description": "A chief's daughter crosses the ocean to return a goddess's stolen heart.",
+        "genres": [
+          "animation",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 224,
@@ -4903,7 +7111,17 @@
       0.9,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "How to Train Your Dragon",
+        "description": "A young Viking befriends a dragon and changes his tribe's beliefs.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 225,
@@ -4925,7 +7143,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Kung Fu Panda",
+        "description": "A clumsy panda becomes a student of kung fu masters.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 226,
@@ -4947,7 +7175,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Madagascar",
+        "description": "Residents of a New York zoo find themselves in the wild.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 227,
@@ -4969,7 +7207,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Ice Age",
+        "description": "A mammoth, a sloth, and a saber-toothed tiger return a human baby to its family.",
+        "genres": [
+          "animation",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 228,
@@ -4991,7 +7239,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Soul",
+        "description": "A jazz musician tries to return to life and rethinks its meaning.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 229,
@@ -5013,7 +7271,17 @@
       0.9,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "My Neighbor Totoro",
+        "description": "Two sisters meet forest spirits after moving to the countryside.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 230,
@@ -5035,7 +7303,17 @@
       0.9,
       0.5,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Howl's Moving Castle",
+        "description": "A cursed young woman finds shelter in a mysterious wizard's moving home.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 231,
@@ -5057,7 +7335,17 @@
       0.9,
       0.8,
       0.5
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Princess Mononoke",
+        "description": "A young warrior tries to reconcile humans and the gods of the forest.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 232,
@@ -5079,7 +7367,17 @@
       0.9,
       0.1,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Kiki's Delivery Service",
+        "description": "A young witch begins an independent life in a seaside town.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 233,
@@ -5101,7 +7399,17 @@
       0.9,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Grave of the Fireflies",
+        "description": "A brother and sister try to survive in wartime Japan.",
+        "genres": [
+          "animation",
+          "drama"
+        ]
+      }
+    }
   },
   {
     "id": 234,
@@ -5123,7 +7431,17 @@
       0.9,
       0.4,
       0.8
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Your Name",
+        "description": "Teenagers from different places mysteriously swap bodies.",
+        "genres": [
+          "animation",
+          "romance"
+        ]
+      }
+    }
   },
   {
     "id": 235,
@@ -5145,7 +7463,17 @@
       0.9,
       0.4,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Spider-Man: Into the Spider-Verse",
+        "description": "Miles Morales meets heroes from other worlds and learns to be Spider-Man.",
+        "genres": [
+          "animation",
+          "action"
+        ]
+      }
+    }
   },
   {
     "id": 236,
@@ -5167,7 +7495,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Klaus",
+        "description": "A postman and a solitary toymaker transform life in a northern town.",
+        "genres": [
+          "animation",
+          "comedy"
+        ]
+      }
+    }
   },
   {
     "id": 237,
@@ -5189,7 +7527,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Beauty and the Beast",
+        "description": "A young woman becomes a guest in an enchanted castle and gets to know its master.",
+        "genres": [
+          "animation",
+          "musical"
+        ]
+      }
+    }
   },
   {
     "id": 238,
@@ -5211,7 +7559,17 @@
       0.9,
       0.2,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Aladdin",
+        "description": "A young street dweller finds a magic lamp and tries to win a princess's heart.",
+        "genres": [
+          "animation",
+          "fantasy"
+        ]
+      }
+    }
   },
   {
     "id": 239,
@@ -5233,7 +7591,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Little Mermaid",
+        "description": "A sea princess gives up her voice for a chance to live among humans.",
+        "genres": [
+          "animation",
+          "musical"
+        ]
+      }
+    }
   },
   {
     "id": 240,
@@ -5255,7 +7623,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Mulan",
+        "description": "A young woman joins the army in her father's place and defends her country.",
+        "genres": [
+          "animation",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 241,
@@ -5277,7 +7655,17 @@
       0.9,
       0.3,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Lilo & Stitch",
+        "description": "A Hawaiian girl welcomes an escaped alien experiment into her family.",
+        "genres": [
+          "animation",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 242,
@@ -5299,7 +7687,17 @@
       0.9,
       0.5,
       0.9
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Iron Giant",
+        "description": "A boy befriends a huge robot pursued by the military.",
+        "genres": [
+          "animation",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 243,
@@ -5321,7 +7719,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Shining",
+        "description": "A hotel's winter caretaker and his family fall under the power of isolation and sinister forces.",
+        "genres": [
+          "horror",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 244,
@@ -5343,7 +7751,17 @@
       0.0,
       0.9,
       0.0
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Thing",
+        "description": "Polar researchers discover a creature that can take the form of any of them.",
+        "genres": [
+          "horror",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 245,
@@ -5365,7 +7783,17 @@
       0.0,
       0.7,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Jaws",
+        "description": "A sheriff, a scientist, and a fisherman head to sea to hunt a shark.",
+        "genres": [
+          "thriller",
+          "adventure"
+        ]
+      }
+    }
   },
   {
     "id": 246,
@@ -5386,7 +7814,16 @@
       0.0,
       0.9,
       0.1
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Exorcist",
+        "description": "A mother turns to priests when her daughter begins behaving inexplicably.",
+        "genres": [
+          "horror"
+        ]
+      }
+    }
   },
   {
     "id": 247,
@@ -5407,7 +7844,16 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "The Conjuring",
+        "description": "Paranormal investigators help a family in a house with a dangerous presence.",
+        "genres": [
+          "horror"
+        ]
+      }
+    }
   },
   {
     "id": 248,
@@ -5429,7 +7875,17 @@
       0.0,
       0.9,
       0.3
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "Get Out",
+        "description": "A visit to his girlfriend's parents leads a young man to a terrifying discovery.",
+        "genres": [
+          "horror",
+          "thriller"
+        ]
+      }
+    }
   },
   {
     "id": 249,
@@ -5451,7 +7907,17 @@
       0.0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "A Quiet Place",
+        "description": "A family lives in silence, hiding from creatures that hunt by sound.",
+        "genres": [
+          "horror",
+          "science fiction"
+        ]
+      }
+    }
   },
   {
     "id": 250,
@@ -5473,6 +7939,16 @@
       0.0,
       0.9,
       0.4
-    ]
+    ],
+    "translations": {
+      "en": {
+        "title": "It",
+        "description": "Children in a small town unite against a creature that feeds on their fears.",
+        "genres": [
+          "horror",
+          "fantasy"
+        ]
+      }
+    }
   }
 ]

@@ -16,6 +16,7 @@ class WebTests(unittest.TestCase):
             self.app = create_app({'TESTING': True, 'QDRANT_URL': 'http://test:6333'})
             api.assert_not_called()
         self.client = self.app.test_client()
+        self.client.environ_base['HTTP_ACCEPT_LANGUAGE'] = 'ru'
         self.catalog = services.read_movies(DATA)
 
     def test_apps_have_independent_stores_and_configuration(self):
@@ -70,14 +71,14 @@ class WebTests(unittest.TestCase):
         self.assertIn('<option value="5" selected>', html)
         for value in ('5', '10', '20', '50'):
             self.assertIn(f'<option value="{value}"', html)
-            with patch.object(services, 'search', side_effect=services.DemoError('Нет соединения')) as search:
+            with patch.object(services, 'search', side_effect=services.DemoError('response')) as search:
                 redirect = self.client.post('/search', data={'query': '1', 'limit': value})
                 self.assertEqual(redirect.status_code, 303)
                 self.assertIn('limit=' + value, redirect.headers['Location'])
                 for _ in range(2):
                     html = self.client.get(redirect.headers['Location']).get_data(as_text=True)
                     self.assertIn(f'<option value="{value}" selected>', html)
-                    self.assertIn('Нет соединения', html)
+                    self.assertIn('Некорректный ответ Qdrant', html)
                 search.assert_called_with(self.app.extensions['movie_store'], '1', self.catalog, limit=int(value))
             with patch.object(services, 'search', return_value={
                 'source': self.catalog[0], 'recommendations': [],
@@ -106,9 +107,9 @@ class WebTests(unittest.TestCase):
 
     def test_unavailable_qdrant_and_escaping(self):
         query = '<script>alert(1)</script>'
-        with patch.object(services, 'search', side_effect=services.DemoError('Нет соединения с Qdrant')):
+        with patch.object(services, 'search', side_effect=services.DemoError('response')):
             html = self.client.get('/', query_string={'q': query}).get_data(as_text=True)
-        self.assertIn('Нет соединения с Qdrant', html)
+        self.assertIn('Некорректный ответ Qdrant', html)
         self.assertIn('&lt;script&gt;', html)
         self.assertNotIn('<script>', html)
         self.assertNotIn('Traceback', html)
@@ -135,7 +136,7 @@ class WebTests(unittest.TestCase):
                 app = create_app({'TESTING': True})
                 self.assertEqual(app.config['MOVIES_PATH'], DATA)
                 with app.test_client() as client:
-                    page = client.get('/')
+                    page = client.get('/?lang=ru')
                     self.assertIn('value="Матрица"', page.get_data(as_text=True))
                     self.assertIn('/static/style.css', page.get_data(as_text=True))
                     css = client.get('/static/style.css')

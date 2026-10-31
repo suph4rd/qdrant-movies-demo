@@ -36,6 +36,12 @@ class ServiceTests(unittest.TestCase):
             lambda data: data[0].update(title=''),
             lambda data: data[0].update(description=' '),
             lambda data: data[0].update(year='1999'),
+            lambda data: data[0].pop('translations'),
+            lambda data: data[0].update(translations={'en': {}}),
+            lambda data: data[0]['translations']['en'].update(title=' '),
+            lambda data: data[0]['translations']['en'].update(description=''),
+            lambda data: data[0]['translations']['en'].update(genres=[]),
+            lambda data: data[0].update(translations=[]),
             lambda data: data[0].update(genres=[]),
             lambda data: data[0].update(vector=[0] * 10),
             lambda data: data[0].update(vector=[1] * 9),
@@ -66,7 +72,7 @@ class ServiceTests(unittest.TestCase):
             for function, args in ((self.store.recommend, (1,)),
                                    (services.search, (self.store, '1', self.catalog))):
                 with self.subTest(limit=limit, function=function), patch.object(self.store, 'request') as api:
-                    with self.assertRaisesRegex(services.DemoError, 'Количество'):
+                    with self.assertRaisesRegex(services.DemoError, 'recommendation count'):
                         function(*args, limit=limit)
                     api.assert_not_called()
 
@@ -74,9 +80,9 @@ class ServiceTests(unittest.TestCase):
         for query in ('1', 'Матрица', '  мАтРиЦа  ', 'матри'):
             self.assertEqual(services.resolve_movie(query, self.catalog)['id'], 1)
         for query, message in (
-            ('', 'Введите'), ('  ', 'Введите'), ('999', 'Неизвестный ID'),
-            ('-1', 'ID должен'), (str(2**64), 'ID должен'),
-            ('несуществующий фильм', 'не найден'), (' ', 'Введите'),
+            ('', 'Enter'), ('  ', 'Enter'), ('999', 'Unknown movie ID'),
+            ('-1', 'ID must'), (str(2**64), 'ID must'),
+            ('несуществующий фильм', 'not found'), (' ', 'Enter'),
         ):
             with self.subTest(query=query), self.assertRaisesRegex(services.DemoError, message):
                 services.resolve_movie(query, self.catalog)
@@ -92,7 +98,7 @@ class ServiceTests(unittest.TestCase):
     def test_exact_precedes_partial_and_ambiguity(self):
         catalog = [{'id': 1, 'title': 'Фильм'}, {'id': 2, 'title': 'Фильм второй'}]
         self.assertEqual(services.resolve_movie('фильм', catalog)['id'], 1)
-        with self.assertRaisesRegex(services.DemoError, 'Уточните'):
+        with self.assertRaisesRegex(services.DemoError, 'specify'):
             services.resolve_movie('фил', catalog)
 
     def test_search_same_id_and_title_without_output(self):
@@ -121,7 +127,7 @@ class ServiceTests(unittest.TestCase):
                     {'config': {'params': {'vectors': vectors}}},
                 ],
             ) as api:
-                with self.assertRaisesRegex(services.DemoError, 'Несовместимая'):
+                with self.assertRaisesRegex(services.DemoError, 'Incompatible'):
                     self.store.load(DATA)
                 self.assertTrue(all(call.args[0] == 'GET' for call in api.call_args_list))
 
@@ -142,7 +148,7 @@ class ServiceTests(unittest.TestCase):
             with self.subTest(error=error), patch.object(
                 services.requests, 'request', side_effect=error,
             ):
-                with self.assertRaisesRegex(services.DemoError, 'Нет соединения'):
+                with self.assertRaisesRegex(services.DemoError, 'Cannot connect'):
                     self.store.recommend(1)
 
     def test_http_error(self):
@@ -162,7 +168,7 @@ class ServiceTests(unittest.TestCase):
             with self.subTest(body=body), patch.object(
                 services.requests, 'request', return_value=response,
             ):
-                with self.assertRaisesRegex(services.DemoError, 'Некорректный ответ'):
+                with self.assertRaisesRegex(services.DemoError, 'Invalid Qdrant response'):
                     self.store.request('GET', '/collections')
         response = requests.Response()
         response.status_code = 200
@@ -178,7 +184,7 @@ class ServiceTests(unittest.TestCase):
 
     def test_unknown_id(self):
         with patch.object(self.store, 'request', return_value=[]) as api:
-            with self.assertRaisesRegex(services.DemoError, 'Неизвестный ID'):
+            with self.assertRaisesRegex(services.DemoError, 'Unknown movie ID'):
                 self.store.recommend(999)
             api.assert_called_once()
 

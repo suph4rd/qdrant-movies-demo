@@ -24,3 +24,6 @@ article p { margin: 8px 0; }
 
 select { max-width: 100%; border: 1px solid #818f87; background: #fff; }
 .search + label { margin-top: 16px; }
+nav { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; }
+nav a { color: #245c4d; padding: 6px 12px; border-radius: 6px; }
+nav a[aria-current] { background: #245c4d; color: white; text-decoration: none; }
