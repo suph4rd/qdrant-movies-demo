@@ -1,21 +1,53 @@
 # Рекомендации фильмов с Qdrant
 
-Локальный учебный пример: 30 фильмов, ручные векторы, REST API и Python standard library. Требуются Docker с Compose и Python 3.9+. Установка Python-пакетов не нужна.
+Локальный учебный пример: 30 фильмов, ручные векторы, REST API, движок, загрузчик и веб-интерфейс Flask. Требуются Docker с Compose и Python 3.9+. Движок и загрузчик используют стандартную библиотеку; веб-интерфейс требует Flask 3.1.
 
 ## Запуск
 
 ```sh
 cd /Users/andreibiarniak/qdrant-movies-demo
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 docker compose config
 docker compose up -d
 curl --fail http://localhost:6333/readyz
-python3 movies.py load
-python3 movies.py recommend 1
+python -m engine.load
 ```
 
 Если `readyz` ещё не отвечает, повторите проверку через несколько секунд. Dashboard: http://localhost:6333/dashboard. REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. Порты опубликованы только на loopback.
 
 Образ Qdrant v1.20.0 закреплён digest в `compose.yaml`. Контейнер: `qdrant-movies`, политика перезапуска: `unless-stopped`. Данные хранятся в отдельном Docker volume `qdrant-movies-demo_movies-storage`, смонтированном в `/qdrant/storage`.
+
+## Веб-интерфейс
+
+После проверки готовности Qdrant и загрузки данных запустите:
+
+```sh
+source .venv/bin/activate
+python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
+```
+
+Откройте http://127.0.0.1:5000. Введите ID, например `1`, название «Матрица» или уникальную часть названия. Регистр и крайние пробелы не учитываются. При нескольких совпадениях нужно уточнить название. Ниже формы появятся пять фильмов с годом, жанрами, описанием и cosine similarity. Ошибки отображаются под формой, запрос сохраняется; отправка формы перенаправляет на GET, поэтому обновление страницы повторяет только чтение.
+
+URL Qdrant задаётся переменной окружения `QDRANT_URL` (по умолчанию `http://127.0.0.1:6333`):
+
+```sh
+QDRANT_URL=http://127.0.0.1:6333 python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
+```
+
+Создание приложения не загружает данные: для загрузки используйте `python -m engine.load`. Каталог определяется относительно файлов проекта, а не текущей директории.
+
+Структура:
+
+- `engine/services.py` — валидация, разрешение названий и работа с Qdrant.
+- `engine/load.py` — консольный загрузчик с параметрами `--url` и `--data`.
+- `engine/__init__.py` — общий путь к корневому `movies.json`, вычисленный относительно файлов пакета.
+- `web/app.py` — фабрика Flask и маршруты; `web/templates/` и `web/static/` — интерфейс без JavaScript и сборки.
+- `engine/tests/` — тесты движка и загрузчика, `web/tests/` — тесты Flask.
+
+Консольные рекомендации удалены; поиск рекомендаций доступен через веб-интерфейс.
 
 ## Данные и признаки
 
@@ -39,15 +71,12 @@ python3 movies.py recommend 1
 ## Рекомендации и проверки
 
 ```sh
-python3 movies.py recommend 1    # Матрица: фантастика / боевик
-python3 movies.py recommend 16   # День сурка: комедия / романтика
-python3 movies.py recommend 21   # Семь: триллер
-python3 movies.py recommend 999  # Понятная ошибка, код завершения 1
-python3 movies.py --url http://127.0.0.1:6333 recommend 1
-python3 verify.py
+python -m engine.load --url http://127.0.0.1:6333 --data movies.json
+python -m unittest -v
+python -m engine.tests.verify
 ```
 
-CLI запрашивает пять ближайших фильмов через Query Points API с фильтром, исключающим исходный ID. Вывод содержит ID, название, год и cosine similarity. Это мера сходства векторов, а не вероятность предпочтения пользователя. Qdrant нормализует векторы для Cosine; в JSON хранятся исходные значения.
+Веб-интерфейс запрашивает пять ближайших фильмов через Query Points API с фильтром, исключающим исходный ID. Cosine similarity — мера сходства векторов, а не вероятность предпочтения пользователя. Qdrant нормализует векторы для Cosine; в JSON хранятся исходные значения.
 
 Пример для «Матрицы»:
 
@@ -59,18 +88,20 @@ CLI запрашивает пять ближайших фильмов через
  3  Интерстеллар (2014) — 0.8439
 ```
 
-`verify.py` проверяет 30 записей, пять результатов для трёх разных фильмов, исключение исходного ID и совпадение результатов с независимым расчётом cosine по JSON. Проверяет неизвестный ID через API и несовместимые схемы через подмену ответов без изменения коллекции.
+`engine/tests/verify.py` проверяет 30 записей, пять результатов для трёх разных фильмов, исключение исходного ID и совпадение результатов с независимым расчётом cosine по JSON. Проверяет неизвестный ID через API и несовместимые схемы через подмену ответов без изменения коллекции.
 
 Проверка сохранности:
 
 ```sh
 docker compose restart
 curl --fail http://localhost:6333/readyz
-python3 verify.py
+python -m engine.tests.verify
 ```
 
-При необходимости дождитесь готовности перед проверкой. Эта проверка выполнена успешно при подготовке проекта; контейнер оставлен работающим.
+При необходимости дождитесь готовности перед проверкой.
 
 Остановка: `docker compose stop`. Удаление контейнера с сохранением данных: `docker compose down`. Команда `docker compose down -v` удаляет также volume и все данные.
 
 Официальная документация: [Docker-установка](https://qdrant.tech/documentation/installation/), [Query Points API](https://api.qdrant.tech/api-reference/search/query-points).
+
+Автономные тесты `python -m unittest -v` проверяют движок, загрузчик и Flask test client с mock, без запущенного Qdrant. Интеграционная проверка не запускается при обнаружении автономных тестов. Для проверки двух загрузок выполните `python -m engine.load` дважды, затем `python -m engine.tests.verify`: в коллекции должно остаться ровно 30 записей.
