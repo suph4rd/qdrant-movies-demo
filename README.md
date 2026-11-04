@@ -1,26 +1,79 @@
 # Movie recommendations with Qdrant
 
-A local learning demo with 250 movies, manually assigned vectors, an async engine and loader, and a FastAPI web interface. Requires Docker with Compose and Python **3.15.2**. Qdrant access uses the official `AsyncQdrantClient` over REST with a 15-second timeout. Dependencies are pinned in `requirements.txt` and must be installed in a virtual environment.
+A local learning demo with 250 movies, manually assigned vectors, an async engine and loader, and a FastAPI web interface. The full Docker setup requires Docker Engine with Compose; local Python is not needed. The application image uses Python **3.15.2** and installs the dependencies pinned in `requirements.txt`. Qdrant access uses the official `AsyncQdrantClient` over REST with a 15-second timeout.
 
-Install Python 3.15.2 separately with a Python version manager or the [official installer](https://www.python.org/downloads/release/python-3152/); do not replace the operating system Python. Confirm `python3.15 --version` reports `Python 3.15.2` before creating the environment.
-
-## Getting started
+## Getting started with Docker
 
 ```sh
 cd /path/to/project
+cp env/.env.example env/.env
+docker compose --env-file env/.env -f docker/compose.yaml config
+docker compose --env-file env/.env -f docker/compose.yaml up -d --build
+```
+
+All commands run from the repository root. Copy the environment example once; keep local changes in the ignored `env/.env`. `WEB_PORT`, `QDRANT_HTTP_PORT`, and `QDRANT_GRPC_PORT` set host ports (defaults: 5000, 6333, 6334); all published ports remain bound to IPv4 loopback. Internal ports and healthcheck intervals are fixed. Adjust browser and local Python URLs when changing host ports.
+
+`QDRANT_URL` is passed to both `web` and `loader`. The loader uses it for `/readyz` and catalog loading. Its Docker default, `http://qdrant:6333`, uses the Compose service name and internal port. Local Python uses `http://127.0.0.1:6333` instead (or the configured `QDRANT_HTTP_PORT`); pass that address to the loader with `--url` and to local web through `QDRANT_URL`. Compose's env file is not automatically loaded by local Python. The `env/` directory is excluded from the image build context.
+
+Open http://127.0.0.1:5000 once startup completes. The `loader` service waits up to 60 seconds for HTTP 200 from Qdrant's `/readyz`, then runs the existing catalog loader. It must exit successfully before Compose starts `web` ([Compose startup order](https://docs.docker.com/compose/how-tos/startup-order/)). A readiness timeout or load failure prevents web startup; inspect the logs, fix the cause, and run the startup command again.
+
+On macOS, use `127.0.0.1` explicitly. If `localhost:5000` returns `403 Forbidden` with a `Server: AirTunes` header, the request reached macOS AirPlay over IPv6 rather than the application's IPv4 loopback binding.
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml ps -a
+docker compose --env-file env/.env -f docker/compose.yaml logs --tail=100 loader web qdrant
+```
+
+An exited `loader` with code 0 is expected. The web healthcheck requests the existing home page using Python's standard library. It checks HTTP availability; it does not run a recommendation query or monitor Qdrant readiness.
+
+The application runs as an unprivileged user. Uvicorn listens on `0.0.0.0:5000` inside the container, published only at `127.0.0.1:5000`. Dashboard: http://127.0.0.1:6333/dashboard. Qdrant REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. This setup is for a local demo, without TLS or external access.
+
+The Qdrant v1.20.0 image is pinned by digest in `docker/compose.yaml`. Container: `qdrant-movies`, restart policy: `unless-stopped`. Data lives in the separate Docker volume `qdrant-movies-demo_movies-storage`, mounted at `/qdrant/storage`.
+
+Reload the catalog already included in the image:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml run --rm loader
+```
+
+The catalog, translations, templates, CSS, and application code are copied into the image. After changing them, rebuild and recreate the application services:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader web
+```
+
+There are no source bind mounts or automatic code updates. Reloading the same stable IDs leaves exactly 250 records. Loading remains a separate operation; FastAPI lifespan never loads Qdrant records.
+
+Run offline tests and check the container's Python version:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python --version
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python -m unittest -v
+```
+
+After Qdrant is ready, run integration verification without local Python. The test container shares Qdrant's network namespace because the verifier uses `127.0.0.1:6333`:
+
+```sh
+docker run --rm --network container:qdrant-movies qdrant-movies-demo-app:local python -m engine.tests.verify
+```
+
+Stop with `docker compose --env-file env/.env -f docker/compose.yaml stop`. Remove the containers while preserving data with `docker compose --env-file env/.env -f docker/compose.yaml down`; start again with `docker compose --env-file env/.env -f docker/compose.yaml up -d`. The named volume survives. `docker compose --env-file env/.env -f docker/compose.yaml down -v` also deletes the volume and all stored data.
+
+## Local Python alternative
+
+Install Python 3.15.2 separately with a Python version manager or the [official installer](https://www.python.org/downloads/release/python-3152/); do not replace the operating system Python. Confirm `python3.15 --version` reports `Python 3.15.2` before creating the environment. Install dependencies in a virtual environment:
+
+```sh
 python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-docker compose config
-docker compose up -d
-curl --fail http://localhost:6333/readyz
+docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant
+curl --fail http://127.0.0.1:6333/readyz
 python -m engine.load
 ```
 
-If `readyz` does not respond yet, retry after a few seconds. Dashboard: http://localhost:6333/dashboard. REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. Ports are published on loopback only.
-
-The Qdrant v1.20.0 image is pinned by digest in `compose.yaml`. Container: `qdrant-movies`, restart policy: `unless-stopped`. Data lives in the separate Docker volume `qdrant-movies-demo_movies-storage`, mounted at `/qdrant/storage`.
+If `readyz` does not respond yet, retry after a few seconds. If Docker `web` is already running, stop it with `docker compose --env-file env/.env -f docker/compose.yaml stop web` to free port 5000 before starting local Uvicorn.
 
 ## Web interface
 
@@ -106,14 +159,14 @@ The engine supports `await services.search(store, query, catalog, limit=5)` and 
 Persistence check:
 
 ```sh
-docker compose restart
+docker compose --env-file env/.env -f docker/compose.yaml restart
 curl --fail http://localhost:6333/readyz
 python -m engine.tests.verify
 ```
 
 Wait for readiness before verification if necessary.
 
-Stop: `docker compose stop`. Remove the container while keeping data: `docker compose down`. `docker compose down -v` also deletes the volume and all data.
+Stop: `docker compose --env-file env/.env -f docker/compose.yaml stop`. Remove the container while keeping data: `docker compose --env-file env/.env -f docker/compose.yaml down`. `docker compose --env-file env/.env -f docker/compose.yaml down -v` also deletes the volume and all data.
 
 Official documentation: [Docker installation](https://qdrant.tech/documentation/installation/), [Query Points API](https://api.qdrant.tech/api-reference/search/query-points).
 
