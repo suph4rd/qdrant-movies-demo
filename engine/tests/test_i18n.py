@@ -1,3 +1,5 @@
+from engine import catalog as movie_catalog, store as movie_store
+from engine.errors import DemoError
 import contextlib
 import hashlib
 import io
@@ -6,13 +8,13 @@ import sys
 import unittest
 from unittest.mock import patch
 
-from engine import DEFAULT_DATA_PATH, load, services
+from engine import DEFAULT_DATA_PATH, load
 from engine.i18n import LANGUAGES, MESSAGES, localize_movie, translate
 
 
 class LocalizationTests(unittest.TestCase):
     def setUp(self):
-        self.catalog = services.read_movies(DEFAULT_DATA_PATH)
+        self.catalog = movie_catalog.read_movies(DEFAULT_DATA_PATH)
 
     def test_complete_catalog_and_original_data(self):
         original = [{k: v for k, v in m.items() if k != 'translations'} for m in self.catalog]
@@ -36,20 +38,20 @@ class LocalizationTests(unittest.TestCase):
             for lang in LANGUAGES:
                 title = localize_movie(movie, lang)['title']
                 with self.subTest(id=movie['id'], lang=lang):
-                    self.assertEqual(services.resolve_movie(' ' + title.swapcase() + ' ', self.catalog)['id'], movie['id'])
-        self.assertEqual(services.resolve_movie('the matr', self.catalog)['id'], 1)
-        self.assertEqual(services.resolve_movie('матри', self.catalog)['id'], 1)
-        self.assertEqual(services.resolve_movie('1917', self.catalog)['id'], 77)
+                    self.assertEqual(movie_catalog.resolve_movie(' ' + title.swapcase() + ' ', self.catalog)['id'], movie['id'])
+        self.assertEqual(movie_catalog.resolve_movie('the matr', self.catalog)['id'], 1)
+        self.assertEqual(movie_catalog.resolve_movie('матри', self.catalog)['id'], 1)
+        self.assertEqual(movie_catalog.resolve_movie('1917', self.catalog)['id'], 77)
 
     def test_cross_language_exact_match_and_deduplication(self):
         catalog = [
             {'id': 1, 'title': 'Test', 'translations': {'en': {'title': 'Test'}}},
             {'id': 2, 'title': 'Test sequel', 'translations': {'en': {'title': 'Another'}}},
         ]
-        self.assertEqual(services.resolve_movie('test', catalog)['id'], 1)
-        self.assertEqual(services.resolve_movie('another', catalog)['id'], 2)
-        with self.assertRaises(services.DemoError) as raised:
-            services.resolve_movie('Harry Potter', self.catalog)
+        self.assertEqual(movie_catalog.resolve_movie('test', catalog)['id'], 1)
+        self.assertEqual(movie_catalog.resolve_movie('another', catalog)['id'], 2)
+        with self.assertRaises(DemoError) as raised:
+            movie_catalog.resolve_movie('Harry Potter', self.catalog)
         self.assertEqual(raised.exception.key, 'ambiguous')
         self.assertIn('Harry Potter', raised.exception.format('en'))
         self.assertIn('Гарри Поттер', raised.exception.format('ru'))
@@ -58,7 +60,7 @@ class LocalizationTests(unittest.TestCase):
     def test_loader_languages_help_and_argument_errors(self):
         for lang in LANGUAGES:
             for arguments in (['--lang', lang], ['--lang=' + lang]):
-                with patch.object(services.QdrantMovieStore, 'load', return_value={'loaded': 250, 'count': 250}), patch.object(sys, 'argv', ['loader'] + arguments), contextlib.redirect_stdout(io.StringIO()) as out:
+                with patch.object(movie_store.QdrantMovieStore, 'load', return_value={'loaded': 250, 'count': 250}), patch.object(sys, 'argv', ['loader'] + arguments), contextlib.redirect_stdout(io.StringIO()) as out:
                     self.assertEqual(load.main(), 0)
                     self.assertEqual(out.getvalue().strip(), translate('loaded', lang, loaded=250, count=250))
             for arguments, code, key in (
@@ -77,7 +79,7 @@ class LocalizationTests(unittest.TestCase):
                 if lang == 'ru':
                     for fragment in ('unrecognized arguments', 'expected one argument', 'invalid choice', 'ignored explicit argument', 'options:'):
                         self.assertNotIn(fragment, text)
-            with patch.object(sys, 'argv', ['loader', '--lang', lang]), patch.object(services.QdrantMovieStore, 'load', side_effect=services.DemoError('response')), contextlib.redirect_stderr(io.StringIO()) as err:
+            with patch.object(sys, 'argv', ['loader', '--lang', lang]), patch.object(movie_store.QdrantMovieStore, 'load', side_effect=DemoError('response')), contextlib.redirect_stderr(io.StringIO()) as err:
                 self.assertEqual(load.main(), 1)
                 self.assertIn(translate('response', lang), err.getvalue())
 
@@ -108,7 +110,8 @@ class LocalizationTests(unittest.TestCase):
 
     def test_web_locale_is_request_scoped(self):
         from web.app import create_app
-        with create_app({'TESTING': True}).test_client() as client:
+        from fastapi.testclient import TestClient
+        with TestClient(create_app()) as client:
             for lang in ('en', 'ru', 'en'):
                 response = client.get('/?lang=' + lang)
                 self.assertIn(translate('heading', lang), response.text)

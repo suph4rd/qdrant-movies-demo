@@ -1,3 +1,5 @@
+from engine import catalog as movie_catalog, store as movie_store
+from engine.errors import DemoError
 import contextlib
 import io
 import os
@@ -6,9 +8,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
-from engine import DEFAULT_DATA_PATH, load, services
+from engine import DEFAULT_DATA_PATH, load
 
 
 class LoaderTests(unittest.TestCase):
@@ -21,12 +23,12 @@ class LoaderTests(unittest.TestCase):
     def test_success_and_default_path_from_other_directory(self):
         original = os.getcwd()
         with tempfile.TemporaryDirectory() as directory, patch.object(
-            services.QdrantMovieStore, 'load', return_value={'loaded': 250, 'count': 250}
+            movie_store.QdrantMovieStore, 'load', return_value={'loaded': 250, 'count': 250}
         ) as loader:
             try:
                 os.chdir(directory)
                 code, output, errors = self.run_loader([])
-                self.assertEqual(len(services.read_movies(DEFAULT_DATA_PATH)), 250)
+                self.assertEqual(len(movie_catalog.read_movies(DEFAULT_DATA_PATH)), 250)
             finally:
                 os.chdir(original)
         loader.assert_called_once_with(DEFAULT_DATA_PATH)
@@ -35,15 +37,17 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(errors, '')
 
     def test_connection_and_data_options(self):
-        with patch.object(services, 'QdrantMovieStore') as store_class:
+        with patch.object(movie_store, 'QdrantMovieStore') as store_class:
+            store_class.return_value.load = AsyncMock()
+            store_class.return_value.close = AsyncMock()
             store_class.return_value.load.return_value = {'loaded': 250, 'count': 250}
             self.assertEqual(self.run_loader(['--url', 'http://test:6333', '--data', 'custom.json'])[0], 0)
         store_class.assert_called_once_with('http://test:6333')
         store_class.return_value.load.assert_called_once_with(Path('custom.json'))
 
     def test_errors(self):
-        for error in (services.DemoError('response'), ValueError('данные'), OSError('файл'), KeyError('count'), TypeError('ответ')):
-            with self.subTest(error=error), patch.object(services.QdrantMovieStore, 'load', side_effect=error):
+        for error in (DemoError('response'), ValueError('данные'), OSError('файл'), KeyError('count'), TypeError('ответ')):
+            with self.subTest(error=error), patch.object(movie_store.QdrantMovieStore, 'load', side_effect=error):
                 code, output, errors = self.run_loader([])
                 self.assertEqual(code, 1)
                 self.assertEqual(output, '')
@@ -51,7 +55,7 @@ class LoaderTests(unittest.TestCase):
                 self.assertIn(str(error), errors)
 
     def test_invalid_arguments(self):
-        with patch.object(services.QdrantMovieStore, 'load') as loader:
+        with patch.object(movie_store.QdrantMovieStore, 'load') as loader:
             for arguments in (['recommend', '1'], ['--url'], ['--unknown']):
                 with self.subTest(arguments=arguments), self.assertRaises(SystemExit) as raised:
                     self.run_loader(arguments)
@@ -66,6 +70,20 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn('Error: Cannot read the movie catalog', result.stderr)
         self.assertEqual(result.stdout, '')
+
+
+class LoaderResourceTests(unittest.IsolatedAsyncioTestCase):
+    async def test_closes_store_on_success_and_failure(self):
+        for error in (None, DemoError('response')):
+            store = AsyncMock()
+            store.load.side_effect = error
+            with patch.object(movie_store, 'QdrantMovieStore', return_value=store):
+                if error:
+                    with self.assertRaises(DemoError):
+                        await load.load_catalog('http://test', DEFAULT_DATA_PATH)
+                else:
+                    await load.load_catalog('http://test', DEFAULT_DATA_PATH)
+            store.close.assert_awaited_once()
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-"""Shared gettext messages, independent of Flask."""
 import gettext
 from functools import lru_cache
 from pathlib import Path

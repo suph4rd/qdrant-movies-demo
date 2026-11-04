@@ -1,27 +1,37 @@
-import os
+from contextlib import asynccontextmanager
+from pathlib import Path
 
-from flask import Flask
-from flask_babel import Babel
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from engine.i18n import TRANSLATIONS_PATH
-from web.routes import select_language
+from engine import DEFAULT_DATA_PATH, catalog, store as movie_store
+from web.router import router
 
-from engine import DEFAULT_DATA_PATH, services
-from web.router import register_routes
+PACKAGE_PATH = Path(__file__).resolve().parent
 
 
-def create_app(test_config=None):
-    app = Flask(__name__)
-    app.config.from_mapping(
-        QDRANT_URL=os.environ.get('QDRANT_URL', 'http://127.0.0.1:6333'),
-        MOVIES_PATH=DEFAULT_DATA_PATH,
-    )
-    if test_config is not None:
-        app.config.update(test_config)
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(extra='forbid')
+    qdrant_url: str = 'http://127.0.0.1:6333'
+    movies_path: Path = DEFAULT_DATA_PATH
 
-    app.extensions['movie_store'] = services.QdrantMovieStore(app.config['QDRANT_URL'])
-    Babel(app, locale_selector=select_language,
-          default_translation_directories=str(TRANSLATIONS_PATH))
-    register_routes(app)
 
+def create_app(settings=None):
+    settings = settings if isinstance(settings, Settings) else Settings(**(settings or {}))
+
+    @asynccontextmanager
+    async def lifespan(app):
+        app.state.catalog = catalog.read_movies(settings.movies_path)
+        store = movie_store.QdrantMovieStore(settings.qdrant_url)
+        app.state.movie_store = store
+        try:
+            yield
+        finally:
+            await store.close()
+
+    app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app.state.settings = settings
+    app.mount('/static', StaticFiles(directory=PACKAGE_PATH / 'static'), name='static')
+    app.include_router(router)
     return app
