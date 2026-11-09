@@ -11,7 +11,7 @@ from engine.errors.exceptions import (
     MovieNotFoundError,
     SemanticSchemaError,
 )
-from engine.errors.formatting import format_error
+from engine.errors.formatting import format_error, format_message
 from engine.errors.metadata import annotate_error, is_expected_error
 
 __all__ = [
@@ -19,5 +19,5 @@ __all__ = [
     'DomainError', 'EmbeddingModelError', 'EmbeddingResponseError',
     'IndexStateError', 'InputValidationError', 'MovieLookupError',
     'MovieNotFoundError', 'SemanticSchemaError',
-    'annotate_error', 'is_expected_error', 'format_error',
+    'annotate_error', 'is_expected_error', 'format_error', 'format_message',
 ]

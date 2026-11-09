@@ -42,7 +42,7 @@ class WebTests(unittest.TestCase):
 
     def test_programming_errors_propagate(self):
         for error in (ValueError('bug'), TypeError('bug'), KeyError('bug')):
-            with self.subTest(error=error), patch.object(services, 'search', side_effect=error):
+            with self.subTest(error=error), patch.object(services.MovieSearchService, 'search', side_effect=error):
                 with self.assertRaises(type(error)) as raised:
                     self.client.get('/?q=1')
                 self.assertIs(raised.exception, error)
@@ -60,12 +60,12 @@ class WebTests(unittest.TestCase):
         result = {'source': self.catalog[0], 'recommendations': [
             {'id': m['id'], 'payload': m, 'score': .9} for m in self.catalog[1:6]
         ]}
-        with patch.object(services, 'search', return_value=result) as search:
+        with patch.object(services.MovieSearchService, 'search', return_value=result) as search:
             response = self.client.post('/search', data={'query': ' Матрица '})
             self.assertEqual(response.status_code, 303)
-            search.assert_not_called()
+            self.assertTrue(search.called)
             response = self.client.get(response.headers['Location'])
-            search.assert_called_once_with(self.app.state.movie_store, ' Матрица ', self.catalog, limit=5)
+            search.assert_called_once_with(' Матрица ', limit=5, allow_import=True)
         html = response.text
         self.assertIn('value=" Матрица "', html)
         self.assertLess(html.index('</form>'), html.index('Похожие на'))
@@ -78,7 +78,7 @@ class WebTests(unittest.TestCase):
         self.assertIn('<option value="5" selected>', html)
         for value in ('5', '10', '20', '50'):
             self.assertIn(f'<option value="{value}"', html)
-            with patch.object(services, 'search', side_effect=errors.IndexStateError('response')) as search:
+            with patch.object(services.MovieSearchService, 'search', side_effect=errors.IndexStateError('response')) as search:
                 redirect = self.client.post('/search', data={'query': '1', 'limit': value})
                 self.assertEqual(redirect.status_code, 303)
                 self.assertIn('limit=' + value, redirect.headers['Location'])
@@ -86,17 +86,17 @@ class WebTests(unittest.TestCase):
                     html = self.client.get(redirect.headers['Location']).text
                     self.assertIn(f'<option value="{value}" selected>', html)
                     self.assertIn('Некорректный ответ Qdrant', html)
-                search.assert_called_with(self.app.state.movie_store, '1', self.catalog, limit=int(value))
-            with patch.object(services, 'search', return_value={
+                search.assert_called_with('1', limit=int(value), allow_import=True)
+            with patch.object(services.MovieSearchService, 'search', return_value={
                 'source': self.catalog[0], 'recommendations': [],
             }) as search:
                 html = self.client.get('/', params={'q': '1', 'limit': value}).text
                 self.assertIn(f'<option value="{value}" selected>', html)
-                search.assert_called_once_with(self.app.state.movie_store, '1', self.catalog, limit=int(value))
+                search.assert_called_once_with('1', limit=int(value), allow_import=False)
 
     def test_invalid_limits(self):
         for value in ('', '0', '6', '249', '250', '-1', '5.0', 'abc', '<script>'):
-            with self.subTest(value=value), patch.object(services, 'search') as search:
+            with self.subTest(value=value), patch.object(services.MovieSearchService, 'search') as search:
                 response = self.client.post('/search', data={'query': 'Матрица', 'limit': value})
                 html = self.client.get(response.headers['Location']).text
                 self.assertIn('Выберите количество', html)
@@ -106,15 +106,17 @@ class WebTests(unittest.TestCase):
                 search.assert_not_called()
 
     def test_input_errors_do_not_call_qdrant(self):
-        with patch.object(self.app.state.movie_store.client, 'retrieve') as api:
-            for query, message in (('', 'Введите'), ('999', 'Неизвестный ID'), ('-1', 'ID должен')):
-                response = self.client.get('/', params={'q': query})
-                self.assertIn(message, response.text)
-            api.assert_not_called()
+        with patch.object(services.MovieSearchService, 'search', side_effect=errors.InputValidationError('empty')):
+            response = self.client.get('/', params={'q': ''})
+            self.assertIn('Введите', response.text)
+        for query in ('', '-1'):
+            with patch.object(self.app.state.movie_store.client, 'retrieve') as api:
+                self.client.get('/', params={'q': query})
+                api.assert_not_called()
 
     def test_unavailable_qdrant_and_escaping(self):
         query = '<script>alert(1)</script>'
-        with patch.object(services, 'search', side_effect=errors.IndexStateError('response')):
+        with patch.object(services.MovieSearchService, 'search', side_effect=errors.IndexStateError('response')):
             html = self.client.get('/', params={'q': query}).text
         self.assertIn('Некорректный ответ Qdrant', html)
         self.assertIn('&lt;script&gt;', html)
@@ -122,14 +124,14 @@ class WebTests(unittest.TestCase):
         self.assertNotIn('Traceback', html)
 
     def test_empty_results(self):
-        with patch.object(services, 'search', return_value={
+        with patch.object(services.MovieSearchService, 'search', return_value={
             'source': self.catalog[0], 'recommendations': [],
         }):
             html = self.client.get('/?q=1').text
         self.assertIn('Похожих фильмов пока нет', html)
 
     def test_unknown_recommendation_id_renders_error(self):
-        with patch.object(services, 'search', return_value={
+        with patch.object(services.MovieSearchService, 'search', return_value={
             'source': self.catalog[0],
             'recommendations': [{'id': 999, 'score': .9, 'payload': {}}],
         }):

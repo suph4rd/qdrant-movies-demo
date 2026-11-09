@@ -117,3 +117,30 @@ class LocalizationTests(unittest.TestCase):
             for lang in ('en', 'ru', 'en'):
                 response = client.get('/?lang=' + lang)
                 self.assertIn(engine_i18n.translate('heading', lang), response.text)
+
+
+class SharedLocalizationTests(unittest.TestCase):
+    def test_source_translation_matches_key_translation(self):
+        for lang in engine_i18n.LANGUAGES:
+            self.assertEqual(
+                engine_i18n.translate_message(engine_i18n.MESSAGES['import_added'], lang, title='Solaris'),
+                engine_i18n.translate('import_added', lang, title='Solaris'))
+
+    def test_structured_messages_localize_nested_errors_without_mutation(self):
+        error = errors.InputValidationError('import_invalid')
+        message = {'key': 'import_failed', 'params': {'title': 'Solaris', 'error': error}}
+        for lang in engine_i18n.LANGUAGES:
+            self.assertEqual(errors.format_message(message, lang), engine_i18n.translate(
+                'import_failed', lang, title='Solaris', detail=errors.format_error(error, lang)))
+        self.assertIs(message['params']['error'], error)
+        self.assertNotIn('detail', message['params'])
+
+    def test_description_language_and_original_movie_are_preserved(self):
+        movie = {'title': 'Фильм', 'description': 'Описание', 'description_language': 'ru',
+                 'translations': {'en': {'title': 'Movie', 'description': 'Description'}}}
+        english = engine_i18n.localize_movie(movie, 'en')
+        self.assertEqual(english['description_language'], 'en')
+        self.assertEqual(movie['description_language'], 'ru')
+        self.assertEqual(engine_i18n.localize_movie(movie, 'ru'), movie)
+        fallback = {**movie, 'description_language': 'en'}
+        self.assertEqual(engine_i18n.localize_movie(fallback, 'ru')['description_language'], 'en')

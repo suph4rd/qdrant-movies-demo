@@ -1,14 +1,15 @@
-# Translations template for PROJECT.
+# Translations template for qdrant-movies-demo.
 # Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
+# This file is distributed under the same license as the qdrant-movies-demo
+# project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
+"Project-Id-Version: qdrant-movies-demo VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-09 15:59+0300\n"
+"POT-Creation-Date: 2026-11-10 00:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,315 +18,390 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: engine/i18n.py:14
-msgid ""
-"Description search is unavailable with legacy features. Select the "
-"semantic collection."
+#: engine/i18n.py:16
+msgid "Invalid imported movie metadata."
 msgstr ""
 
-#: engine/i18n.py:15
+#: engine/i18n.py:17
+msgid "Movie ID conflict. The existing record was preserved."
+msgstr ""
+
+#: engine/i18n.py:18
+#, python-format
+msgid "Added: %(title)s."
+msgstr ""
+
+#: engine/i18n.py:19
+#, python-format
+msgid "Already saved: %(title)s."
+msgstr ""
+
+#: engine/i18n.py:20
+#, python-format
+msgid "Could not process %(title)s: %(detail)s"
+msgstr ""
+
+#: engine/i18n.py:21
+msgid ""
+"No saved movie found. Submit the form to search Wikidata and import exact"
+" matches."
+msgstr ""
+
+#: engine/i18n.py:22 web/templates/index.html:63
+#, python-format
+msgid "Description language: %(language)s"
+msgstr ""
+
+#: engine/i18n.py:23 web/templates/index.html:55 web/templates/index.html:64
+msgid "Source: TMDB"
+msgstr ""
+
+#: engine/i18n.py:24
+msgid "Movie not found in Wikidata."
+msgstr ""
+
+#: engine/i18n.py:25
+msgid "Invalid Wikidata response or incomplete movie metadata."
+msgstr ""
+
+#: engine/i18n.py:26
+msgid "Wikidata request limit reached. Try again later."
+msgstr ""
+
+#: engine/i18n.py:27
+msgid "Wikidata is unavailable. Try again later."
+msgstr ""
+
+#: engine/i18n.py:28
+#, python-format
+msgid "Skipped incomplete Wikidata movie %(id)s."
+msgstr ""
+
+#: engine/i18n.py:29 web/templates/index.html:53 web/templates/index.html:64
+msgid "Source: Wikidata"
+msgstr ""
+
+#: engine/i18n.py:30 web/templates/index.html:64
+msgid "Short description from Wikidata"
+msgstr ""
+
+#: engine/i18n.py:31 web/templates/index.html:54
+msgid ""
+"Wikidata provides a short description, not a plot summary. Plot-based "
+"recommendations may be less precise."
+msgstr ""
+
+#: engine/i18n.py:32 web/templates/index.html:77
+msgid "Wikidata structured data is available under CC0. No API key is required."
+msgstr ""
+
+#: engine/i18n.py:33 web/templates/index.html:76
+msgid "Credits"
+msgstr ""
+
+#: engine/i18n.py:35
 msgid "Choose movie or description search."
 msgstr ""
 
-#: engine/i18n.py:16 web/templates/index.html:22
+#: engine/i18n.py:36 web/templates/index.html:22
 msgid "Search mode"
 msgstr ""
 
-#: engine/i18n.py:17 web/templates/index.html:25
+#: engine/i18n.py:37 web/templates/index.html:25
 msgid "By movie"
 msgstr ""
 
-#: engine/i18n.py:18 web/templates/index.html:26
+#: engine/i18n.py:38 web/templates/index.html:26
 msgid "By description"
 msgstr ""
 
-#: engine/i18n.py:19 web/templates/index.html:18
+#: engine/i18n.py:39 web/templates/index.html:18
 msgid "Choose a movie or describe what you want to watch in English or Russian."
 msgstr ""
 
-#: engine/i18n.py:20 web/templates/index.html:28
+#: engine/i18n.py:40 web/templates/index.html:28
 msgid "Movie title, ID, or description"
 msgstr ""
 
-#: engine/i18n.py:21 web/templates/index.html:31
+#: engine/i18n.py:41 web/templates/index.html:31
 msgid "For example, The Matrix, 1, or an astronaut stranded on Mars"
 msgstr ""
 
-#: engine/i18n.py:22 web/templates/index.html:44
+#: engine/i18n.py:42 web/templates/index.html:44
 msgid ""
 "In movie mode, enter a title or ID. In description mode, describe a plot "
 "or mood in English or Russian."
 msgstr ""
 
-#: engine/i18n.py:23 web/templates/index.html:50
+#: engine/i18n.py:43 web/templates/index.html:52
 msgid "Movies matching your description"
 msgstr ""
 
-#: engine/i18n.py:24 web/templates/index.html:51
+#: engine/i18n.py:44 web/templates/index.html:56
 msgid ""
 "Cosine similarity measures vector similarity, not the probability that "
 "you will like a movie."
 msgstr ""
 
-#: engine/i18n.py:26
+#: engine/i18n.py:46
 msgid ""
 "Incompatible semantic index. Reindex into a new collection with the "
 "pinned model, revision, and text format."
 msgstr ""
 
-#: engine/i18n.py:27
+#: engine/i18n.py:47
 #, python-format
 msgid "Cannot write the embedding cache (%(path)s)."
 msgstr ""
 
-#: engine/i18n.py:28
+#: engine/i18n.py:48
 msgid "TEI embedding service URL"
 msgstr ""
 
-#: engine/i18n.py:29
+#: engine/i18n.py:49
 msgid "Semantic collection name (movies is reserved)"
 msgstr ""
 
-#: engine/i18n.py:30
+#: engine/i18n.py:50
 msgid "Embedding cache directory"
 msgstr ""
 
-#: engine/i18n.py:32
+#: engine/i18n.py:52
 msgid "Enter a description in English or Russian."
 msgstr ""
 
-#: engine/i18n.py:33
+#: engine/i18n.py:53
 #, python-format
 msgid "Cannot reach the embedding model (%(url)s). Check that TEI is ready."
 msgstr ""
 
-#: engine/i18n.py:34
+#: engine/i18n.py:54
 msgid ""
 "Invalid embedding response: expected finite, nonzero 384-dimensional "
 "vectors."
 msgstr ""
 
-#: engine/i18n.py:35
+#: engine/i18n.py:55
 msgid ""
 "TEI model configuration does not match the pinned model, revision, "
 "pooling, or dtype."
 msgstr ""
 
-#: engine/i18n.py:37
+#: engine/i18n.py:57
 #, python-format
 msgid "Qdrant HTTP %(status)s: %(detail)s"
 msgstr ""
 
-#: engine/i18n.py:38
+#: engine/i18n.py:58
 msgid "Invalid Qdrant response."
 msgstr ""
 
-#: engine/i18n.py:39
+#: engine/i18n.py:59
 #, python-format
 msgid "Cannot connect to Qdrant (%(url)s): %(detail)s"
 msgstr ""
 
-#: engine/i18n.py:40
+#: engine/i18n.py:60
 msgid ""
 "Incompatible movies collection: one unnamed 10-dimensional vector with "
 "Cosine distance is required. Existing data is unchanged."
 msgstr ""
 
-#: engine/i18n.py:41
+#: engine/i18n.py:61
 msgid ""
 "The movies collection contains additional records; they are preserved. "
 "This demo expects 250."
 msgstr ""
 
-#: engine/i18n.py:42
+#: engine/i18n.py:62
 #, python-format
 msgid "Unknown movie ID: %(id)s. See movies.json for IDs."
 msgstr ""
 
-#: engine/i18n.py:43
+#: engine/i18n.py:63
 #, python-format
 msgid "Cannot read the movie catalog: %(detail)s"
 msgstr ""
 
-#: engine/i18n.py:44
+#: engine/i18n.py:64
 msgid "JSON must contain exactly 250 movies."
 msgstr ""
 
-#: engine/i18n.py:45
+#: engine/i18n.py:65
 msgid "Each movie must be an object."
 msgstr ""
 
-#: engine/i18n.py:46
+#: engine/i18n.py:66
 #, python-format
 msgid "Invalid or duplicate ID: %(id)s"
 msgstr ""
 
-#: engine/i18n.py:47
+#: engine/i18n.py:67
 #, python-format
 msgid "Movie %(id)s: a nonzero vector of 10 numbers in the range 0–1 is required."
 msgstr ""
 
-#: engine/i18n.py:48
+#: engine/i18n.py:68
 #, python-format
 msgid ""
 "Movie %(id)s: title, description, and genres are required in both "
 "languages."
 msgstr ""
 
-#: engine/i18n.py:49
+#: engine/i18n.py:69
 #, python-format
 msgid "Movie %(id)s: invalid year or genres."
 msgstr ""
 
-#: engine/i18n.py:50
+#: engine/i18n.py:70
 msgid "ID must be an integer from 0 to 2^64−1."
 msgstr ""
 
-#: engine/i18n.py:51
+#: engine/i18n.py:71
 msgid "Enter a movie title or ID."
 msgstr ""
 
-#: engine/i18n.py:52
+#: engine/i18n.py:72
 msgid "Movie not found. Enter another title or ID."
 msgstr ""
 
-#: engine/i18n.py:53
+#: engine/i18n.py:73
 #, python-format
 msgid "Multiple movies found. Please specify the title: %(titles)s."
 msgstr ""
 
-#: engine/i18n.py:54
+#: engine/i18n.py:74
 msgid "The recommendation count must be an integer from 1 to 249."
 msgstr ""
 
-#: engine/i18n.py:55
+#: engine/i18n.py:75
 msgid "Choose the number of similar movies: 5, 10, 20, or 50."
 msgstr ""
 
-#: engine/i18n.py:56 web/templates/index.html:6
+#: engine/i18n.py:76 web/templates/index.html:6
 msgid "Your next movie"
 msgstr ""
 
-#: engine/i18n.py:57 web/templates/index.html:16
+#: engine/i18n.py:77 web/templates/index.html:16
 msgid "MOVIE CATALOG · 250 MOVIES"
 msgstr ""
 
-#: engine/i18n.py:58 web/templates/index.html:17
+#: engine/i18n.py:78 web/templates/index.html:17
 msgid "What to watch next?"
 msgstr ""
 
-#: engine/i18n.py:59
+#: engine/i18n.py:79
 msgid "Choose a familiar movie to find similar movies by mood and genre."
 msgstr ""
 
-#: engine/i18n.py:60
+#: engine/i18n.py:80
 msgid "Movie title or ID"
 msgstr ""
 
-#: engine/i18n.py:61
+#: engine/i18n.py:81
 msgid "For example, The Matrix or 1"
 msgstr ""
 
-#: engine/i18n.py:62 web/templates/index.html:32
+#: engine/i18n.py:82 web/templates/index.html:32
 msgid "Find similar movies"
 msgstr ""
 
-#: engine/i18n.py:63 web/templates/index.html:34
+#: engine/i18n.py:83 web/templates/index.html:34
 msgid "Number of similar movies"
 msgstr ""
 
-#: engine/i18n.py:64 web/templates/index.html:24 web/templates/index.html:37
+#: engine/i18n.py:84 web/templates/index.html:24 web/templates/index.html:37
 #, python-format
 msgid "Invalid value: %(value)s"
 msgstr ""
 
-#: engine/i18n.py:65
+#: engine/i18n.py:85
 msgid ""
 "You can enter part of a title in English or Russian. Matching ignores "
 "case."
 msgstr ""
 
-#: engine/i18n.py:66 web/templates/index.html:50
+#: engine/i18n.py:86 web/templates/index.html:52
 #, python-format
 msgid "Similar to “%(title)s”"
 msgstr ""
 
-#: engine/i18n.py:67
+#: engine/i18n.py:87
 msgid ""
 "Cosine similarity measures manually assigned vector similarity, not the "
 "probability that you will like a movie."
 msgstr ""
 
-#: engine/i18n.py:68 web/templates/index.html:58
+#: engine/i18n.py:88 web/templates/index.html:65
 msgid "Cosine similarity"
 msgstr ""
 
-#: engine/i18n.py:69 web/templates/index.html:61
+#: engine/i18n.py:89 web/templates/index.html:68
 msgid "No similar movies yet."
 msgstr ""
 
-#: engine/i18n.py:70 web/templates/index.html:66
+#: engine/i18n.py:90 web/templates/index.html:74
 msgid "Start with a favorite movie. Recommendations will appear here."
 msgstr ""
 
-#: engine/i18n.py:71 web/templates/index.html:11
+#: engine/i18n.py:91 web/templates/index.html:11
 msgid "Interface language"
 msgstr ""
 
-#: engine/i18n.py:72
+#: engine/i18n.py:92
 #, python-format
 msgid "Loaded %(loaded)s movies. Total in collection: %(count)s."
 msgstr ""
 
-#: engine/i18n.py:73
+#: engine/i18n.py:93
 #, python-format
 msgid "Error: %(detail)s"
 msgstr ""
 
-#: engine/i18n.py:74
+#: engine/i18n.py:94
 msgid "Validate and load the movie catalog into Qdrant."
 msgstr ""
 
-#: engine/i18n.py:75
+#: engine/i18n.py:95
 msgid "Qdrant REST URL"
 msgstr ""
 
-#: engine/i18n.py:76
+#: engine/i18n.py:96
 msgid "Path to the JSON catalog of 250 movies"
 msgstr ""
 
-#: engine/i18n.py:77
+#: engine/i18n.py:97
 msgid "Output language (default: en)"
 msgstr ""
 
-#: engine/i18n.py:78
+#: engine/i18n.py:98
 msgid "Show this help message and exit"
 msgstr ""
 
-#: engine/i18n.py:79
+#: engine/i18n.py:99
 msgid "usage: "
 msgstr ""
 
-#: engine/i18n.py:80
+#: engine/i18n.py:100
 msgid "options"
 msgstr ""
 
-#: engine/i18n.py:81
+#: engine/i18n.py:101
 #, python-format
 msgid "unrecognized arguments: %(value)s"
 msgstr ""
 
-#: engine/i18n.py:82
+#: engine/i18n.py:102
 #, python-format
 msgid "argument %(value)s: expected one argument"
 msgstr ""
 
-#: engine/i18n.py:83
+#: engine/i18n.py:103
 #, python-format
 msgid "argument %(argument)s: ignored explicit argument %(value)s"
 msgstr ""
 
-#: engine/i18n.py:84
+#: engine/i18n.py:104
 #, python-format
 msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
 msgstr ""

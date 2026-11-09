@@ -6,10 +6,12 @@ This is a local movie-recommendation demo using Python 3.15.2, FastAPI for the w
 
 - `engine/parser.py`: localized CLI argument parsing for `--url`, `--data`, and `--lang`.
 - `engine/load.py`: loader arguments (`--url`, `--data`, `--lang`) and localized English/Russian console output; no console recommendations.
-- `engine/i18n.py`: shared message keys and gettext catalogs without web dependencies.
-- `engine/errors/`: domain exceptions in `exceptions.py`, localization metadata on original library exceptions in `metadata.py`, and localized formatting in `formatting.py`; public exports in `__init__.py`.
+- `engine/i18n.py`: shared message keys, source-string translation, movie localization, and gettext catalogs without web dependencies.
+- `engine/errors/`: domain exceptions in `exceptions.py`, localization metadata on original library exceptions in `metadata.py`, and localized error and structured notification formatting in `formatting.py`; public exports in `__init__.py`.
 - `engine/validators.py`: catalog, metadata, ID, and limit validation.
-- `engine/catalog.py`: synchronous JSON reading and title/ID resolution; `engine/services.py`: the async search scenario.
+- `engine/catalog.py`: synchronous JSON reading and title/ID resolution; `engine/services.py`: injected `MovieSearchService` search/import orchestration and compatible `search_movies` wrapper.
+- `engine/imports/`: constants, normalized titles, external identity rules, and imported-card validation; public compatibility exports in `__init__.py` include shared QID validation and legacy TMDB support.
+- `engine/wikidata/`: transport, paginated/batched entities, parsing, validation, classification, movie mapping, and search; `WikidataClient` is the public facade over `EntityClassifier`, `MovieMapper`, and `WikidataSearch`.
 - `engine/constants.py`: shared URLs, collection, catalog path, limits, dimensions, and timeout.
 - `engine/embeddings/`: client, cache, pinned specification, text preparation, and validation; public exports in `__init__.py`.
 - `engine/stores/`: standalone `SemanticMovieStore` and `create_store`; semantic-only runtime, with `movies` reserved.

@@ -94,13 +94,13 @@ After editing code, JSON, translations or templates, rebuild/recreate:
 docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader web
 ```
 
-Two loads of unchanged IDs leave exactly 250 points. The loader validates JSON
+Two loads of unchanged IDs preserve the 250 original movies and any imported movies. The loader validates JSON
 and an existing collection's schema/model metadata before encoding. Documents
 are encoded in batches of 32. It obtains and validates the complete set before
 creating a collection or issuing one Qdrant upsert with `wait=true`; an inference
 failure never writes an incomplete set. This is not a transactional replacement
-of an index across network/server failures. Extra records are preserved and a
-count other than 250 is reported as an error.
+of an index across network/server failures. Extra records are preserved. The loader checks that every original ID is present
+instead of requiring a total of exactly 250.
 
 Cache keys hash the exact prepared text and the model, revision, text version,
 dimension, pooling, dtype and normalization contract. Every cached vector is
@@ -136,10 +136,43 @@ variables provide defaults for the endpoint, collection and cache settings.
 
 ## Search and languages
 
-**By movie** is the default. Enter an ID, exact title or unique title fragment
-in either language; matching ignores case and surrounding whitespace. An
-ambiguous title asks for a more specific title. Qdrant uses the saved source
-movie's semantic vector and excludes that ID. No model request is needed.
+**By movie** is the default. Enter an internal ID, a title, or `Title (2005)`
+in English or Russian. Matching normalizes Unicode, case and whitespace. A
+numeric query always means an internal ID; for a numeric title use its year,
+for example `1917 (2019)`. Original-catalog title fragments remain supported.
+Each matching movie has a separate recommendation group, labelled with its
+year, original title and Wikidata QID where available. All source movies are excluded
+from every recommendation group.
+
+The search checks the original catalog and saved Qdrant movies first. If neither
+contains a match, submitting **By movie** searches Wikidata in English and Russian
+and automatically imports exact title/year matches, including aliases and original
+titles. Only film entities with complete required metadata are imported. English
+names, descriptions and genres are required. Missing Russian metadata falls back
+to English, with a visible description-language label. New movies receive semantic
+embeddings from TEI and deterministic internal IDs `2000000000000 + numeric QID`
+(for example, `Q83495` maps to `2000000083495`). Their Wikidata source links appear
+in the interface. Successful imports remain saved if a later import fails; status
+messages explain added and skipped cards. Repeated imports do not create duplicate
+records. Existing TMDB imports retain their original IDs, metadata and source links.
+
+External imports require no account, API key or token. The web server reads the
+public [Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access) over HTTPS;
+network access to Wikidata is required. Its structured data is published under
+CC0. No requests are sent to the TMDB API. `TMDB_API_TOKEN` is no longer used and
+can be removed from existing local environment files.
+
+Wikidata descriptions are short identifying phrases, not plot summaries. Imported
+movies can therefore produce less precise plot-based recommendations than the
+original catalog. The interface marks these descriptions. Incomplete entities are
+skipped rather than filled with invented text. Wikipedia text is not imported.
+
+Only POST `/search` can import. GET links, refreshes and language switches never
+contact Wikidata or write movies. Movie POST results and messages are kept in a
+bounded server-side cache of 128 searches, addressed by an opaque `result`
+parameter through the redirect. This demo uses one web worker; snapshots expire
+on restart or eviction. An expired link performs a read-only search of saved
+movies. Imported movies themselves persist in Qdrant across restarts.
 
 **By description** accepts free text in Russian or English. Select that mode,
 enter a plot or mood and submit. TEI encodes the query and Qdrant searches all
@@ -152,7 +185,8 @@ Cosine scores measure vector similarity, not a probability of liking a movie.
 
 Language priority: supported `lang=en|ru`, saved cookie, `Accept-Language`, then
 English. Each request uses its own gettext translator. Catalog metadata is
-localized from the application catalog by result ID, without mutating it.
+localized from the application catalog by result ID or from imported Qdrant
+payloads, without mutating them.
 
 ## Model and text format
 
@@ -197,6 +231,25 @@ specification, text preparation and validation. Public imports are available
 from `engine.stores` and `engine.embeddings`. The engine has no web dependency.
 The official async Qdrant SDK uses REST with a 15-second timeout and exact search.
 
+`engine/wikidata/` separates transport, entity pagination and batching, parsing,
+validation, classification, movie mapping and search. `WikidataClient` is the
+public facade for `search`, `movie` and `close`; `EntityClassifier`, `MovieMapper`
+and `WikidataSearch` implement the provider-specific work. Each search shares an
+entity cache, and injected HTTP clients remain owned by their caller.
+
+`engine/imports/` owns title normalization, matching, external identifiers and
+imported-card validation, including legacy TMDB cards. Its public exports remain
+available through `engine.imports`. `engine.services.MovieSearchService` receives
+the store, catalog and optional Wikidata client. It searches exact catalog titles,
+saved cards and partial catalog titles in that order, then imports only when
+explicitly allowed. `services.search_movies` remains a compatible wrapper with
+structured `groups` and `messages` results.
+
+`engine.i18n` handles shared source-string translation and movie localization;
+`engine.errors` formats structured notifications and nested expected errors.
+The web layer chooses the request language and uses `MovieSearchService` without
+moving HTTP language selection into the engine.
+
 ```python
 from engine import services
 from engine.stores import create_store
@@ -227,11 +280,17 @@ requires both services ready and tests the semantic collection:
 ```sh
 python -m unittest -v
 python -m engine.tests.verify
+python -m engine.tests.verify_imports
 python -m evaluation.runners.probe
 python -m evaluation.runners.run
 ```
 
-`verify` performs repeated loads, checks 250 points, both languages, 5/10/20/50
+`verify_imports` uses a separate temporary collection with real Qdrant and TEI
+to check concurrent/repeated import, restart persistence, source exclusion and
+reloading all original movies while retaining imports; it deletes only that
+temporary collection in `finally`. It does not call Wikidata.
+
+`verify` performs repeated loads, checks the original 250 IDs, both languages, 5/10/20/50
 results, source exclusion, unknown IDs, localized catalog metadata and
 independent cosine ranking. Verification also proves repeat loads use
 no inference. Offline tests cover schema/model incompatibility before writes,

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -6,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from engine import catalog
 from engine import constants
+from engine import wikidata
 from engine.embeddings import constants as embedding_constants
 from engine.stores import factory
 from web import constants as web_constants
@@ -26,17 +28,29 @@ class ApplicationLifespan:
         self.settings = settings
         self.app = app
         self.store = None
+        self.wikidata = None
 
     async def __aenter__(self):
         self.app.state.catalog = catalog.read_movies(self.settings.movies_path)
         self.store = factory.create_store(
             self.settings.qdrant_url, self.settings.movies_collection,
             self.settings.embedding_url, self.settings.embedding_cache)
-        self.app.state.movie_store = self.store
+        try:
+            self.wikidata = wikidata.WikidataClient()
+            self.app.state.wikidata = self.wikidata
+            self.app.state.search_results = OrderedDict()
+            self.app.state.movie_store = self.store
+        except BaseException:
+            await self.store.close()
+            raise
         return None
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.store.close()
+        try:
+            if self.wikidata is not None:
+                await self.wikidata.close()
+        finally:
+            await self.store.close()
 
 
 def create_app(settings=None):

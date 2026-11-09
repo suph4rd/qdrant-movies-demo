@@ -61,15 +61,22 @@ async def verify():
         data=movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
         await store.load(constants.DEFAULT_DATA_PATH)
         with patch.object(embedding_client.EmbeddingClient, 'encode_documents', side_effect=AssertionError('Unexpected cache miss')):
-            assert await store.load(constants.DEFAULT_DATA_PATH) == {'loaded':250,'count':250}
-        assert (await store.client.count(collection_name=store.collection_name,exact=True)).count == 250
-        records, offset=await store.client.scroll(collection_name=store.collection_name,limit=300,
-                                                   with_vectors=True,with_payload=True)
-        assert offset is None and len(records) == 250
+            loaded = await store.load(constants.DEFAULT_DATA_PATH)
+            assert loaded['loaded'] == 250 and loaded['count'] >= 250
+        records, offset = [], None
+        while True:
+            batch, offset = await store.client.scroll(collection_name=store.collection_name, limit=300,
+                                                       offset=offset, with_vectors=True, with_payload=True)
+            records.extend(batch)
+            if offset is None:
+                break
+        assert len(records) >= 250
         vectors={p.id:p.vector['semantic'] for p in records}
         by_id={m['id']:m for m in data}
+        assert set(by_id) <= {p.id for p in records}
         for point in records:
-            assert point.payload['translations'] == by_id[point.id]['translations']
+            if point.id in by_id:
+                assert point.payload['translations'] == by_id[point.id]['translations']
             assert point.payload['_embedding']['revision'] == store.spec.revision
         for movie_id in (1,16,21):
             for limit in (5,10,20,50):
@@ -91,7 +98,7 @@ async def verify():
             raise AssertionError('Unknown ID accepted')
     finally:
         await store.close()
-    print('OK: semantic index, two loads, zero repeat inference, 250 records, independent cosine, '
+    print('OK: semantic index, two loads, zero repeat inference, 250 original records preserved, independent cosine, '
           'both languages, both scenarios, limits and source exclusion.')
 
 

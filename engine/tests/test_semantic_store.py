@@ -45,6 +45,7 @@ class SemanticLoaderTests(unittest.IsolatedAsyncioTestCase):
         self.client.get_collection.return_value = collection()
         self.client.count.return_value = NS(count=250)
         self.movies = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
+        self.client.retrieve.return_value = [models.Record(id=m['id']) for m in self.movies]
 
     async def test_batches_payload_and_repeated_load(self):
         for _ in range(2):

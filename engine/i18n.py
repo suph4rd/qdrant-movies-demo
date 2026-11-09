@@ -13,6 +13,25 @@ def N_(message):
 
 
 MESSAGES = {
+    'import_invalid': N_('Invalid imported movie metadata.'),
+    'import_conflict': N_('Movie ID conflict. The existing record was preserved.'),
+    'import_added': N_('Added: %(title)s.'),
+    'import_existing': N_('Already saved: %(title)s.'),
+    'import_failed': N_('Could not process %(title)s: %(detail)s'),
+    'search_saved_only': N_('No saved movie found. Submit the form to search Wikidata and import exact matches.'),
+    'description_language': N_('Description language: %(language)s'),
+    'tmdb_source': N_('Source: TMDB'),
+    'wikidata_not_found': N_('Movie not found in Wikidata.'),
+    'wikidata_invalid': N_('Invalid Wikidata response or incomplete movie metadata.'),
+    'wikidata_rate_limit': N_('Wikidata request limit reached. Try again later.'),
+    'wikidata_unavailable': N_('Wikidata is unavailable. Try again later.'),
+    'wikidata_skipped': N_('Skipped incomplete Wikidata movie %(id)s.'),
+    'wikidata_source': N_('Source: Wikidata'),
+    'wikidata_short': N_('Short description from Wikidata'),
+    'wikidata_quality': N_('Wikidata provides a short description, not a plot summary. Plot-based recommendations may be less precise.'),
+    'wikidata_credits': N_('Wikidata structured data is available under CC0. No API key is required.'),
+    'credits': N_('Credits'),
+
     'search_mode': N_('Choose movie or description search.'),
     'mode_label': N_('Search mode'),
     'mode_movie': N_('By movie'),
@@ -95,11 +114,16 @@ def catalog(lang):
     return gettext.translation('messages', localedir=TRANSLATIONS_PATH, languages=[lang])
 
 
+def translate_message(message, lang='en', **params):
+    return catalog(lang).gettext(message) % params
+
+
 def translate(key, lang='en', **params):
-    return catalog(lang).gettext(MESSAGES[key]) % params
+    return translate_message(MESSAGES[key], lang, **params)
 
 
 def localize_movie(movie, lang='en'):
     if lang == 'en':
-        return {**movie, **movie.get('translations', {}).get('en', {})}
+        return {**movie, **movie.get('translations', {}).get('en', {}),
+                'description_language': 'en'}
     return {**movie}

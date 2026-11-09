@@ -23,7 +23,7 @@ class DescriptionWebTests(unittest.TestCase):
             for limit in ('5','10','20','50'):
                 query='Космонавт & <test>' if lang == 'ru' else 'Astronaut & <test>'
                 result={'source':None,'recommendations':[{'id':4,'score':.9,'payload':{}}]}
-                with patch.object(services,'semantic_search',return_value=result) as search, patch.object(services,'search') as movie_search:
+                with patch.object(services,'semantic_search',return_value=result) as search, patch.object(services.MovieSearchService,'search') as movie_search:
                     redirect=self.client.post('/search',data={'mode':'description','query':query,'limit':limit,'lang':lang})
                     self.assertEqual(redirect.status_code,303)
                     search.assert_not_called()
@@ -71,7 +71,7 @@ class DescriptionWebTests(unittest.TestCase):
         self.assertEqual(error.exception._localization[0], 'semantic_schema')
 
     def test_old_url_uses_movie_mode(self):
-        with patch.object(services,'search',return_value={'source':{},'recommendations':[]}) as search:
+        with patch.object(services.MovieSearchService,'search',return_value={'source':{},'recommendations':[]}) as search:
             html=self.client.get('/?q=1').text
             search.assert_called_once()
             self.assertIn('<option value="movie" selected>',html)

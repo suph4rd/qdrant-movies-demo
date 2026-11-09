@@ -53,9 +53,9 @@ class ConcurrentLanguageTests(unittest.IsolatedAsyncioTestCase):
         async with app.router.lifespan_context(app):
             original = copy.deepcopy(app.state.catalog)
 
-            async def recommend(movie_id, limit=5):
+            async def recommend(movie_id, limit=5, exclude_ids=None):
                 await asyncio.sleep(0)
-                return {'source': {}, 'recommendations': [{'id': 2, 'score': .9, 'payload': {}}]}
+                return {'source': {'id': 1}, 'recommendations': [{'id': 2, 'score': .9, 'payload': {}}]}
 
             with patch.object(app.state.movie_store, 'recommend', side_effect=recommend):
                 async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
