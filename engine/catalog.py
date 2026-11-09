@@ -1,30 +1,37 @@
 import json
 from pathlib import Path
 
-from engine.errors import DemoError
-from engine.i18n import localize_movie
-from engine.validators import validate_catalog, validate_id
+from engine import errors
+from engine import i18n as engine_i18n
+from engine import validators
 
 
 def read_movies(path):
     try:
         movies = json.loads(Path(path).read_text(encoding='utf-8'))
-    except (OSError, ValueError) as exc:
-        raise DemoError('read', detail=exc) from exc
-    return validate_catalog(movies)
+    except OSError as exc:
+        errors.annotate_error(exc, 'read', detail=exc)
+        raise
+    except json.JSONDecodeError as exc:
+        errors.annotate_error(exc, 'read', detail=exc)
+        raise
+    except UnicodeDecodeError as exc:
+        errors.annotate_error(exc, 'read', detail=exc)
+        raise
+    return validators.validate_catalog(movies)
 
 
 def resolve_movie(query, catalog):
     query = query.strip()
     if not query:
-        raise DemoError('empty')
+        raise errors.InputValidationError('empty')
     movie_id = None
     if query.lstrip('+-').isdecimal():
         try:
             movie_id = int(query)
         except ValueError as exc:
-            raise DemoError('id') from exc
-        validate_id(movie_id)
+            raise errors.InputValidationError('id') from exc
+        validators.validate_id(movie_id)
         matches = [m for m in catalog if m['id'] == movie_id]
         if matches:
             return matches[0]
@@ -34,12 +41,12 @@ def resolve_movie(query, catalog):
         matches = [m for m in catalog if any(title in t.casefold() for t in movie_titles(m))]
     if not matches:
         if movie_id is not None:
-            raise DemoError('unknown_id', id=movie_id)
-        raise DemoError('not_found')
+            raise errors.MovieNotFoundError('unknown_id', id=movie_id)
+        raise errors.MovieNotFoundError('not_found')
     if len(matches) > 1:
-        raise DemoError('ambiguous', movies=matches)
+        raise errors.AmbiguousMovieError('ambiguous', movies=matches)
     return matches[0]
 
 
 def movie_titles(movie):
-    return [movie['title'], localize_movie(movie, 'en')['title']]
+    return [movie['title'], engine_i18n.localize_movie(movie, 'en')['title']]

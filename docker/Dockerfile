@@ -9,13 +9,16 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN python -m venv /opt/venv \
     && python -m pip install --no-cache-dir -r requirements.txt \
-    && useradd --create-home --uid 10001 app
+    && useradd --create-home --uid 10001 app \
+    && mkdir -p /home/app/.cache/embeddings \
+    && chown -R app:app /home/app/.cache
 
 COPY movies.json ./
 COPY engine ./engine
 COPY web ./web
-COPY docker/wait_for_qdrant.py docker/healthcheck.py ./docker/
+COPY docker/scripts/wait_for_qdrant.py docker/scripts/healthcheck.py ./docker/scripts/
+COPY docker/scripts/start-loader.sh docker/scripts/start-web.sh ./docker/scripts/
 
 USER app
-EXPOSE 5000
-CMD ["python", "-m", "uvicorn", "web.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "5000"]
+EXPOSE 18000
+CMD ["/bin/sh", "docker/scripts/start-web.sh"]

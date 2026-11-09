@@ -1,15 +1,17 @@
-from engine import catalog as movie_catalog, store as movie_store
-from engine.errors import DemoError
 from html.parser import HTMLParser
 from urllib.parse import parse_qs, urlsplit
 import unittest
 from unittest.mock import patch
 
-from engine import DEFAULT_DATA_PATH, services
-from engine.i18n import localize_movie, translate
-from web.app import create_app, Settings
 from fastapi.testclient import TestClient
 from contextlib import ExitStack
+
+from engine import catalog as movie_catalog
+from engine import constants
+from engine import errors
+from engine import i18n as engine_i18n
+from engine import services
+from web import app as web_app
 
 
 class LanguageLinks(HTMLParser):
@@ -19,7 +21,7 @@ class LanguageLinks(HTMLParser):
         self.feed(html)
 
     def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
+        attrs = {name: value for name, value in attrs}
         if tag == 'a' and 'hreflang' in attrs:
             self.links[attrs['hreflang']] = attrs['href']
 
@@ -27,14 +29,14 @@ class LanguageLinks(HTMLParser):
 class WebLocalizationTests(unittest.TestCase):
     def setUp(self):
         self.stack = self.enterContext(ExitStack())
-        self.app = create_app(Settings(qdrant_url='http://test:6333'))
+        self.app = web_app.create_app(web_app.Settings(qdrant_url='http://test:6333'))
         self.client = self.stack.enter_context(TestClient(self.app, follow_redirects=False))
-        self.catalog = movie_catalog.read_movies(DEFAULT_DATA_PATH)
+        self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
 
     def assert_language(self, response, lang):
         self.assertEqual(response.headers['Content-Language'], lang)
         self.assertIn(f'<html lang="{lang}">', response.text)
-        self.assertIn(translate('heading', lang), response.text)
+        self.assertIn(engine_i18n.translate('heading', lang), response.text)
         self.assertIn(f'name="lang" value="{lang}"', response.text)
 
     def test_selection_priority_and_cookie(self):
@@ -56,17 +58,17 @@ class WebLocalizationTests(unittest.TestCase):
             links = LanguageLinks(response.text).links
             self.assertEqual(set(links), {'en', 'ru'})
             for target, link in links.items():
-                self.assertEqual(parse_qs(urlsplit(link).query), {'q': [query], 'limit': ['20'], 'lang': [target]})
+                self.assertEqual(parse_qs(urlsplit(link).query), {'q': [query], 'limit': ['20'], 'mode': ['movie'], 'lang': [target]})
                 self.assert_language(self.client.get(link), target)
-            with patch.object(services, 'search', side_effect=DemoError('response')) as search:
+            with patch.object(services, 'search', side_effect=errors.IndexStateError('response')) as search:
                 response = self.client.post('/search', data={'query': query, 'limit': '20', 'lang': lang})
                 self.assertEqual(response.status_code, 303)
                 search.assert_not_called()
-                self.assertEqual(parse_qs(urlsplit(response.headers['Location']).query), {'q': [query], 'limit': ['20'], 'lang': [lang]})
+                self.assertEqual(parse_qs(urlsplit(response.headers['Location']).query), {'q': [query], 'limit': ['20'], 'mode': ['movie'], 'lang': [lang]})
                 for _ in range(2):
                     page = self.client.get(response.headers['Location'])
                     self.assert_language(page, lang)
-                    self.assertIn(translate('response', lang), page.text)
+                    self.assertIn(engine_i18n.translate('response', lang), page.text)
                     self.assertIn('<option value="20" selected>', page.text)
                     self.assertNotIn('<test>', page.text)
 
@@ -85,8 +87,8 @@ class WebLocalizationTests(unittest.TestCase):
                 }):
                     response = self.client.get('/', params={'q': query, 'lang': lang})
                 self.assert_language(response, lang)
-                self.assertIn(localize_movie(self.catalog[0], lang)['title'], response.text)
-                self.assertIn(localize_movie(self.catalog[1], lang)['title'], response.text)
+                self.assertIn(engine_i18n.localize_movie(self.catalog[0], lang)['title'], response.text)
+                self.assertIn(engine_i18n.localize_movie(self.catalog[1], lang)['title'], response.text)
                 self.assertIn('0.9876', response.text)
                 self.assertNotIn('obsolete', response.text)
 
@@ -96,7 +98,7 @@ class WebLocalizationTests(unittest.TestCase):
                 with patch.object(self.app.state.movie_store.client, 'retrieve') as api:
                     response = self.client.get('/', params={**params, 'lang': lang})
                     api.assert_not_called()
-                self.assertIn(translate(key, lang), response.text)
+                self.assertIn(engine_i18n.translate(key, lang), response.text)
             response = self.client.get('/', params={'q': 'Гарри', 'lang': lang})
             title = 'Harry Potter' if lang == 'en' else 'Гарри Поттер'
             self.assertIn(title, response.text.split('role="alert">')[1])

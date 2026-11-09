@@ -1,0 +1,132 @@
+{
+  "recorded_at": "2026-11-09T13:02:20.839524+00:00",
+  "full_stack_stop_start_succeeded": true,
+  "additional_tei_restart_succeeded": true,
+  "counts": {
+    "movies": 250,
+    "movies_semantic_v1": 250
+  },
+  "weights_stat_before": "470268510 1794228576 8156",
+  "weights_stat_after": "470268510 1794228576 8156",
+  "cache_retrieval_seconds": 0.000476541,
+  "note": "TEI logs say Downloading even on a cache hit; unchanged size/mtime/inode and sub-millisecond retrieval confirm reuse.",
+  "tei_info": {
+    "model_id": "intfloat/multilingual-e5-small",
+    "model_sha": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "model_dtype": "float32",
+    "served_model_name": "intfloat/multilingual-e5-small",
+    "model_type": {
+      "embedding": {
+        "pooling": "mean"
+      }
+    },
+    "max_concurrent_requests": 512,
+    "max_input_length": 512,
+    "max_batch_tokens": 16384,
+    "max_batch_requests": 8,
+    "max_client_batch_size": 32,
+    "auto_truncate": true,
+    "tokenization_workers": 7,
+    "version": "1.9.4",
+    "sha": "e80ef225ed0e6cb1717ce632a6a84b6cf211bb67",
+    "docker_label": "sha-e80ef22"
+  },
+  "real_web_checks": [
+    {
+      "mode": "movie",
+      "lang": "en",
+      "limit": 5,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "en",
+      "limit": 10,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "en",
+      "limit": 20,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "en",
+      "limit": 50,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "ru",
+      "limit": 5,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "ru",
+      "limit": 10,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "ru",
+      "limit": 20,
+      "status": "passed"
+    },
+    {
+      "mode": "movie",
+      "lang": "ru",
+      "limit": 50,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "en",
+      "limit": 5,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "en",
+      "limit": 10,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "en",
+      "limit": 20,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "en",
+      "limit": 50,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "ru",
+      "limit": 5,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "ru",
+      "limit": 10,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "ru",
+      "limit": 20,
+      "status": "passed"
+    },
+    {
+      "mode": "description",
+      "lang": "ru",
+      "limit": 50,
+      "status": "passed"
+    }
+  ]
+}

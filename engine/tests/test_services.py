@@ -1,18 +1,23 @@
-from engine import catalog as movie_catalog, store as movie_store
-from engine.errors import DemoError
 import copy
 import json
 from pathlib import Path
 from types import SimpleNamespace as NS
 import tempfile
 import unittest
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import httpx
 from qdrant_client import models
 from qdrant_client.http.exceptions import ResponseHandlingException, UnexpectedResponse
 
-from engine import DEFAULT_DATA_PATH, services, validators
+from engine import catalog as movie_catalog
+from engine import constants
+from engine import errors
+from engine import services
+from engine import validators
+from engine.embeddings import spec as embedding_spec
+from engine.stores import semantic
+from engine.tests import helpers
 
 
 def collection(vectors):
@@ -22,39 +27,15 @@ def collection(vectors):
 class ServiceTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.client = AsyncMock()
-        self.store = movie_store.QdrantMovieStore('http://test:6333', client=self.client)
-        self.catalog = movie_catalog.read_movies(DEFAULT_DATA_PATH)
+        embeddings = AsyncMock()
+        embeddings.spec = embedding_spec.SPEC
+        self.store = semantic.SemanticMovieStore('http://test:6333', client=self.client, embeddings=embeddings)
+        self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
         self.client.get_collections.return_value = NS(collections=[NS(name='movies')])
-        self.client.get_collection.return_value = collection(models.VectorParams(size=10, distance='Cosine'))
+        self.client.get_collection.return_value = NS(config=NS(params=NS(vectors={'semantic': models.VectorParams(size=embedding_spec.SPEC.dimensions, distance='Cosine')}, sparse_vectors=None), metadata={'embedding': embedding_spec.SPEC.metadata()}))
         self.client.count.return_value = NS(count=250)
         self.client.retrieve.return_value = [models.Record(id=1, payload=self.catalog[0])]
         self.client.query_points.return_value = NS(points=[])
-
-    async def test_load(self):
-        self.assertEqual(await self.store.load(DEFAULT_DATA_PATH), {'loaded': 250, 'count': 250})
-        self.client.upsert.assert_called_once()
-        args = self.client.upsert.call_args.kwargs
-        self.assertTrue(args['wait'])
-        self.assertEqual(len(args['points']), 250)
-        self.assertEqual(args['points'][0].payload['translations'], self.catalog[0]['translations'])
-        self.client.count.assert_called_once_with(collection_name='movies', exact=True)
-        await self.store.close()
-        self.client.close.assert_not_called()
-
-    async def test_create(self):
-        self.client.get_collections.return_value = NS(collections=[])
-        await self.store.load(DEFAULT_DATA_PATH)
-        self.client.create_collection.assert_called_once_with(collection_name='movies', vectors_config=models.VectorParams(size=10, distance='Cosine'))
-
-    async def test_schema_rejected_before_writes(self):
-        for vectors in (models.VectorParams(size=3, distance='Cosine'), models.VectorParams(size=10, distance='Dot'),
-                        {'named': models.VectorParams(size=10, distance='Cosine')},
-                        models.VectorParams(size=10, distance='Cosine', multivector_config=models.MultiVectorConfig(comparator='max_sim'))):
-            self.client.get_collection.return_value = collection(vectors)
-            with self.assertRaisesRegex(DemoError, 'Incompatible'):
-                await self.store.load(DEFAULT_DATA_PATH)
-            self.client.upsert.assert_not_called()
-            self.client.create_collection.assert_not_called()
 
     async def test_invalid_catalog_before_network(self):
         mutations = [lambda d: d.pop(), lambda d: d[0].update(vector=[0]*10),
@@ -68,22 +49,22 @@ class ServiceTests(unittest.IsolatedAsyncioTestCase):
                 data = copy.deepcopy(self.catalog)
                 mutate(data)
                 path.write_text(json.dumps(data))
-                with self.assertRaises(DemoError):
+                with helpers.expected_error(self):
                     await self.store.load(path)
                 self.assertEqual(self.client.mock_calls, [])
 
     async def test_catalog_validation_without_file_io(self):
         self.assertIs(validators.validate_catalog(self.catalog), self.catalog)
         for value, key in ((None, 'size'), ([None] * 250, 'object')):
-            with self.subTest(key=key), self.assertRaises(DemoError) as raised:
+            with self.subTest(key=key), helpers.expected_error(self) as raised:
                 validators.validate_catalog(value)
-            self.assertEqual(raised.exception.key, key)
+            self.assertEqual(raised.exception._localization[0], key)
         self.assertEqual(self.client.mock_calls, [])
 
     async def test_invalid_search_limit_precedes_resolution_and_network(self):
-        with self.assertRaises(DemoError) as raised:
+        with helpers.expected_error(self) as raised:
             await services.search(self.store, '', self.catalog, limit=0)
-        self.assertEqual(raised.exception.key, 'limit')
+        self.assertEqual(raised.exception._localization[0], 'limit')
         self.assertEqual(self.client.mock_calls, [])
 
     async def test_search_and_limits(self):
@@ -95,46 +76,32 @@ class ServiceTests(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(args['search_params'].exact)
             self.assertEqual(args['query_filter'].must_not[0].has_id, [1])
         for limit in (0, 250, True, 5.0, '5', None):
-            with self.assertRaises(DemoError):
+            with helpers.expected_error(self):
                 await self.store.recommend(1, limit)
         for value in (-1, 2**64, True, '1'):
-            with self.assertRaises(DemoError):
+            with helpers.expected_error(self):
                 await self.store.recommend(value)
 
     async def test_unknown_id(self):
         self.client.retrieve.return_value = []
-        with self.assertRaisesRegex(DemoError, 'Unknown movie ID'):
+        with self.assertRaises(errors.MovieNotFoundError):
             await self.store.recommend(999)
         self.client.query_points.assert_not_called()
 
     async def test_sdk_errors(self):
         for exc, key in ((httpx.ReadTimeout('timeout'), 'connection'),
                          (ResponseHandlingException(httpx.ConnectError('offline')), 'connection'),
-                         (ResponseHandlingException(ValueError('invalid JSON')), 'response'),
+                         (ResponseHandlingException(json.JSONDecodeError('invalid JSON', '', 0)), 'response'),
                          (UnexpectedResponse(503, 'unavailable', b'unavailable', {}), 'http')):
             self.client.retrieve.side_effect = exc
-            with self.assertRaises(DemoError) as raised:
+            with helpers.expected_error(self) as raised:
                 await self.store.recommend(1)
-            self.assertEqual(raised.exception.key, key)
-
-    async def test_extra_records(self):
-        self.client.count.return_value = NS(count=251)
-        with self.assertRaisesRegex(DemoError, 'additional records'):
-            await self.store.load(DEFAULT_DATA_PATH)
+            self.assertEqual(raised.exception._localization[0], key)
 
     async def test_resolve(self):
         for query in ('1', 'Матрица', ' мАтРиЦа ', 'матри', 'The Matrix'):
             self.assertEqual(movie_catalog.resolve_movie(query, self.catalog)['id'], 1)
         self.assertEqual(movie_catalog.resolve_movie('1917', self.catalog)['id'], 77)
         for query in ('', '999', '-1', str(2**64), 'absent title'):
-            with self.assertRaises(DemoError):
+            with helpers.expected_error(self):
                 movie_catalog.resolve_movie(query, self.catalog)
-
-    async def test_owned_client_configuration_and_close(self):
-        from unittest.mock import patch
-        with patch.object(movie_store, 'AsyncQdrantClient', return_value=self.client) as factory:
-            store = movie_store.QdrantMovieStore('http://test:6333')
-            factory.assert_called_once_with(url='http://test:6333', prefer_grpc=False,
-                                            timeout=15, check_compatibility=False)
-            await store.close()
-            self.client.close.assert_awaited_once()

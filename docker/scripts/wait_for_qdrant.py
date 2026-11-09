@@ -1,24 +1,23 @@
-"""Wait for Qdrant readiness before running the separate catalog loader."""
-
 import os
 import sys
 import time
-from urllib.error import URLError
-from urllib.request import urlopen
+
+import httpx
 
 
 def wait_for_qdrant(url=None, timeout=60):
     if url is None:
         url = os.environ.get('QDRANT_URL', 'http://qdrant:6333').rstrip('/') + '/readyz'
     deadline = time.monotonic() + timeout
-    while (remaining := deadline - time.monotonic()) > 0:
-        try:
-            with urlopen(url, timeout=min(2, remaining)) as response:
-                if response.status == 200:
+    with httpx.Client(follow_redirects=True) as client:
+        while (remaining := deadline - time.monotonic()) > 0:
+            try:
+                response = client.get(url, timeout=min(2, remaining))
+                if response.status_code == 200:
                     return True
-        except (OSError, URLError):
-            pass
-        time.sleep(min(1, max(0, deadline - time.monotonic())))
+            except (httpx.RequestError, OSError):
+                pass
+            time.sleep(min(1, max(0, deadline - time.monotonic())))
     return False
 
 

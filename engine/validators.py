@@ -1,40 +1,41 @@
 import math
 
-from engine.errors import DemoError
+from engine import constants
+from engine import errors
 
 
 def validate_catalog(movies):
-    if not isinstance(movies, list) or len(movies) != 250:
-        raise DemoError('size')
+    if not isinstance(movies, list) or len(movies) != constants.MOVIE_COUNT:
+        raise errors.CatalogValidationError('size')
     ids = set()
     for m in movies:
         if not isinstance(m, dict):
-            raise DemoError('object')
+            raise errors.CatalogValidationError('object')
         i, v = m.get('id'), m.get('vector')
         if type(i) is not int or not 0 <= i < 2**64 or i in ids:
-            raise DemoError('duplicate_id', id=i)
+            raise errors.CatalogValidationError('duplicate_id', id=i)
         ids.add(i)
-        if (not isinstance(v, list) or len(v) != 10 or
+        if (not isinstance(v, list) or len(v) != constants.VECTOR_DIMENSIONS or
             not all(type(x) in (int, float) and math.isfinite(x) and 0 <= x <= 1 for x in v)
             or not any(v)):
-            raise DemoError('vector', id=i)
+            raise errors.CatalogValidationError('vector', id=i)
         translations = m.get('translations')
         english = translations.get('en') if isinstance(translations, dict) else None
         if not valid_metadata(m) or not valid_metadata(english):
-            raise DemoError('metadata', id=i)
+            raise errors.CatalogValidationError('metadata', id=i)
         if type(m.get('year')) is not int:
-            raise DemoError('year', id=i)
+            raise errors.CatalogValidationError('year', id=i)
     return movies
 
 
 def validate_id(movie_id):
     if type(movie_id) is not int or not 0 <= movie_id < 2**64:
-        raise DemoError('id')
+        raise errors.InputValidationError('id')
 
 
 def validate_limit(limit):
-    if type(limit) is not int or not 1 <= limit <= 249:
-        raise DemoError('limit')
+    if type(limit) is not int or not 1 <= limit < constants.MOVIE_COUNT:
+        raise errors.InputValidationError('limit')
 
 
 def valid_metadata(movie):

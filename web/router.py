@@ -1,6 +1,8 @@
 from fastapi import APIRouter
-from web.routes import index, search
+
+from web import routes
+
 
 router = APIRouter()
-router.add_api_route('/', index, methods=['GET'], name='index')
-router.add_api_route('/search', search, methods=['POST'], name='search')
+router.add_api_route('/', routes.index, methods=['GET'], name='index')
+router.add_api_route('/search', routes.search, methods=['POST'], name='search')

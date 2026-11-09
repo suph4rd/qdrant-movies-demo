@@ -1,12 +1,12 @@
-from engine.i18n import LANGUAGES
+from engine import i18n as engine_i18n
 
 
 def select_language(request):
     explicit = request.query_params.get('lang')
-    if explicit in LANGUAGES:
+    if explicit in engine_i18n.LANGUAGES:
         return explicit
     saved = request.cookies.get('lang')
-    if saved in LANGUAGES:
+    if saved in engine_i18n.LANGUAGES:
         return saved
     matches = []
     for index, part in enumerate(request.headers.get('accept-language', '').split(',')):
@@ -20,7 +20,7 @@ def select_language(request):
         except ValueError:
             continue
         language = tag.lower().split('-')[0]
-        if language in LANGUAGES and 0 < quality <= 1:
+        if language in engine_i18n.LANGUAGES and 0 < quality <= 1:
             matches.append((quality, -index, language))
     return max(matches)[2] if matches else 'en'
 

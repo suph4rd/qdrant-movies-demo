@@ -2,14 +2,16 @@
 import asyncio
 import sys
 
-from engine import store as movie_store
-from engine.i18n import translate
-from engine.parser import parse_args
-from engine.errors import DemoError
+from engine import constants
+from engine import errors
+from engine import i18n as engine_i18n
+from engine import parser
+from engine.stores import factory
 
 
-async def load_catalog(url, path):
-    store = movie_store.QdrantMovieStore(url)
+async def load_catalog(url, path, collection_name=constants.DEFAULT_COLLECTION,
+                       embedding_url=constants.DEFAULT_EMBEDDING_URL, cache_path=None):
+    store = factory.create_store(url, collection_name, embedding_url, cache_path)
     try:
         return await store.load(path)
     finally:
@@ -17,13 +19,15 @@ async def load_catalog(url, path):
 
 
 def main():
-    args = parse_args(sys.argv[1:])
+    args = parser.parse_args(sys.argv[1:])
     try:
-        result = asyncio.run(load_catalog(args.url, args.data))
-        print(translate('loaded', args.lang, **result))
-    except (DemoError, ValueError, OSError, KeyError, TypeError) as exc:
-        detail = exc.format(args.lang) if isinstance(exc, DemoError) else str(exc)
-        print(translate('error', args.lang, detail=detail), file=sys.stderr)
+        result = asyncio.run(load_catalog(args.url, args.data, args.collection, args.embedding_url, args.cache))
+        print(engine_i18n.translate('loaded', args.lang, **result))
+    except Exception as exc:
+        if not errors.is_expected_error(exc):
+            raise
+        detail = errors.format_error(exc, args.lang)
+        print(engine_i18n.translate('error', args.lang, detail=detail), file=sys.stderr)
         return 1
     return 0
 

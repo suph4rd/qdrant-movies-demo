@@ -1,41 +1,51 @@
-from engine import catalog as movie_catalog, store as movie_store
-from engine.errors import DemoError
 import os
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from engine import DEFAULT_DATA_PATH, services
-from web.app import create_app, Settings
 from fastapi.testclient import TestClient
 from contextlib import ExitStack
 
+from engine import catalog as movie_catalog
+from engine import constants
+from engine import errors
+from engine import services
+from engine.tests import helpers
+from web import app as web_app
 
-DATA = DEFAULT_DATA_PATH
+
+DATA = constants.DEFAULT_DATA_PATH
 
 
 class WebTests(unittest.TestCase):
     def setUp(self):
         self.stack = self.enterContext(ExitStack())
-        self.app = create_app(Settings(qdrant_url='http://test:6333'))
+        self.app = web_app.create_app(web_app.Settings(qdrant_url='http://test:6333'))
         self.client = self.stack.enter_context(TestClient(self.app, follow_redirects=False))
-        self.catalog = movie_catalog.read_movies(DEFAULT_DATA_PATH)
+        self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
         self.client.headers['Accept-Language'] = 'ru'
 
     def test_apps_have_independent_stores_and_configuration(self):
         with patch.object(movie_catalog, 'read_movies', wraps=movie_catalog.read_movies) as read:
-            other = create_app(Settings(qdrant_url='http://other:6333'))
+            other = web_app.create_app(web_app.Settings(qdrant_url='http://other:6333'))
             read.assert_not_called()
             with TestClient(other) as client:
                 self.assertIsNot(self.app.state.movie_store, other.state.movie_store)
                 self.assertIsNot(self.app.state.catalog, other.state.catalog)
                 client.get('/')
                 client.get('/?lang=ru')
-                read.assert_called_once_with(DEFAULT_DATA_PATH)
+                read.assert_called_once_with(constants.DEFAULT_DATA_PATH)
 
     def test_invalid_catalog_fails_startup(self):
-        with self.assertRaises(DemoError), TestClient(create_app(Settings(movies_path='missing.json'))):
+        with helpers.expected_error(self), TestClient(web_app.create_app(web_app.Settings(movies_path='missing.json'))):
             pass
+
+    def test_programming_errors_propagate(self):
+        for error in (ValueError('bug'), TypeError('bug'), KeyError('bug')):
+            with self.subTest(error=error), patch.object(services, 'search', side_effect=error):
+                with self.assertRaises(type(error)) as raised:
+                    self.client.get('/?q=1')
+                self.assertIs(raised.exception, error)
 
     def test_initial(self):
         with patch.object(self.app.state.movie_store.client, 'retrieve') as api:
@@ -68,7 +78,7 @@ class WebTests(unittest.TestCase):
         self.assertIn('<option value="5" selected>', html)
         for value in ('5', '10', '20', '50'):
             self.assertIn(f'<option value="{value}"', html)
-            with patch.object(services, 'search', side_effect=DemoError('response')) as search:
+            with patch.object(services, 'search', side_effect=errors.IndexStateError('response')) as search:
                 redirect = self.client.post('/search', data={'query': '1', 'limit': value})
                 self.assertEqual(redirect.status_code, 303)
                 self.assertIn('limit=' + value, redirect.headers['Location'])
@@ -104,7 +114,7 @@ class WebTests(unittest.TestCase):
 
     def test_unavailable_qdrant_and_escaping(self):
         query = '<script>alert(1)</script>'
-        with patch.object(services, 'search', side_effect=DemoError('response')):
+        with patch.object(services, 'search', side_effect=errors.IndexStateError('response')):
             html = self.client.get('/', params={'q': query}).text
         self.assertIn('Некорректный ответ Qdrant', html)
         self.assertIn('&lt;script&gt;', html)
@@ -140,7 +150,7 @@ class WebTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             try:
                 os.chdir(directory)
-                app = create_app()
+                app = web_app.create_app()
                 self.assertEqual(app.state.settings.movies_path, DATA)
                 with TestClient(app) as client:
                     page = client.get('/?lang=ru')

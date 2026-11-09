@@ -2,6 +2,8 @@ import gettext
 from functools import lru_cache
 from pathlib import Path
 
+
+
 LANGUAGES = ('en', 'ru')
 TRANSLATIONS_PATH = Path(__file__).resolve().parent / 'translations'
 
@@ -11,6 +13,28 @@ def N_(message):
 
 
 MESSAGES = {
+    'search_mode': N_('Choose movie or description search.'),
+    'mode_label': N_('Search mode'),
+    'mode_movie': N_('By movie'),
+    'mode_description': N_('By description'),
+    'semantic_intro': N_('Choose a movie or describe what you want to watch in English or Russian.'),
+    'semantic_query': N_('Movie title, ID, or description'),
+    'semantic_placeholder': N_('For example, The Matrix, 1, or an astronaut stranded on Mars'),
+    'semantic_hint': N_('In movie mode, enter a title or ID. In description mode, describe a plot or mood in English or Russian.'),
+    'description_results': N_('Movies matching your description'),
+    'semantic_cosine': N_('Cosine similarity measures vector similarity, not the probability that you will like a movie.'),
+
+    'semantic_schema': N_('Incompatible semantic index. Reindex into a new collection with the pinned model, revision, and text format.'),
+    'embedding_cache': N_('Cannot write the embedding cache (%(path)s).'),
+    'cli_embedding_url': N_('TEI embedding service URL'),
+    'cli_collection': N_('Semantic collection name (movies is reserved)'),
+    'cli_cache': N_('Embedding cache directory'),
+
+    'semantic_empty': N_('Enter a description in English or Russian.'),
+    'embedding_unavailable': N_('Cannot reach the embedding model (%(url)s). Check that TEI is ready.'),
+    'embedding_response': N_('Invalid embedding response: expected finite, nonzero 384-dimensional vectors.'),
+    'embedding_model': N_('TEI model configuration does not match the pinned model, revision, pooling, or dtype.'),
+
     'http': N_('Qdrant HTTP %(status)s: %(detail)s'),
     'response': N_('Invalid Qdrant response.'),
     'connection': N_('Cannot connect to Qdrant (%(url)s): %(detail)s'),
@@ -46,7 +70,7 @@ MESSAGES = {
     'no_results': N_('No similar movies yet.'),
     'initial': N_('Start with a favorite movie. Recommendations will appear here.'),
     'languages': N_('Interface language'),
-    'loaded': N_('Loaded %(loaded)s movies. Total in movies: %(count)s.'),
+    'loaded': N_('Loaded %(loaded)s movies. Total in collection: %(count)s.'),
     'error': N_('Error: %(detail)s'),
     'cli_description': N_('Validate and load the movie catalog into Qdrant.'),
     'cli_url': N_('Qdrant REST URL'),
@@ -78,4 +102,4 @@ def translate(key, lang='en', **params):
 def localize_movie(movie, lang='en'):
     if lang == 'en':
         return {**movie, **movie.get('translations', {}).get('en', {})}
-    return dict(movie)
+    return {**movie}

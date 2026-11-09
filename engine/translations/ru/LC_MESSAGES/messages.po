@@ -201,3 +201,88 @@ msgstr ""
 "аргумент %(argument)s: недопустимое значение: %(value)s (выберите из "
 "%(choices)s)"
 
+msgid "Enter a description in English or Russian."
+msgstr "Введите описание на русском или английском языке."
+
+#, python-format
+msgid "Cannot reach the embedding model (%(url)s). Check that TEI is ready."
+msgstr "Модель embeddings недоступна (%(url)s). Проверьте готовность TEI."
+
+msgid ""
+"Invalid embedding response: expected finite, nonzero 384-dimensional "
+"vectors."
+msgstr ""
+"Некорректный ответ модели: ожидаются конечные ненулевые векторы "
+"размерности 384."
+
+msgid ""
+"TEI model configuration does not match the pinned model, revision, "
+"pooling, or dtype."
+msgstr ""
+"Настройки модели TEI не соответствуют закреплённой модели, revision, "
+"pooling или dtype."
+
+msgid ""
+"Incompatible semantic index. Reindex into a new collection with the "
+"pinned model, revision, and text format."
+msgstr ""
+"Несовместимый семантический индекс. Переиндексируйте данные в новую "
+"коллекцию с закреплённой моделью, revision и форматом текста."
+
+#, python-format
+msgid "Cannot write the embedding cache (%(path)s)."
+msgstr "Не удалось записать кеш embeddings (%(path)s)."
+
+msgid "TEI embedding service URL"
+msgstr "URL сервиса embeddings TEI"
+
+msgid "Embedding cache directory"
+msgstr "Каталог кеша embeddings"
+
+msgid "Choose movie or description search."
+msgstr "Выберите поиск по фильму или по описанию."
+
+msgid "Search mode"
+msgstr "Режим поиска"
+
+msgid "By movie"
+msgstr "По фильму"
+
+msgid "By description"
+msgstr "По описанию"
+
+msgid "Choose a movie or describe what you want to watch in English or Russian."
+msgstr ""
+"Выберите фильм или опишите, что хотите посмотреть, на русском или "
+"английском языке."
+
+msgid "Movie title, ID, or description"
+msgstr "Название, ID фильма или описание"
+
+msgid "For example, The Matrix, 1, or an astronaut stranded on Mars"
+msgstr "Например, Матрица, 1 или космонавт, застрявший на Марсе"
+
+msgid ""
+"In movie mode, enter a title or ID. In description mode, describe a plot "
+"or mood in English or Russian."
+msgstr ""
+"В режиме «По фильму» введите название или ID. В режиме «По описанию» "
+"опишите сюжет или настроение на русском или английском языке."
+
+msgid "Movies matching your description"
+msgstr "Фильмы по вашему описанию"
+
+msgid ""
+"Cosine similarity measures vector similarity, not the probability that "
+"you will like a movie."
+msgstr ""
+"Косинусная близость показывает сходство векторов, а не вероятность того, "
+"что фильм вам понравится."
+
+#, python-format
+msgid "Loaded %(loaded)s movies. Total in collection: %(count)s."
+msgstr "Загружено фильмов: %(loaded)s. Всего в коллекции: %(count)s."
+
+msgid "Semantic collection name (movies is reserved)"
+msgstr "Имя семантической коллекции (movies зарезервировано)"
+
