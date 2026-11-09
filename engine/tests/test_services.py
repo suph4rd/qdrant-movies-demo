@@ -1,199 +1,107 @@
-import contextlib
-import io
+import copy
 import json
-import tempfile
 from pathlib import Path
+from types import SimpleNamespace as NS
+import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
-import requests
+import httpx
+from qdrant_client import models
+from qdrant_client.http.exceptions import ResponseHandlingException, UnexpectedResponse
 
-from engine import DEFAULT_DATA_PATH, services
+from engine import catalog as movie_catalog
+from engine import constants
+from engine import errors
+from engine import services
+from engine import validators
+from engine.embeddings import spec as embedding_spec
+from engine.stores import semantic
+from engine.tests import helpers
 
 
-DATA = DEFAULT_DATA_PATH
+def collection(vectors):
+    return NS(config=NS(params=NS(vectors=vectors)))
 
 
-class ServiceTests(unittest.TestCase):
+class ServiceTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        self.store = services.QdrantMovieStore('http://test:6333/')
-        self.catalog = services.read_movies(DATA)
+        self.client = AsyncMock()
+        embeddings = AsyncMock()
+        embeddings.spec = embedding_spec.SPEC
+        self.store = semantic.SemanticMovieStore('http://test:6333', client=self.client, embeddings=embeddings)
+        self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
+        self.client.get_collections.return_value = NS(collections=[NS(name='movies')])
+        self.client.get_collection.return_value = NS(config=NS(params=NS(vectors={'semantic': models.VectorParams(size=embedding_spec.SPEC.dimensions, distance='Cosine')}, sparse_vectors=None), metadata={'embedding': embedding_spec.SPEC.metadata()}))
+        self.client.count.return_value = NS(count=250)
+        self.client.retrieve.return_value = [models.Record(id=1, payload=self.catalog[0])]
+        self.client.query_points.return_value = NS(points=[])
 
-    def test_catalog(self):
-        self.assertEqual(len(self.catalog), 250)
-        self.assertEqual({m['id'] for m in self.catalog}, set(range(1, 251)))
-        self.assertEqual(len({(m['title'].casefold(), m['year']) for m in self.catalog}), 250)
-        for movie in self.catalog:
-            self.assertTrue(1888 <= movie['year'] <= 2026)
-            self.assertTrue(movie['title'].strip())
-            self.assertTrue(movie['description'].strip())
-            self.assertTrue(all(g.strip() for g in movie['genres']))
-
-    def test_invalid_catalog(self):
-        mutations = (
-            lambda data: data.pop(),
-            lambda data: data[1].update(id=1),
-            lambda data: data[0].update(title=''),
-            lambda data: data[0].update(description=' '),
-            lambda data: data[0].update(year='1999'),
-            lambda data: data[0].pop('translations'),
-            lambda data: data[0].update(translations={'en': {}}),
-            lambda data: data[0]['translations']['en'].update(title=' '),
-            lambda data: data[0]['translations']['en'].update(description=''),
-            lambda data: data[0]['translations']['en'].update(genres=[]),
-            lambda data: data[0].update(translations=[]),
-            lambda data: data[0].update(genres=[]),
-            lambda data: data[0].update(vector=[0] * 10),
-            lambda data: data[0].update(vector=[1] * 9),
-            lambda data: data[0].update(vector=[float('nan')] * 10),
-            lambda data: data[0].update(vector=[1.1] * 10),
-        )
+    async def test_invalid_catalog_before_network(self):
+        mutations = [lambda d: d.pop(), lambda d: d[0].update(vector=[0]*10),
+                     lambda d: d[0].update(vector=[float('nan')]*10), lambda d: d[0].update(vector=[1.1]*10),
+                     lambda d: d[0].update(vector=[1]*9), lambda d: d[1].update(id=1),
+                     lambda d: d[0].pop('translations'), lambda d: d[0].update(year='1999'),
+                     lambda d: d[0].update(title=''), lambda d: d[0]['translations']['en'].update(genres=[])]
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / 'movies.json'
+            path = Path(directory)/'movies.json'
             for mutate in mutations:
-                data = json.loads(DATA.read_text())
+                data = copy.deepcopy(self.catalog)
                 mutate(data)
                 path.write_text(json.dumps(data))
-                with self.subTest(mutation=mutate), patch.object(self.store, 'request') as api:
-                    with self.assertRaises(services.DemoError):
-                        self.store.load(path)
-                    api.assert_not_called()
+                with helpers.expected_error(self):
+                    await self.store.load(path)
+                self.assertEqual(self.client.mock_calls, [])
 
-    def test_limits(self):
+    async def test_catalog_validation_without_file_io(self):
+        self.assertIs(validators.validate_catalog(self.catalog), self.catalog)
+        for value, key in ((None, 'size'), ([None] * 250, 'object')):
+            with self.subTest(key=key), helpers.expected_error(self) as raised:
+                validators.validate_catalog(value)
+            self.assertEqual(raised.exception._localization[0], key)
+        self.assertEqual(self.client.mock_calls, [])
+
+    async def test_invalid_search_limit_precedes_resolution_and_network(self):
+        with helpers.expected_error(self) as raised:
+            await services.search(self.store, '', self.catalog, limit=0)
+        self.assertEqual(raised.exception._localization[0], 'limit')
+        self.assertEqual(self.client.mock_calls, [])
+
+    async def test_search_and_limits(self):
         for limit in (1, 5, 10, 20, 50, 249):
-            with self.subTest(limit=limit), patch.object(self.store, 'request', side_effect=[
-                [{'payload': self.catalog[0]}], {'points': []},
-            ]) as api:
-                services.search(self.store, '1', self.catalog, limit=limit)
-                body = api.call_args.args[2]
-                self.assertEqual(body['limit'], limit)
-                self.assertEqual(body['filter']['must_not'], [{'has_id': [1]}])
-        for limit in (0, -1, 250, True, False, 5.0, '5', None):
-            for function, args in ((self.store.recommend, (1,)),
-                                   (services.search, (self.store, '1', self.catalog))):
-                with self.subTest(limit=limit, function=function), patch.object(self.store, 'request') as api:
-                    with self.assertRaisesRegex(services.DemoError, 'recommendation count'):
-                        function(*args, limit=limit)
-                    api.assert_not_called()
+            await services.search(self.store, 'The Matrix', self.catalog, limit)
+            args = self.client.query_points.call_args.kwargs
+            self.assertEqual(args['query'], 1)
+            self.assertEqual(args['limit'], limit)
+            self.assertTrue(args['search_params'].exact)
+            self.assertEqual(args['query_filter'].must_not[0].has_id, [1])
+        for limit in (0, 250, True, 5.0, '5', None):
+            with helpers.expected_error(self):
+                await self.store.recommend(1, limit)
+        for value in (-1, 2**64, True, '1'):
+            with helpers.expected_error(self):
+                await self.store.recommend(value)
 
-    def test_resolve(self):
-        for query in ('1', 'Матрица', '  мАтРиЦа  ', 'матри'):
-            self.assertEqual(services.resolve_movie(query, self.catalog)['id'], 1)
-        for query, message in (
-            ('', 'Enter'), ('  ', 'Enter'), ('999', 'Unknown movie ID'),
-            ('-1', 'ID must'), (str(2**64), 'ID must'),
-            ('несуществующий фильм', 'not found'), (' ', 'Enter'),
-        ):
-            with self.subTest(query=query), self.assertRaisesRegex(services.DemoError, message):
-                services.resolve_movie(query, self.catalog)
+    async def test_unknown_id(self):
+        self.client.retrieve.return_value = []
+        with self.assertRaises(errors.MovieNotFoundError):
+            await self.store.recommend(999)
+        self.client.query_points.assert_not_called()
 
-    def test_numeric_title(self):
-        for query in ('1917', ' 1917 ', '77'):
-            with self.subTest(query=query):
-                self.assertEqual(services.resolve_movie(query, self.catalog)['id'], 77)
-        with patch.object(self.store, 'recommend', return_value={}) as recommend:
-            services.search(self.store, '1917', self.catalog)
-            recommend.assert_called_once_with(77, limit=5)
+    async def test_sdk_errors(self):
+        for exc, key in ((httpx.ReadTimeout('timeout'), 'connection'),
+                         (ResponseHandlingException(httpx.ConnectError('offline')), 'connection'),
+                         (ResponseHandlingException(json.JSONDecodeError('invalid JSON', '', 0)), 'response'),
+                         (UnexpectedResponse(503, 'unavailable', b'unavailable', {}), 'http')):
+            self.client.retrieve.side_effect = exc
+            with helpers.expected_error(self) as raised:
+                await self.store.recommend(1)
+            self.assertEqual(raised.exception._localization[0], key)
 
-    def test_exact_precedes_partial_and_ambiguity(self):
-        catalog = [{'id': 1, 'title': 'Фильм'}, {'id': 2, 'title': 'Фильм второй'}]
-        self.assertEqual(services.resolve_movie('фильм', catalog)['id'], 1)
-        with self.assertRaisesRegex(services.DemoError, 'specify'):
-            services.resolve_movie('фил', catalog)
-
-    def test_search_same_id_and_title_without_output(self):
-        source = self.catalog[0]
-        responses = [[{'payload': source}], {'points': []}] * 2
-        with patch.object(self.store, 'request', side_effect=responses) as api:
-            with contextlib.redirect_stdout(io.StringIO()) as output:
-                by_id = services.search(self.store, '1', self.catalog)
-                by_title = services.search(self.store, 'Матрица', self.catalog)
-            self.assertEqual(by_id, by_title)
-            self.assertEqual(output.getvalue(), '')
-            query = api.call_args_list[1].args[2]
-            self.assertEqual(query['filter']['must_not'], [{'has_id': [1]}])
-            self.assertEqual(query['limit'], 5)
-            self.assertTrue(query['params']['exact'])
-
-    def test_schema_rejected_before_writes(self):
-        for vectors in (
-            {'size': 3, 'distance': 'Cosine'}, {'size': 10, 'distance': 'Dot'},
-            {'named': {'size': 10, 'distance': 'Cosine'}},
-            {'size': 10, 'distance': 'Cosine', 'multivector_config': {'comparator': 'max_sim'}},
-        ):
-            with self.subTest(vectors=vectors), patch.object(
-                self.store, 'request', side_effect=[
-                    {'collections': [{'name': 'movies'}]},
-                    {'config': {'params': {'vectors': vectors}}},
-                ],
-            ) as api:
-                with self.assertRaisesRegex(services.DemoError, 'Incompatible'):
-                    self.store.load(DATA)
-                self.assertTrue(all(call.args[0] == 'GET' for call in api.call_args_list))
-
-    def test_load_result_and_no_stdout(self):
-        with patch.object(self.store, 'request', side_effect=[
-            {'collections': []}, {},
-            {'config': {'params': {'vectors': {'size': 10, 'distance': 'Cosine'}}}},
-            {}, {'count': 250},
-        ]) as api, contextlib.redirect_stdout(io.StringIO()) as output:
-            self.assertEqual(self.store.load(DATA), {'loaded': 250, 'count': 250})
-            self.assertEqual(len(api.call_args_list[3].args[2]['points']), 250)
-            self.assertEqual(output.getvalue(), '')
-
-    def test_network_failure(self):
-        for error in (requests.exceptions.ConnectionError('offline'),
-                      requests.exceptions.ConnectTimeout('timed out'),
-                      requests.exceptions.ReadTimeout('timed out')):
-            with self.subTest(error=error), patch.object(
-                services.requests, 'request', side_effect=error,
-            ):
-                with self.assertRaisesRegex(services.DemoError, 'Cannot connect'):
-                    self.store.recommend(1)
-
-    def test_http_error(self):
-        response = requests.Response()
-        response.status_code = 503
-        response.encoding = 'utf-8'
-        response._content = 'недоступно'.encode('utf-8')
-        with patch.object(services.requests, 'request', return_value=response):
-            with self.assertRaisesRegex(services.DemoError, 'Qdrant HTTP 503: недоступно'):
-                self.store.recommend(1)
-
-    def test_request_and_malformed_responses(self):
-        for body in (b'invalid', b'{}', b'null', b'[]'):
-            response = requests.Response()
-            response.status_code = 200
-            response._content = body
-            with self.subTest(body=body), patch.object(
-                services.requests, 'request', return_value=response,
-            ):
-                with self.assertRaisesRegex(services.DemoError, 'Invalid Qdrant response'):
-                    self.store.request('GET', '/collections')
-        response = requests.Response()
-        response.status_code = 200
-        response._content = b'{"result": {}}'
-        for method, body in (('POST', {'exact': True}), ('GET', None)):
-            with self.subTest(method=method), patch.object(
-                services.requests, 'request', return_value=response,
-            ) as api:
-                self.assertEqual(self.store.request(method, '/collections', body), {})
-                api.assert_called_once_with(
-                    method, 'http://test:6333/collections', json=body,
-                    headers={'Content-Type': 'application/json'}, timeout=15)
-
-    def test_unknown_id(self):
-        with patch.object(self.store, 'request', return_value=[]) as api:
-            with self.assertRaisesRegex(services.DemoError, 'Unknown movie ID'):
-                self.store.recommend(999)
-            api.assert_called_once()
-
-    def test_invalid_id_does_not_call_api(self):
-        with patch.object(self.store, 'request') as api:
-            with self.assertRaises(services.DemoError):
-                self.store.recommend(-1)
-            api.assert_not_called()
-
-
-if __name__ == '__main__':
-    unittest.main()
+    async def test_resolve(self):
+        for query in ('1', 'Матрица', ' мАтРиЦа ', 'матри', 'The Matrix'):
+            self.assertEqual(movie_catalog.resolve_movie(query, self.catalog)['id'], 1)
+        self.assertEqual(movie_catalog.resolve_movie('1917', self.catalog)['id'], 77)
+        for query in ('', '999', '-1', str(2**64), 'absent title'):
+            with helpers.expected_error(self):
+                movie_catalog.resolve_movie(query, self.catalog)

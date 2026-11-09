@@ -1,0 +1,589 @@
+{
+  "recorded_at": "2026-11-09T12:58:58.297149+00:00",
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "python": "3.15.2",
+  "model": {
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "text_version": "movie-en-v1",
+    "dimensions": 384,
+    "pooling": "mean",
+    "dtype": "float32",
+    "normalize": true
+  },
+  "tei_info": {
+    "model_id": "intfloat/multilingual-e5-small",
+    "model_sha": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "model_dtype": "float32",
+    "served_model_name": "intfloat/multilingual-e5-small",
+    "model_type": {
+      "embedding": {
+        "pooling": "mean"
+      }
+    },
+    "max_concurrent_requests": 512,
+    "max_input_length": 512,
+    "max_batch_tokens": 16384,
+    "max_batch_requests": 8,
+    "max_client_batch_size": 32,
+    "auto_truncate": true,
+    "tokenization_workers": 7,
+    "version": "1.9.4",
+    "sha": "e80ef225ed0e6cb1717ce632a6a84b6cf211bb67",
+    "docker_label": "sha-e80ef22"
+  },
+  "recall_at_5": {
+    "all": 0.83,
+    "en": 0.84,
+    "ru": 0.82
+  },
+  "latency_seconds": {
+    "first": 0.14339354075491428,
+    "subsequent_n": 19,
+    "min": 0.018225500360131264,
+    "median": 0.025455250404775143,
+    "p95": 0.05129108298569918
+  },
+  "queries": [
+    {
+      "id": "01-en",
+      "lang": "en",
+      "query": "A hacker discovers a simulated reality.",
+      "relevant_ids": [
+        1
+      ],
+      "top_5_ids": [
+        1,
+        95,
+        48,
+        192,
+        9
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.14339354075491428
+    },
+    {
+      "id": "01-ru",
+      "lang": "ru",
+      "query": "Хакер узнаёт, что мир — симуляция.",
+      "relevant_ids": [
+        1
+      ],
+      "top_5_ids": [
+        1,
+        149,
+        58,
+        9,
+        85
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.049450541846454144
+    },
+    {
+      "id": "02-en",
+      "lang": "en",
+      "query": "An astronaut survives alone on Mars.",
+      "relevant_ids": [
+        4
+      ],
+      "top_5_ids": [
+        4,
+        47,
+        36,
+        49,
+        27
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.045105624943971634
+    },
+    {
+      "id": "02-ru",
+      "lang": "ru",
+      "query": "Космонавт выживает в одиночку на Марсе.",
+      "relevant_ids": [
+        4
+      ],
+      "top_5_ids": [
+        4,
+        36,
+        27,
+        49,
+        191
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.0389403747394681
+    },
+    {
+      "id": "03-en",
+      "lang": "en",
+      "query": "Someone keeps living the same day.",
+      "relevant_ids": [
+        16,
+        55
+      ],
+      "top_5_ids": [
+        16,
+        218,
+        177,
+        49,
+        137
+      ],
+      "recall_at_5": 0.5,
+      "seconds": 0.03672520909458399
+    },
+    {
+      "id": "03-ru",
+      "lang": "ru",
+      "query": "Человек снова и снова проживает один день.",
+      "relevant_ids": [
+        16,
+        55
+      ],
+      "top_5_ids": [
+        16,
+        90,
+        218,
+        184,
+        211
+      ],
+      "recall_at_5": 0.5,
+      "seconds": 0.05129108298569918
+    },
+    {
+      "id": "04-en",
+      "lang": "en",
+      "query": "Detectives investigate a serial killer.",
+      "relevant_ids": [
+        21,
+        23,
+        101,
+        144
+      ],
+      "top_5_ids": [
+        21,
+        95,
+        112,
+        113,
+        144
+      ],
+      "recall_at_5": 0.5,
+      "seconds": 0.031025500036776066
+    },
+    {
+      "id": "04-ru",
+      "lang": "ru",
+      "query": "Детективы расследуют серийные убийства.",
+      "relevant_ids": [
+        21,
+        23,
+        101,
+        144
+      ],
+      "top_5_ids": [
+        21,
+        144,
+        95,
+        189,
+        112
+      ],
+      "recall_at_5": 0.5,
+      "seconds": 0.021354250609874725
+    },
+    {
+      "id": "05-en",
+      "lang": "en",
+      "query": "A boy attends a school for wizards.",
+      "relevant_ids": [
+        25,
+        157,
+        158,
+        159,
+        160
+      ],
+      "top_5_ids": [
+        25,
+        198,
+        119,
+        160,
+        69
+      ],
+      "recall_at_5": 0.4,
+      "seconds": 0.02293820958584547
+    },
+    {
+      "id": "05-ru",
+      "lang": "ru",
+      "query": "Мальчик учится в школе волшебников.",
+      "relevant_ids": [
+        25,
+        157,
+        158,
+        159,
+        160
+      ],
+      "top_5_ids": [
+        25,
+        238,
+        198,
+        69,
+        119
+      ],
+      "recall_at_5": 0.2,
+      "seconds": 0.022772416472434998
+    },
+    {
+      "id": "06-en",
+      "lang": "en",
+      "query": "A mafia family passes power from father to son.",
+      "relevant_ids": [
+        86,
+        87
+      ],
+      "top_5_ids": [
+        86,
+        87,
+        211,
+        85,
+        93
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.019027791917324066
+    },
+    {
+      "id": "06-ru",
+      "lang": "ru",
+      "query": "В мафиозной семье власть переходит от отца к сыну.",
+      "relevant_ids": [
+        86,
+        87
+      ],
+      "top_5_ids": [
+        86,
+        211,
+        87,
+        103,
+        191
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.0257594995200634
+    },
+    {
+      "id": "07-en",
+      "lang": "en",
+      "query": "An ambitious music teacher pushes a young drummer.",
+      "relevant_ids": [
+        119
+      ],
+      "top_5_ids": [
+        119,
+        15,
+        228,
+        218,
+        84
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.026496457867324352
+    },
+    {
+      "id": "07-ru",
+      "lang": "ru",
+      "query": "Строгий учитель музыки тренирует молодого барабанщика.",
+      "relevant_ids": [
+        119
+      ],
+      "top_5_ids": [
+        119,
+        218,
+        228,
+        84,
+        213
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.03186020813882351
+    },
+    {
+      "id": "08-en",
+      "lang": "en",
+      "query": "Lovers from different classes on a doomed ocean liner.",
+      "relevant_ids": [
+        174
+      ],
+      "top_5_ids": [
+        174,
+        49,
+        32,
+        186,
+        180
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.0204437505453825
+    },
+    {
+      "id": "08-ru",
+      "lang": "ru",
+      "query": "Любовь людей из разных сословий на тонущем лайнере.",
+      "relevant_ids": [
+        174
+      ],
+      "top_5_ids": [
+        174,
+        181,
+        180,
+        151,
+        137
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.02010691538453102
+    },
+    {
+      "id": "09-en",
+      "lang": "en",
+      "query": "A rat dreams of cooking in a Paris restaurant.",
+      "relevant_ids": [
+        219
+      ],
+      "top_5_ids": [
+        219,
+        109,
+        19,
+        178,
+        218
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.025455250404775143
+    },
+    {
+      "id": "09-ru",
+      "lang": "ru",
+      "query": "Крыса мечтает готовить в парижском ресторане.",
+      "relevant_ids": [
+        219
+      ],
+      "top_5_ids": [
+        219,
+        178,
+        19,
+        186,
+        109
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.020038999617099762
+    },
+    {
+      "id": "10-en",
+      "lang": "en",
+      "query": "A family encounters horror while isolated in a hotel.",
+      "relevant_ids": [
+        243
+      ],
+      "top_5_ids": [
+        243,
+        108,
+        247,
+        109,
+        249
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.018225500360131264
+    },
+    {
+      "id": "10-ru",
+      "lang": "ru",
+      "query": "Семья сталкивается с ужасом в изолированном отеле.",
+      "relevant_ids": [
+        243
+      ],
+      "top_5_ids": [
+        243,
+        108,
+        109,
+        247,
+        127
+      ],
+      "recall_at_5": 1.0,
+      "seconds": 0.024614541791379452
+    }
+  ],
+  "recommendation_comparisons": [
+    {
+      "source_id": 1,
+      "legacy_ids": [
+        51,
+        31,
+        2,
+        60,
+        7
+      ],
+      "semantic_ids": [
+        4,
+        42,
+        57,
+        34,
+        48
+      ],
+      "overlap_at_5": 0.0
+    },
+    {
+      "source_id": 4,
+      "legacy_ids": [
+        40,
+        201,
+        38,
+        68,
+        58
+      ],
+      "semantic_ids": [
+        47,
+        3,
+        57,
+        6,
+        1
+      ],
+      "overlap_at_5": 0.0
+    },
+    {
+      "source_id": 16,
+      "legacy_ids": [
+        184,
+        19,
+        196,
+        187,
+        182
+      ],
+      "semantic_ids": [
+        197,
+        177,
+        209,
+        141,
+        184
+      ],
+      "overlap_at_5": 0.2
+    },
+    {
+      "source_id": 21,
+      "legacy_ids": [
+        23,
+        99,
+        82,
+        103,
+        22
+      ],
+      "semantic_ids": [
+        144,
+        107,
+        23,
+        93,
+        95
+      ],
+      "overlap_at_5": 0.2
+    },
+    {
+      "source_id": 24,
+      "legacy_ids": [
+        162,
+        154,
+        155,
+        160,
+        73
+      ],
+      "semantic_ids": [
+        154,
+        155,
+        156,
+        162,
+        160
+      ],
+      "overlap_at_5": 0.8
+    },
+    {
+      "source_id": 86,
+      "legacy_ids": [
+        87,
+        90,
+        89,
+        129,
+        94
+      ],
+      "semantic_ids": [
+        87,
+        88,
+        103,
+        142,
+        211
+      ],
+      "overlap_at_5": 0.2
+    },
+    {
+      "source_id": 119,
+      "legacy_ids": [
+        83,
+        84,
+        126,
+        113,
+        147
+      ],
+      "semantic_ids": [
+        121,
+        15,
+        84,
+        114,
+        127
+      ],
+      "overlap_at_5": 0.2
+    },
+    {
+      "source_id": 174,
+      "legacy_ids": [
+        146,
+        111,
+        90,
+        212,
+        151
+      ],
+      "semantic_ids": [
+        175,
+        212,
+        137,
+        209,
+        151
+      ],
+      "overlap_at_5": 0.4
+    },
+    {
+      "source_id": 219,
+      "legacy_ids": [
+        236,
+        226,
+        227,
+        217,
+        218
+      ],
+      "semantic_ids": [
+        28,
+        19,
+        207,
+        216,
+        242
+      ],
+      "overlap_at_5": 0.0
+    },
+    {
+      "source_id": 243,
+      "legacy_ids": [
+        246,
+        247,
+        165,
+        108,
+        250
+      ],
+      "semantic_ids": [
+        108,
+        247,
+        249,
+        142,
+        109
+      ],
+      "overlap_at_5": 0.4
+    }
+  ]
+}

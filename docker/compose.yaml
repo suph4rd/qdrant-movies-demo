@@ -1,0 +1,71 @@
+name: qdrant-movies-demo
+services:
+  tei:
+    image: ${TEI_IMAGE:-ghcr.io/huggingface/text-embeddings-inference:cpu-arm64-1.9@sha256:798cd7615e060a72ccbdf19aa0ada52289c6a0147490195bafaece6ce04d70f1}
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/usr/local/bin/start-tei.sh"]
+    ports:
+      - "127.0.0.1:${TEI_PORT:-18080}:18080"
+    volumes:
+      - model-weights:/data
+      - ./scripts/start-tei.sh:/usr/local/bin/start-tei.sh:ro
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:18080/health"]
+      interval: 5s
+      timeout: 3s
+      start_period: 300s
+      retries: 12
+  qdrant:
+    image: qdrant/qdrant:v1.20.0@sha256:9bfc89f9914fc14876a88c05270685921a55b8877b254a98bcc1cc2f0a424cd2
+    container_name: qdrant-movies
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${QDRANT_HTTP_PORT:-6333}:6333"
+      - "127.0.0.1:${QDRANT_GRPC_PORT:-6334}:6334"
+    volumes:
+      - movies-storage:/qdrant/storage
+  loader:
+    image: qdrant-movies-demo-app:local
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: "no"
+    environment:
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      EMBEDDING_URL: ${EMBEDDING_URL:-http://tei:18080}
+      MOVIES_COLLECTION: ${MOVIES_COLLECTION:-movies_semantic_v1}
+      EMBEDDING_CACHE: /home/app/.cache/embeddings
+    volumes:
+      - embedding-cache:/home/app/.cache/embeddings
+    depends_on:
+      tei:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    command: ["/bin/sh", "docker/scripts/start-loader.sh"]
+  web:
+    image: qdrant-movies-demo-app:local
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    environment:
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      EMBEDDING_URL: ${EMBEDDING_URL:-http://tei:18080}
+      MOVIES_COLLECTION: ${MOVIES_COLLECTION:-movies_semantic_v1}
+      EMBEDDING_CACHE: /home/app/.cache/embeddings
+    ports:
+      - "127.0.0.1:${WEB_PORT:-18000}:18000"
+    depends_on:
+      loader:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "docker/scripts/healthcheck.py"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+volumes:
+  movies-storage:
+  model-weights:
+  embedding-cache:

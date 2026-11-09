@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ _('Your next movie') }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
 <main>
@@ -15,34 +15,40 @@
   </nav>
   <header><p class="eyebrow">{{ _('MOVIE CATALOG · 250 MOVIES') }}</p>
     <h1>{{ _('What to watch next?') }}</h1>
-    <p>{{ _('Choose a familiar movie to find similar movies by mood and genre.') }}</p>
+    <p>{{ _('Choose a movie or describe what you want to watch in English or Russian.') }}</p>
   </header>
   <form action="{{ url_for('search') }}" method="post">
     <input type="hidden" name="lang" value="{{ lang }}">
-    <label for="query">{{ _('Movie title or ID') }}</label>
+    <label for="mode">{{ _('Search mode') }}</label>
+    <select id="mode" name="mode">
+      {% if mode not in search_modes %}<option value="{{ mode }}" selected>{{ _('Invalid value: %(value)s', value=mode) }}</option>{% endif %}
+      <option value="movie"{% if mode == 'movie' %} selected{% endif %}>{{ _('By movie') }}</option>
+      <option value="description"{% if mode == 'description' %} selected{% endif %}>{{ _('By description') }}</option>
+    </select>
+    <label for="query">{{ _('Movie title, ID, or description') }}</label>
     <div class="search">
-      <input id="query" name="query" value="{{ query }}" list="titles"
-             placeholder="{{ _('For example, The Matrix or 1') }}" aria-describedby="hint">
+      <input id="query" name="query" value="{{ query }}"{% if mode == 'movie' %} list="titles"{% endif %}
+             placeholder="{{ _('For example, The Matrix, 1, or an astronaut stranded on Mars') }}" aria-describedby="hint">
       <button type="submit">{{ _('Find similar movies') }}</button>
     </div>
     <label for="limit">{{ _('Number of similar movies') }}</label>
     <select id="limit" name="limit">
-      {% if limit not in ('5', '10', '20', '50') %}
+      {% if limit not in limit_options %}
       <option value="{{ limit }}" selected>{{ _('Invalid value: %(value)s', value=limit) }}</option>
       {% endif %}
-      {% for value in ('5', '10', '20', '50') %}
+      {% for value in limit_options %}
       <option value="{{ value }}"{% if limit == value %} selected{% endif %}>{{ value }}</option>
       {% endfor %}
     </select>
     <datalist id="titles">{% for movie in catalog %}<option value="{{ movie.title }}">{% endfor %}</datalist>
-    <p id="hint" class="muted">{{ _('You can enter part of a title in English or Russian. Matching ignores case.') }}</p>
+    <p id="hint" class="muted">{{ _('In movie mode, enter a title or ID. In description mode, describe a plot or mood in English or Russian.') }}</p>
   </form>
   {% if error %}
     <p class="error" role="alert">{{ error }}</p>
   {% elif result is not none %}
     <section aria-labelledby="results">
-      <h2 id="results">{{ _('Similar to “%(title)s”', title=result.source.title) }}</h2>
-      <p class="muted">{{ _('Cosine similarity measures manually assigned vector similarity, not the probability that you will like a movie.') }}</p>
+      <h2 id="results">{% if result.source %}{{ _('Similar to “%(title)s”', title=result.source.title) }}{% else %}{{ _('Movies matching your description') }}{% endif %}</h2>
+      <p class="muted">{{ _('Cosine similarity measures vector similarity, not the probability that you will like a movie.') }}</p>
       <div class="cards">
       {% for point in result.recommendations %}
         <article>

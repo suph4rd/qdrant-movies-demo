@@ -1,129 +1,275 @@
 # Movie recommendations with Qdrant
 
-A local learning demo with 250 movies, manually assigned vectors, a REST API, an engine, a loader, and a Flask web interface. Requires Docker with Compose and Python 3.9+. The engine and loader use requests (>=2.32,<3) for Qdrant HTTP requests; the web interface also requires Flask 3.1. Install requirements.txt in a virtual environment before running the loader, checks, or web interface.
+A local demo with 250 movies, semantic embeddings, an async Python engine and
+loader, and a FastAPI interface in English and Russian. Python **3.15.2** is used
+locally and in Docker. No JavaScript or build pipeline is required.
 
-## Getting started
+The default index is `movies_semantic_v1`: one named `semantic` vector, 384
+components, Cosine distance. Embeddings come from a local Hugging Face Text
+Embeddings Inference (TEI) CPU service using `intfloat/multilingual-e5-small`.
+The original `movies` collection and the ten manual features in `movies.json`
+are preserved as historical data. The runtime supports semantic search only;
+`movies` is reserved and rejected. IDs and both catalog languages are preserved.
+
+## Docker startup
+
+Run from the repository root. Docker Engine with Compose is sufficient:
 
 ```sh
-cd /path/to/project
-python3 -m venv .venv
+cp env/.env.example env/.env  # Once; merge new settings if this file already exists.
+docker compose --env-file env/.env -f docker/compose.yaml config
+docker compose --env-file env/.env -f docker/compose.yaml up -d --build
+docker compose --env-file env/.env -f docker/compose.yaml ps -a
+```
+
+Open http://127.0.0.1:18000 after the loader exits successfully. First startup
+requires internet to download the Docker images and approximately 470 MB of
+model weights, plus tokenizers. Allow several minutes. The ARM64 CPU image was
+verified on Apple Silicon; Docker uses CPU cores, without Metal/MPS acceleration.
+
+TEI has a `/health` readiness check. Compose waits for TEI to be healthy before
+starting the loader. The loader additionally waits up to 60 seconds for Qdrant's
+`/readyz`. Web starts only after a successful load. A failure prevents web startup;
+inspect logs, fix the problem and repeat the startup command:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml logs --tail=100 tei loader web qdrant
+curl --fail http://127.0.0.1:18080/health
+curl --fail http://127.0.0.1:6333/readyz
+```
+
+The application runs as an unprivileged user. Ports are bound to IPv4 loopback:
+web 18000, TEI 18080, Qdrant REST 6333 and gRPC 6334. On macOS use `127.0.0.1`;
+`localhost:18000` may reach AirPlay over IPv6 instead. This is a local demo without
+TLS or external access. Qdrant dashboard: http://127.0.0.1:6333/dashboard.
+
+For an existing `env/.env`, merge `WEB_PORT=18000` and `TEI_PORT=18080`;
+if it defines `EMBEDDING_URL`, change it to `http://tei:18080`.
+Do not replace the file: preserve other local settings. Web and TEI listen on
+18000 and 18080 inside their containers as well.
+
+Settings in `env/.env`:
+
+| Setting | Docker default | Local Python default |
+| --- | --- | --- |
+| `QDRANT_URL` | `http://qdrant:6333` | `http://127.0.0.1:6333` |
+| `EMBEDDING_URL` | `http://tei:18080` | `http://127.0.0.1:18080` |
+| `MOVIES_COLLECTION` | `movies_semantic_v1` | `movies_semantic_v1` |
+| `EMBEDDING_CACHE` | `/home/app/.cache/embeddings` (fixed in Compose) | package-relative `.cache/embeddings` |
+| `MOVIES_PATH` | `/app/movies.json` | package-relative `movies.json` |
+
+`WEB_PORT`, `TEI_PORT`, `QDRANT_HTTP_PORT` and `QDRANT_GRPC_PORT` change host ports
+only. Update browser/local URLs accordingly. Compose's env file is not read by
+local Python. The ignored `env/` directory and local caches are excluded from
+image builds; code, catalog and translations are copied into the app image.
+
+The ARM64 TEI **1.9.4** image is pinned by immutable digest:
+
+```text
+ghcr.io/huggingface/text-embeddings-inference:cpu-arm64-1.9@sha256:798cd7615e060a72ccbdf19aa0ada52289c6a0147490195bafaece6ce04d70f1
+```
+
+On **x86_64 CPU**, set `TEI_IMAGE` in `env/.env` to the official x86_64 image:
+
+```text
+ghcr.io/huggingface/text-embeddings-inference:cpu-1.9@sha256:2538ea1c9640d3763b15af668039d24172d063b42337b0c27796fc2be180c78d
+```
+
+The x86_64 image manifest was checked; inference was tested on ARM64 only.
+Qdrant v1.20.0 is also pinned by digest in Compose.
+
+## Persistence and reloads
+
+Compose keeps three named volumes: `movies-storage` for Qdrant, `model-weights`
+for TEI and `embedding-cache` for document embeddings. A normal restart reuses
+weights and cached embeddings. Reload the catalog included in the image:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml run --rm loader
+```
+
+After editing code, JSON, translations or templates, rebuild/recreate:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader web
+```
+
+Two loads of unchanged IDs leave exactly 250 points. The loader validates JSON
+and an existing collection's schema/model metadata before encoding. Documents
+are encoded in batches of 32. It obtains and validates the complete set before
+creating a collection or issuing one Qdrant upsert with `wait=true`; an inference
+failure never writes an incomplete set. This is not a transactional replacement
+of an index across network/server failures. Extra records are preserved and a
+count other than 250 is reported as an error.
+
+Cache keys hash the exact prepared text and the model, revision, text version,
+dimension, pooling, dtype and normalization contract. Every cached vector is
+validated before use. Missing/corrupt entries regenerate; unchanged entries do
+not call TEI. Files are replaced atomically. The cache is regenerable and ignored
+by Git. Removing it only makes the next load encode documents again.
+
+Stop with `docker compose --env-file env/.env -f docker/compose.yaml stop`.
+`down` removes containers while preserving volumes. **`down -v` deletes all three
+volumes**, including Qdrant data, weights and cached embeddings.
+
+## Local Python
+
+Use a virtual environment with Python 3.15.2:
+
+```sh
+python3.15 --version
+python3.15 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-docker compose config
-docker compose up -d
-curl --fail http://localhost:6333/readyz
-python -m engine.load
+docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei
+curl --fail http://127.0.0.1:6333/readyz
+curl --fail http://127.0.0.1:18080/health
+python -m engine.load --url http://127.0.0.1:6333 --embedding-url http://127.0.0.1:18080 --data movies.json
+python -m uvicorn web.app:create_app --factory --host 127.0.0.1 --port 18000
 ```
 
-If `readyz` does not respond yet, retry after a few seconds. Dashboard: http://localhost:6333/dashboard. REST: `127.0.0.1:6333`, gRPC: `127.0.0.1:6334`. Ports are published on loopback only.
+Retry readiness checks until both return successfully. Stop Docker web first if
+it already occupies port 18000. Loader flags `--url`, `--embedding-url`,
+`--collection`, `--cache`, `--data` and `--lang` override defaults; environment
+variables provide defaults for the endpoint, collection and cache settings.
+`python -m engine.load --lang ru --help` shows Russian help/errors.
 
-The Qdrant v1.20.0 image is pinned by digest in `compose.yaml`. Container: `qdrant-movies`, restart policy: `unless-stopped`. Data lives in the separate Docker volume `qdrant-movies-demo_movies-storage`, mounted at `/qdrant/storage`.
+## Search and languages
 
-## Web interface
+**By movie** is the default. Enter an ID, exact title or unique title fragment
+in either language; matching ignores case and surrounding whitespace. An
+ambiguous title asks for a more specific title. Qdrant uses the saved source
+movie's semantic vector and excludes that ID. No model request is needed.
 
-After checking Qdrant readiness and loading the data, run:
+**By description** accepts free text in Russian or English. Select that mode,
+enter a plot or mood and submit. TEI encodes the query and Qdrant searches all
+movies. There is no source movie in the results. Empty descriptions are rejected.
 
-```sh
-source .venv/bin/activate
-python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
+Choose 5, 10, 20 or 50 results. Mode, text, count and language persist through
+POST → GET redirects, refreshes and language links (`mode`, `q`, `limit`, `lang`).
+Old links without `mode` use movie search. The interface works without JavaScript.
+Cosine scores measure vector similarity, not a probability of liking a movie.
+
+Language priority: supported `lang=en|ru`, saved cookie, `Accept-Language`, then
+English. Each request uses its own gettext translator. Catalog metadata is
+localized from the application catalog by result ID, without mutating it.
+
+## Model and text format
+
+Model revision: `614241f622f53c4eeff9890bdc4f31cfecc418b3`. Mean pooling,
+float32, normalized output. Text format **`movie-en-v1`** is defined in
+[evaluation/README.md](evaluation/README.md). Documents use English title,
+genres (original order) and description, with LF separators and no trailing LF:
+
+```text
+passage: Title: {title}
+Genres: {genres joined with comma and space}
+Description: {description}
 ```
 
-Open http://127.0.0.1:5000. Enter an ID such as `1`, a title such as “The Matrix”, or a unique title fragment. Matching ignores case and leading/trailing whitespace. Multiple matches require a more specific title. Choose 5, 10, 20, or 50 similar movies (default: 5). Recommendations appear below the form with year, genres, description, and cosine similarity. Errors appear below the form. The query and count remain in the URL (`q` and `limit`), including after errors. Form submission redirects to GET, so refreshing only repeats a read.
+Queries use `query: {trimmed query}` in either language. Embeddings must be 384
+finite numbers with nonzero norm; negative components are valid. Requests have
+15-second timeouts and disable truncation so oversized text fails explicitly.
+The client verifies TEI model/revision/pooling/dtype through `/info` before
+encoding. Collection metadata records the complete contract; every search and
+load checks compatibility. An incompatible index is rejected with a reindexing
+message. Collections are never deleted automatically.
 
-Set the Qdrant URL with `QDRANT_URL` (default: `http://127.0.0.1:6333`):
+To change the model or text contract, update the pinned specification and TEI
+configuration together, bump the text version when appropriate and choose a
+**new collection name**, for example `movies_semantic_v2`. Load it before switching
+web's `MOVIES_COLLECTION`; recreate web to apply settings. Changed contracts use
+new cache keys. Keep the prior collection for rollback.
 
-```sh
-QDRANT_URL=http://127.0.0.1:6333 python -m flask --app web.app:create_app run --host 127.0.0.1 --port 5000
+## Preserved manual features
+
+The original manual vector order remains: science fiction, action, drama,
+comedy, romance, suspense/thriller, fantasy/magic, animation, darkness, optimism.
+Each vector contains ten finite values in `[0, 1]` and is nonzero. These subjective
+annotations are preserved in JSON and the legacy collection.
+
+## Engine and lifecycle
+
+`engine/constants.py` defines shared defaults. `engine/stores/semantic.py` owns
+Qdrant calls and resources; `engine/stores/factory.py` configures this single
+implementation. `engine/embeddings/` separates the HTTP client, cache, model
+specification, text preparation and validation. Public imports are available
+from `engine.stores` and `engine.embeddings`. The engine has no web dependency.
+The official async Qdrant SDK uses REST with a 15-second timeout and exact search.
+
+```python
+from engine import services
+from engine.stores import create_store
+
+store = create_store('http://127.0.0.1:6333')
+try:
+    similar = await services.search(store, 'The Matrix', catalog, limit=5)
+    matching = await services.semantic_search(store, 'a lonely astronaut', limit=5)
+finally:
+    await store.close()
 ```
 
-Creating the application does not load data: use `python -m engine.load`. The catalog path is relative to the project files, regardless of the working directory.
+The engine limit is an integer 1–249 in both modes. An injected SDK or embedding
+client stays owned by its caller. Owned clients close in `finally` or lifespan.
 
-Structure:
+`web/app.py`'s `ApplicationLifespan` has a fresh instance per startup. The factory performs no catalog reads or network requests. Lifespan
+reads/validates JSON once per application, creates clients and closes them on
+shutdown; it never indexes data. Restart after catalog/settings changes.
+`web/services.py` prepares request-scoped results; routes stay thin. Templates
+and CSS are package-relative. Shared `movies.json` resolution does not depend on
+working directory; no `sys.path` changes are used.
 
-- `engine/i18n.py`: shared English/Russian messages, parameter formatting, and localized movie metadata without Flask.
-- `engine/services.py`: validation, title resolution, and `QdrantMovieStore(base_url)` for HTTP requests, collection loading, and recommendations.
-- `engine/load.py`: command-line loader with `--url`, `--data`, and `--lang` options.
-- `engine/__init__.py`: shared path to the root `movies.json`, resolved relative to package files.
-- `web/app.py`: Flask factory, configuration, and store creation in `app.extensions['movie_store']` without network requests; `web/routes.py`: handlers; `web/router.py`: route registration through `register_routes(app)`; `web/templates/` and `web/static/`: interface without JavaScript or a build step.
-- `engine/tests/`: engine and loader tests; `web/tests/`: Flask tests.
+## Verification and evaluation
 
-Console recommendations have been removed; recommendation search is available through the web interface.
-
-## Languages
-
-The web interface supports English and Russian. Language selection uses a supported `lang=en|ru` URL parameter first, then the saved `lang` cookie, then `Accept-Language`, and finally English. The EN/RU links preserve the query and result count. Forms and POST redirects preserve the selected language. Search accepts titles in either language regardless of the interface language; exact matches take precedence over substring matches. Ambiguous matches display titles in the selected language.
-
-The loader defaults to English. Use `python -m engine.load --lang ru` for Russian output, or `python -m engine.load --lang ru --help` for Russian help and argument errors. `--lang en` explicitly selects English.
-
-Both catalog versions are validated before any Qdrant request. Reload normally to add translations to existing payloads; no collection deletion is needed. The web interface displays metadata from the local catalog by result ID, so collections loaded before translations were added also work. IDs, years, vectors, feature order, and ranking are unchanged.
-
-## Data and features
-
-`movies.json` contains stable numeric IDs 1–250, titles, years, genres, Russian descriptions, English metadata in `translations.en`, and vectors. The original 30 movies and their data are preserved; additional movies have IDs 31–250. This is a selection of familiar movies across genres, not a popularity ranking. IDs remain stable across reloads. The 10 features, in order:
-
-1. Science fiction.
-2. Action.
-3. Drama.
-4. Comedy.
-5. Romance.
-6. Suspense / thriller.
-7. Fantasy / magic.
-8. Animation.
-9. Darkness.
-10. Optimism.
-
-Each value ranges from 0 to 1 and represents a subjective feature strength. Vectors are nonzero. These are educational annotations, not model output: descriptions and titles are not converted to embeddings and do not directly participate in similarity search.
-
-`QdrantMovieStore.load(path)` validates all data before calling the API, creates the `movies` collection with one unnamed 10-dimensional vector and the Cosine metric, then upserts with `wait=true`. Reloading updates the same IDs: two loads leave 250 records. An existing 30-movie catalog is expanded by running the loader normally. An incompatible collection causes an error before writes and is never deleted automatically. Unrelated IDs are preserved too; if they increase the count above 250, the command reports this and exits with code 1.
-
-## Recommendations and checks
+Offline tests need neither Qdrant nor TEI. Explicit integration verification
+requires both services ready and tests the semantic collection:
 
 ```sh
-python -m engine.load --url http://127.0.0.1:6333 --data movies.json
 python -m unittest -v
 python -m engine.tests.verify
+python -m evaluation.runners.probe
+python -m evaluation.runners.run
 ```
 
-The web interface requests the selected number of nearest movies through the Query Points API with a filter excluding the source ID. Cosine similarity measures vector similarity, not the probability that a user will like a movie. Qdrant normalizes vectors for Cosine; JSON retains the original values.
+`verify` performs repeated loads, checks 250 points, both languages, 5/10/20/50
+results, source exclusion, unknown IDs, localized catalog metadata and
+independent cosine ranking. Verification also proves repeat loads use
+no inference. Offline tests cover schema/model incompatibility before writes,
+corrupt cache regeneration, generation failures, HTTP errors/timeouts, resource
+ownership, and both web modes including localization/navigation. Do not use
+Python's `-O` flag, which disables integration assertions.
 
-The engine supports `services.search(store, query, catalog, limit=5)` and `store.recommend(movie_id, limit=5)`, where `store` is a `QdrantMovieStore` instance and `limit` is an integer from 1 to 249. Invalid counts raise `DemoError` before contacting Qdrant. The web interface accepts only the four listed counts; links without `limit` return five recommendations.
-
-`engine/tests/verify.py` checks 250 records, 5/10/20/50 results for three movies, source-ID exclusion, and agreement with independently calculated cosine scores from JSON. It loads the catalog twice and checks that exactly 250 records remain, verifies translated payloads and legacy payload display in both languages, checks unknown IDs through the API, and tests incompatible schemas through mocked responses without changing the collection.
-
-Persistence check:
+In Docker:
 
 ```sh
-docker compose restart
-curl --fail http://localhost:6333/readyz
-python -m engine.tests.verify
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python --version
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python -m unittest -v
+docker compose --env-file env/.env -f docker/compose.yaml run --rm loader python -m engine.tests.verify
 ```
 
-Wait for readiness before verification if necessary.
+The verifier respects `QDRANT_URL` and `EMBEDDING_URL`. It writes the cache; use
+the loader service, which mounts the persistent cache volume. Quality/latency
+artifacts are generated locally in `evaluation/results/`; frozen inputs live in
+`evaluation/data/` and package-relative paths in `evaluation/config/`. Run probe
+and evaluation sequentially without competing loads. Historical JSON measurements
+remain unchanged; fresh measurements use separate `*-latest.json` files. See [the recorded report](evaluation/REPORT.md)
+for Recall@5 on 20 frozen RU/EN queries, comparison for ten source movies,
+first/subsequent request timings and limitations. This narrow evaluation does
+not guarantee better recommendations. Descriptions are short; there is no
+personalization, reranker, hybrid search or model training.
 
-Stop: `docker compose stop`. Remove the container while keeping data: `docker compose down`. `docker compose down -v` also deletes the volume and all data.
-
-Official documentation: [Docker installation](https://qdrant.tech/documentation/installation/), [Query Points API](https://api.qdrant.tech/api-reference/search/query-points).
-
-Offline tests (`python -m unittest -v`) cover the engine, loader, and Flask test client with mocks, without a running Qdrant. Integration verification is excluded from offline test discovery. For an explicit loader check, run `python -m engine.load` twice, then `python -m engine.tests.verify`: the collection must contain exactly 250 records.
-
-### Maintaining translations
-
-The web uses Flask-Babel; the engine and loader use Python gettext without
-depending on Flask. Both read the shared catalog in engine/translations.
-English source messages are the fallback; Russian translations live in
-ru/LC_MESSAGES/messages.po. Compiled messages.mo files are committed so normal
-startup needs no translation build step.
-
-Run these commands in the virtual environment after changing messages:
+Translations live in `engine/translations`. English source strings fall back
+through gettext; reviewed Russian `.po` and compiled `.mo` files are committed:
 
 ```sh
 pybabel extract -F babel.cfg -k N_ -o engine/translations/messages.pot engine web
 pybabel update -i engine/translations/messages.pot -d engine/translations
-# Review translations and remove fuzzy flags only after checking them.
+# Translate new entries and review fuzzy flags before compiling.
 pybabel compile -d engine/translations
 python -m unittest -v
 ```
 
-For a new language, use pybabel init instead of update and add the language to
-the supported languages. Movie metadata translations remain in movies.json.
+Official references: [TEI hardware/images](https://huggingface.co/docs/text-embeddings-inference/supported_models),
+[model card](https://huggingface.co/intfloat/multilingual-e5-small),
+[Qdrant Query Points](https://api.qdrant.tech/api-reference/search/query-points),
+[Compose startup order](https://docs.docker.com/compose/how-tos/startup-order/).

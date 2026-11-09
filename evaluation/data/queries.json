@@ -1,0 +1,183 @@
+{
+  "judgments": "Manually selected before semantic retrieval; relevance follows the explicit plot intent, not genre alone.",
+  "queries": [
+    {
+      "id": "01-en",
+      "lang": "en",
+      "query": "A hacker discovers a simulated reality.",
+      "relevant_ids": [
+        1
+      ]
+    },
+    {
+      "id": "01-ru",
+      "lang": "ru",
+      "query": "Хакер узнаёт, что мир — симуляция.",
+      "relevant_ids": [
+        1
+      ]
+    },
+    {
+      "id": "02-en",
+      "lang": "en",
+      "query": "An astronaut survives alone on Mars.",
+      "relevant_ids": [
+        4
+      ]
+    },
+    {
+      "id": "02-ru",
+      "lang": "ru",
+      "query": "Космонавт выживает в одиночку на Марсе.",
+      "relevant_ids": [
+        4
+      ]
+    },
+    {
+      "id": "03-en",
+      "lang": "en",
+      "query": "Someone keeps living the same day.",
+      "relevant_ids": [
+        16,
+        55
+      ]
+    },
+    {
+      "id": "03-ru",
+      "lang": "ru",
+      "query": "Человек снова и снова проживает один день.",
+      "relevant_ids": [
+        16,
+        55
+      ]
+    },
+    {
+      "id": "04-en",
+      "lang": "en",
+      "query": "Detectives investigate a serial killer.",
+      "relevant_ids": [
+        21,
+        23,
+        101,
+        144
+      ]
+    },
+    {
+      "id": "04-ru",
+      "lang": "ru",
+      "query": "Детективы расследуют серийные убийства.",
+      "relevant_ids": [
+        21,
+        23,
+        101,
+        144
+      ]
+    },
+    {
+      "id": "05-en",
+      "lang": "en",
+      "query": "A boy attends a school for wizards.",
+      "relevant_ids": [
+        25,
+        157,
+        158,
+        159,
+        160
+      ]
+    },
+    {
+      "id": "05-ru",
+      "lang": "ru",
+      "query": "Мальчик учится в школе волшебников.",
+      "relevant_ids": [
+        25,
+        157,
+        158,
+        159,
+        160
+      ]
+    },
+    {
+      "id": "06-en",
+      "lang": "en",
+      "query": "A mafia family passes power from father to son.",
+      "relevant_ids": [
+        86,
+        87
+      ]
+    },
+    {
+      "id": "06-ru",
+      "lang": "ru",
+      "query": "В мафиозной семье власть переходит от отца к сыну.",
+      "relevant_ids": [
+        86,
+        87
+      ]
+    },
+    {
+      "id": "07-en",
+      "lang": "en",
+      "query": "An ambitious music teacher pushes a young drummer.",
+      "relevant_ids": [
+        119
+      ]
+    },
+    {
+      "id": "07-ru",
+      "lang": "ru",
+      "query": "Строгий учитель музыки тренирует молодого барабанщика.",
+      "relevant_ids": [
+        119
+      ]
+    },
+    {
+      "id": "08-en",
+      "lang": "en",
+      "query": "Lovers from different classes on a doomed ocean liner.",
+      "relevant_ids": [
+        174
+      ]
+    },
+    {
+      "id": "08-ru",
+      "lang": "ru",
+      "query": "Любовь людей из разных сословий на тонущем лайнере.",
+      "relevant_ids": [
+        174
+      ]
+    },
+    {
+      "id": "09-en",
+      "lang": "en",
+      "query": "A rat dreams of cooking in a Paris restaurant.",
+      "relevant_ids": [
+        219
+      ]
+    },
+    {
+      "id": "09-ru",
+      "lang": "ru",
+      "query": "Крыса мечтает готовить в парижском ресторане.",
+      "relevant_ids": [
+        219
+      ]
+    },
+    {
+      "id": "10-en",
+      "lang": "en",
+      "query": "A family encounters horror while isolated in a hotel.",
+      "relevant_ids": [
+        243
+      ]
+    },
+    {
+      "id": "10-ru",
+      "lang": "ru",
+      "query": "Семья сталкивается с ужасом в изолированном отеле.",
+      "relevant_ids": [
+        243
+      ]
+    }
+  ]
+}
