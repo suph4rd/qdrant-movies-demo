@@ -19,9 +19,10 @@ class WikidataTransport:
             await self.client.aclose()
 
     async def request(self, **params):
+        endpoint = params.pop('_endpoint', wikidata_constants.API_URL)
         try:
             response = await self.client.get(
-                wikidata_constants.API_URL, params={'format': 'json', 'maxlag': 5, **params},
+                endpoint, params={'format': 'json', 'maxlag': 5, **params},
                 headers={'User-Agent': wikidata_constants.USER_AGENT, 'Accept': 'application/json'},
                 timeout=constants.REQUEST_TIMEOUT)
             response.raise_for_status()

@@ -1,6 +1,7 @@
 import re
 
 from backend.engine import imports
+from backend.engine import errors
 from backend.engine.wikidata import parsing
 from backend.engine.wikidata import validators
 
@@ -17,12 +18,14 @@ class MovieMapper:
         genres = parsing.item_values(entity, 'P136')
         classification = await self.classify(roots, cache)
         if classification is None:
-            return None
+            raise errors.IndexStateError('wikidata_incomplete')
         is_film, adult, television = classification
         if not is_film or adult or television:
             return None
         genre_classification = await self.classify(genres, cache)
-        if genre_classification is None or genre_classification[1]:
+        if genre_classification is None:
+            raise errors.IndexStateError('wikidata_incomplete')
+        if genre_classification[1]:
             return None
         title = parsing.localized(entity, 'labels', 'en') or parsing.localized(entity, 'labels', 'mul')
         description = parsing.localized(entity, 'descriptions', 'en')

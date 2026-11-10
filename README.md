@@ -192,8 +192,15 @@ from every recommendation group.
 
 The search checks the original catalog and saved Qdrant movies first. If neither
 contains a match, submitting **By movie** queues a background Wikidata search in
-English and Russian and automatically imports exact title/year matches, including aliases and original
-titles. Only film entities with complete required metadata are imported. English
+English and Russian and automatically imports verified title/year matches, including aliases and original
+titles. Search tries the original query, normalized spelling, then English/Russian
+Wikipedia search with Wikidata QIDs from page properties (at most 50 candidates
+per language per stage). Wikipedia candidates undergo the same Wikidata checks.
+Normalization ignores punctuation, quote/dash differences, whitespace and Russian ё/е.
+Exact matches take priority; without a year, multiple exact films remain visible.
+For titles of at least five characters, a Levenshtein similarity of at least 0.90
+and a lead of at least 0.05 permits automatic correction with a notification.
+A supplied year is mandatory. Uncertain matches are not imported. Only film entities with complete required metadata are imported. English
 names, descriptions and genres are required. Missing Russian metadata falls back
 to English, with a visible description-language label. New movies receive semantic
 embeddings from TEI and deterministic internal IDs `2000000000000 + numeric QID`
@@ -204,7 +211,7 @@ records. Existing TMDB imports retain their original IDs, metadata and source li
 
 External imports require no account, API key or token. The queue worker reads the
 public [Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access) over HTTPS;
-network access to Wikidata is required. Its structured data is published under
+network access to Wikidata and Wikipedia is required. Its structured data is published under
 CC0. No requests are sent to the TMDB API. `TMDB_API_TOKEN` is no longer used and
 can be removed from existing local environment files.
 
@@ -212,6 +219,10 @@ Wikidata descriptions are short identifying phrases, not plot summaries. Importe
 movies can therefore produce less precise plot-based recommendations than the
 original catalog. The interface marks these descriptions. Incomplete entities are
 skipped rather than filled with invented text. Wikipedia text is not imported.
+Type and genre ancestry checks handle cycles and share a batched entity cache;
+a 512-node bound produces an incomplete-verification notification. Series and
+adult content remain excluded. Provider failures have separate notifications.
+No external catalog can guarantee every film.
 
 POST `/api/search` returns a synchronous result token for saved movies and description
 queries. External searches return 202 and run through PostgreSQL outbox → Kafka →

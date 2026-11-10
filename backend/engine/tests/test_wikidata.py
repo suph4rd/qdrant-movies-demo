@@ -1,12 +1,14 @@
 import copy
 import json
 import unittest
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import httpx
 
 from backend.engine import errors
 from backend.engine import imports
+from backend.engine import services
 from backend.engine import wikidata
 
 
@@ -48,7 +50,9 @@ class WikidataTests(unittest.IsolatedAsyncioTestCase):
                     raise self.failure
                 return self.failure
             params = request.url.params
-            if params['action'] == 'wbsearchentities':
+            if params['action'] == 'query':
+                value = {'query': {'pages': {}}}
+            elif params['action'] == 'wbsearchentities':
                 offset = params.get('continue')
                 value = self.pages[(params['language'], int(offset) if offset else None)]
             else:
@@ -83,7 +87,7 @@ class WikidataTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_all_pages_and_year(self):
         self.pages[('en', None)]['search-continue'] = 50
-        self.pages[('en', 50)] = {'search': [{'id': 'Q43'}]}
+        self.pages[('en', None)]['search'].append({'id': 'Q43'})
         self.cards['Q43']['claims']['P577'] = [statement({'time': '+2002-12-01T00:00:00Z', 'precision': 11})]
         self.assertEqual([m['wikidata_id'] for m in (await self.client.search('Solaris'))['movies']], ['Q42', 'Q43'])
         self.assertEqual([m['wikidata_id'] for m in (await self.client.search('Solaris (1972)'))['movies']], ['Q42'])
@@ -126,14 +130,11 @@ class WikidataTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual([m['wikidata_id'] for m in result['movies']], ['Q43'])
             self.assertIn({'key': 'wikidata_skipped', 'params': {'id': 'Q42'}}, result['messages'])
 
-    async def test_pagination_failure_never_produces_cards(self):
+    async def test_candidates_are_bounded_without_pagination(self):
         self.pages[('en', None)]['search-continue'] = 50
-        for next_page in ({'search': [], 'search-continue': 50}, {'search': None}, httpx.Response(503)):
-            self.requests.clear()
-            self.pages[('en', 50)] = next_page
-            with self.assertRaises((errors.InputValidationError, httpx.HTTPStatusError)):
-                await self.client.search('Solaris')
-            self.assertFalse(any(r.url.params['action'] == 'wbgetentities' for r in self.requests))
+        result = await self.client.search('Solaris')
+        self.assertEqual(len(result['movies']), 1)
+        self.assertFalse(any('continue' in r.url.params for r in self.requests))
 
     async def test_http_json_api_errors_and_programming_errors(self):
         for status, key in ((429, 'wikidata_rate_limit'), (503, 'wikidata_unavailable'), (403, 'wikidata_unavailable')):
@@ -186,16 +187,17 @@ class WikidataTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(any(r.url.params.get('ids') == 'Q100' for r in self.requests))
 
     async def test_deep_nonfilm_and_unresolved_adult_ancestry_skip_cleanly(self):
+        self.cards['Q210'] = genre('Q210')
         for i in range(200, 210):
             self.cards['Q' + str(i)] = genre('Q' + str(i), ['Q' + str(i + 1)])
         self.cards['Q42']['claims']['P31'] = [item('Q200')]
         self.assertEqual(await self.client.search('Solaris'), {'movies': [], 'messages': []})
         self.cards['Q42']['claims']['P31'] = [item('Q11424')]
         self.cards['Q42']['claims']['P136'] = [item('Q200')]
-        self.assertEqual(await self.client.search('Solaris'), {'movies': [], 'messages': []})
+        self.assertEqual(len((await self.client.search('Solaris'))['movies']), 1)
         self.cards['Q42']['claims']['P31'] = [item('Q11424'), item('Q200')]
         self.cards['Q42']['claims']['P136'] = [item('Q100')]
-        self.assertEqual(await self.client.search('Solaris'), {'movies': [], 'messages': []})
+        self.assertEqual(len((await self.client.search('Solaris'))['movies']), 1)
 
     async def test_detail_network_failure_keeps_earlier_movie(self):
         self.pages[('en', None)] = {'search': [{'id': 'Q42'}, {'id': 'Q43'}]}
@@ -244,9 +246,104 @@ class WikidataTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.requests, [])
 
     async def test_classification_node_limit_stops_before_fetching(self):
-        roots = ['Q' + str(number) for number in range(300, 365)]
+        roots = ['Q' + str(number) for number in range(300, 813)]
         self.assertIsNone(await self.client.classification(roots, {}))
         self.assertEqual(self.requests, [])
+
+    async def test_mimino_real_genre_graph_and_import(self):
+        self.cards = json.loads((Path(__file__).parent / 'fixtures' / 'mimino.json').read_text())
+        self.pages = {('en', None): {'search': [{'id': 'Q1519753'}]},
+                      ('ru', None): {'search': [{'id': 'Q1519753'}]}}
+        result = await self.client.search('Мимино')
+        self.assertEqual([m['wikidata_id'] for m in result['movies']], ['Q1519753'])
+        self.assertEqual(result['movies'][0]['year'], 1977)
+        store = AsyncMock()
+        store.find_movies.return_value = []
+        movie = result['movies'][0]
+        store.import_movie.return_value = {'movie': movie, 'created': True}
+        store.recommend.return_value = {'source': movie, 'recommendations': []}
+        service = services.MovieSearchService(store, [], self.client)
+        imported = await service.search('Мимино', allow_import=True)
+        self.assertEqual(imported['groups'][0]['source']['wikidata_id'], 'Q1519753')
+        store.import_movie.assert_awaited_once()
+        store.find_movies.return_value = [movie]
+        await service.search('«МИМИНО»', allow_import=True)
+        store.import_movie.assert_awaited_once()
+
+    async def test_wikidata_language_failure_keeps_other_source(self):
+        original = self.client.request
+        async def request(**params):
+            if params.get('action') == 'wbsearchentities' and params.get('language') == 'en':
+                failure = httpx.ReadTimeout('offline')
+                errors.annotate_error(failure, 'wikidata_unavailable')
+                raise failure
+            return await original(**params)
+        with patch.object(self.client, 'request', side_effect=request):
+            result = await self.client.search('Solaris')
+        self.assertEqual(len(result['movies']), 1)
+        self.assertIn({'key': 'wikidata_unavailable', 'params': {}}, result['messages'])
+
+    async def test_wikipedia_pageprops_transport_and_source_failure(self):
+        def handle(request):
+            if request.url.host == 'en.wikipedia.org':
+                return httpx.Response(503)
+            return httpx.Response(200, json={'query': {'pages': {
+                '1': {'pageprops': {'wikibase_item': 'Q42'}},
+                '2': {'pageprops': {'wikibase_item': 'Q42'}}, '3': {}}}})
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as http:
+            client = wikidata.WikidataClient(http)
+            qids, failures = await client.wikipedia_candidates('Solaris')
+        self.assertEqual(qids, ['Q42'])
+        self.assertEqual(failures[0]._localization[0], 'wikidata_unavailable')
+
+    async def test_typo_confidence_and_short_titles(self):
+        self.cards['Q42']['labels']['en']['value'] = 'Interstellar'
+        result = await self.client.search('Interstelar')
+        self.assertEqual([m['wikidata_id'] for m in result['movies']], ['Q42'])
+        self.assertEqual(result['messages'][0]['key'], 'wikidata_corrected')
+        self.cards['Q43']['labels']['en']['value'] = 'Interstellaa'
+        self.pages[('en', None)]['search'].append({'id': 'Q43'})
+        self.assertEqual((await self.client.search('Interstellab'))['movies'], [])
+        self.assertEqual(imports.similarity('Up', 'Upp'), 0)
+        self.assertEqual(imports.select_similar([{'title': 'Interstellar', 'year': 2014}],
+                                                'Interstelar', 2000), [])
+        self.assertEqual(imports.normalize_title('«Ёлки» — 2!'), 'елки 2')
+
+    async def test_runner_up_below_threshold_still_blocks_correction(self):
+        self.cards['Q42']['labels'] = {'en': {'value': 'abcdefghijklmnopqrsxy'}}
+        self.cards['Q42']['aliases'] = {}
+        self.cards['Q42']['claims'].pop('P1476')
+        self.cards['Q43']['labels'] = {'en': {'value': 'abcdefghijklmnopqrxyz'}}
+        self.cards['Q43']['aliases'] = {}
+        self.cards['Q43']['claims'].pop('P1476')
+        self.pages[('en', None)]['search'].append({'id': 'Q43'})
+        result = await self.client.search('abcdefghijklmnopqrstu')
+        self.assertEqual(result['movies'], [])
+
+    async def test_deep_adult_ancestry_is_rejected(self):
+        for number in range(200, 212):
+            self.cards['Q' + str(number)] = genre('Q' + str(number), ['Q' + str(number + 1)])
+        self.cards['Q212'] = genre('Q212', ['Q185529', 'Q200'])
+        self.cards['Q42']['claims']['P136'] = [item('Q200')]
+        self.assertEqual((await self.client.search('Solaris'))['movies'], [])
+
+    async def test_wikipedia_fallback_deduplicates_and_validates(self):
+        self.pages = {('en', None): {'search': []}, ('ru', None): {'search': []}}
+        with patch.object(self.client, 'wikipedia_candidates', new_callable=AsyncMock,
+                          return_value=(['Q42', 'Q42'], [])) as fallback:
+            result = await self.client.search('Solaris')
+            self.assertEqual(len(result['movies']), 1)
+            fallback.assert_awaited_once()
+        self.pages[('en', None)] = {'search': [{'id': 'Q42'}]}
+        with patch.object(self.client, 'wikipedia_candidates', new_callable=AsyncMock) as fallback:
+            await self.client.search('Solaris')
+            fallback.assert_not_awaited()
+
+    async def test_incomplete_graph_is_reported(self):
+        self.cards['Q42']['claims']['P136'] = [item('Q' + str(i)) for i in range(300, 813)]
+        result = await self.client.search('Solaris')
+        self.assertEqual(result['movies'], [])
+        self.assertIn({'key': 'wikidata_incomplete', 'params': {}}, result['messages'])
 
     async def test_close_ownership(self):
         await self.client.close()

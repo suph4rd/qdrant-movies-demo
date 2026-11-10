@@ -22,6 +22,8 @@ MESSAGES = {
     'description_language': N_('Description language: %(language)s'),
     'tmdb_source': N_('Source: TMDB'),
     'wikidata_not_found': N_('Movie not found in Wikidata.'),
+    'wikidata_incomplete': N_('Movie verification exceeded the graph limit. Please try again later.'),
+    'wikidata_corrected': N_('Automatically matched the query to %(title)s.'),
     'wikidata_invalid': N_('Invalid Wikidata response or incomplete movie metadata.'),
     'wikidata_rate_limit': N_('Wikidata request limit reached. Try again later.'),
     'wikidata_unavailable': N_('Wikidata is unavailable. Try again later.'),

@@ -667,3 +667,9 @@ msgstr "Отметить прочитанным"
 
 msgid "View search task"
 msgstr "Открыть задачу поиска"
+
+msgid "Movie verification exceeded the graph limit. Please try again later."
+msgstr "Проверка фильма превысила лимит графа. Повторите попытку позже."
+
+msgid "Automatically matched the query to %(title)s."
+msgstr "Запрос автоматически сопоставлен с фильмом «%(title)s»."

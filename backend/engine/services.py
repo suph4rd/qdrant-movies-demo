@@ -35,6 +35,11 @@ class MovieSearchService:
             if not allow_import:
                 raise errors.MovieNotFoundError('search_saved_only')
             sources = await self.import_movies(title, year, messages)
+        if sources and all(max((imports.similarity(title, name) for name in imports.titles(movie)),
+                               default=0) >= 0.90 for movie in sources) and not any(
+                imports.matches(movie, title, year) for movie in sources) and not any(
+                message['key'] == 'wikidata_corrected' for message in messages):
+            messages.append({'key': 'wikidata_corrected', 'params': {'title': sources[0]['title']}})
         groups = await self.recommend(sources, limit, messages)
         return {'groups': groups, 'messages': messages}
 
@@ -49,11 +54,13 @@ class MovieSearchService:
         return {'groups': [{**result, 'source': source}], 'messages': []}
 
     async def find_saved(self, title, year):
-        sources = [m for m in self.catalog if imports.matches(m, title, year)]
+        sources = [movie for movie in self.catalog if imports.matches(movie, title, year)]
         if not sources:
             sources = await self.store.find_movies(title, year)
-        # Preserve partial-title navigation for the original catalog, but only exact
-        # external matches can trigger an import.
+        if not sources:
+            sources = imports.select_similar(self.catalog, title, year)
+        # Preserve partial-title navigation for the original catalog, while external
+        # imports require a verified exact or confident fuzzy match.
         if not sources:
             normalized = imports.normalize_title(title)
             sources = [m for m in self.catalog if (year is None or m['year'] == year)

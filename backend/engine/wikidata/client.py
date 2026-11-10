@@ -31,6 +31,9 @@ class WikidataClient:
     async def candidates(self, title):
         return await self._entities.candidates(title)
 
+    async def wikipedia_candidates(self, title):
+        return await self._entities.wikipedia_candidates(title)
+
     async def entities(self, qids, cache):
         return await self._entities.entities(qids, cache)
 

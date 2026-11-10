@@ -38,6 +38,16 @@ class ImportSearchTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['groups'][0]['source']['id'], 30)
         self.wikidata.search.assert_not_awaited()
 
+    async def test_saved_typo_does_not_import_again(self):
+        saved = movie(30, 'Interstellar', 2014)
+        self.store.find_movies.return_value = imports.select_similar([saved], 'Interstelar', 2014)
+        result = await services.search_movies(self.store, 'Interstelar (2014)', [],
+                                             wikidata=self.wikidata, allow_import=True)
+        self.assertEqual(result['groups'][0]['source']['id'], 30)
+        self.assertEqual(result['messages'][0]['key'], 'wikidata_corrected')
+        self.wikidata.search.assert_not_awaited()
+        self.store.import_movie.assert_not_awaited()
+
     async def test_numeric_is_internal_id(self):
         await services.search_movies(self.store, '1917', [movie(1, '1917')],
                                     wikidata=self.wikidata, allow_import=True)

@@ -144,10 +144,10 @@ class SemanticMovieStore:
                 limit=256, with_payload=True, with_vectors=False)
             for record in records:
                 payload = record.payload or {}
-                if imports.matches(payload, title, year):
+                if year is None or payload.get('year') == year:
                     matches.append({**payload, 'id': record.id})
             if next_offset is None:
-                return matches
+                return imports.select_similar(matches, title, year)
             if next_offset in seen_offsets:
                 raise errors.IndexStateError('response')
             seen_offsets.add(next_offset)

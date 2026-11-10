@@ -1,0 +1,2282 @@
+{
+  "Q1519753": {
+    "type": "item",
+    "id": "Q1519753",
+    "labels": {
+      "ru": {
+        "language": "ru",
+        "value": "Мимино"
+      },
+      "en": {
+        "language": "en",
+        "value": "Mimino"
+      }
+    },
+    "descriptions": {
+      "ru": {
+        "language": "ru",
+        "value": "советская кинокомедия Георгия Данелии 1977 года"
+      },
+      "en": {
+        "language": "en",
+        "value": "1977 film by Georgiy Daneliya"
+      }
+    },
+    "aliases": {},
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "fa41184cb03f49f0edfbf2fc4f9d33e35afecaea",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 11424,
+                "id": "Q11424"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P577": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P577",
+            "hash": "f774b36add91d3f95982ae709281349a8bd4f3d4",
+            "datavalue": {
+              "value": {
+                "time": "+1977-07-00T00:00:00Z",
+                "timezone": 0,
+                "before": 0,
+                "after": 0,
+                "precision": 10,
+                "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+            },
+            "datatype": "time"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P136": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P136",
+            "hash": "68f6e3d7fa5134514993c7a67bed1f534c1f3e3a",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 859369,
+                "id": "Q859369"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P1476": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P1476",
+            "hash": "8979b00a111b5b17eb5f54f86f96709d1bbc33b0",
+            "datavalue": {
+              "value": {
+                "text": "Мимино",
+                "language": "ru"
+              },
+              "type": "monolingualtext"
+            },
+            "datatype": "monolingualtext"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P4947": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P4947",
+            "hash": "d94190357723c563de14e2ba4830f20df388c4b4",
+            "datavalue": {
+              "value": "27861",
+              "type": "string"
+            },
+            "datatype": "external-id"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q859369": {
+    "type": "item",
+    "id": "Q859369",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "comedy drama"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "комедийная драма"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "genre of theatre, film, and television"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "жанр пьесы, фильма, телепередачи"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "comedic drama"
+        },
+        {
+          "language": "en",
+          "value": "dramedy"
+        },
+        {
+          "language": "en",
+          "value": "tragicomedy"
+        },
+        {
+          "language": "en",
+          "value": "seriocomedy"
+        },
+        {
+          "language": "en",
+          "value": "dramatic comedy"
+        },
+        {
+          "language": "en",
+          "value": "comedy-drama"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "комедийно-драматический"
+        },
+        {
+          "language": "ru",
+          "value": "драмеди"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "22f7c499b64e34d8cb03d2fd4101578102c95855",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 5151404,
+                "id": "Q5151404"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "d97472668c1e4843f7630474d7eba307157aaec6",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 138833051,
+                "id": "Q138833051"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "76f61481a47d0ade2248798960cf543050305e7e",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 21484471,
+                "id": "Q21484471"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "883328fe3b4cfc2d0f7c5146e2acce39a13a4898",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 21010853,
+                "id": "Q21010853"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "988338e475db1a34f1f09be5bdf8c4b0c0ee47e4",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 40831,
+                "id": "Q40831"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q21010853": {
+    "type": "item",
+    "id": "Q21010853",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "drama fiction"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "драма"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "genre of narrative fiction revolving around human inner feelings"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "произведение, сюжет которого фокусируется на внутренних переживаниях человека"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "драматическое произведение"
+        },
+        {
+          "language": "ru",
+          "value": "драматические произведения"
+        },
+        {
+          "language": "ru",
+          "value": "драма (жанр)"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "dramatic fiction"
+        },
+        {
+          "language": "en",
+          "value": "drama"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "67e4de818b14293a329ce55ab7147c31b5ecb652",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 8253,
+                "id": "Q8253"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "bdbc47936acf0d3562a0d1957ac581351048bfc9",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 108465955,
+                "id": "Q108465955"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q40831": {
+    "type": "item",
+    "id": "Q40831",
+    "labels": {
+      "ru": {
+        "language": "ru",
+        "value": "комедия"
+      },
+      "en": {
+        "language": "en",
+        "value": "comedy"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "genre of art works intended to be humorous"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "жанр юмористических литературных произведений"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "комедии"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "humor"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "d4e9bab01b302d226dac3c8c43e0a0ca7671b041",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 223393,
+                "id": "Q223393"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "9215c0c9d13812fc9ea5544bb452f07a3af8e646",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 627436,
+                "id": "Q627436"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "75c9cb1e0ccbd78cc8e73c66a433be3ebe62c5d0",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 838948,
+                "id": "Q838948"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "beefab63c163f12e69769ce406831ad3527cc9d5",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 60548032,
+                "id": "Q60548032"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q60548032": {
+    "type": "item",
+    "id": "Q60548032",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "humor"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "юмор"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "genre for creative works"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "жанр для творческих работ"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "humour"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "a2ef783bdfc8936a1607bde8a8fe09e824986e4b",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 483394,
+                "id": "Q483394"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "fbcb4164e60060baa6eee2d89e2113f64194e8f3",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 17537576,
+                "id": "Q17537576"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q8253": {
+    "type": "item",
+    "id": "Q8253",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "fiction"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "художественный вымысел"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "genre and narrative form, in any medium, consisting of people, events, or places that are imaginary—in other words, not based strictly on history or fact"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "плод творческого воображения автора художественной литературы или сценариста художественного фильма, воплощающий его мировоззрение"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "fictional"
+        },
+        {
+          "language": "en",
+          "value": "fiction form"
+        },
+        {
+          "language": "en",
+          "value": "fictional art form"
+        },
+        {
+          "language": "en",
+          "value": "imaginary genre"
+        },
+        {
+          "language": "en",
+          "value": "imaginary art genre"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "вымысел"
+        },
+        {
+          "language": "ru",
+          "value": "вымышленная история"
+        },
+        {
+          "language": "ru",
+          "value": "вымышленное произведение"
+        },
+        {
+          "language": "ru",
+          "value": "фикшен"
+        },
+        {
+          "language": "ru",
+          "value": "фикшн"
+        },
+        {
+          "language": "ru",
+          "value": "художественное произведение"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "c4952ed9d3f4c2f4a489d276ab88bc99bfa7cdb1",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 1792379,
+                "id": "Q1792379"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "75c9cb1e0ccbd78cc8e73c66a433be3ebe62c5d0",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 838948,
+                "id": "Q838948"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "93c4dd06f67745d7df39a58de7d9494a6d6b84b2",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 1318295,
+                "id": "Q1318295"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        }
+      ]
+    }
+  },
+  "Q838948": {
+    "type": "item",
+    "id": "Q838948",
+    "labels": {
+      "ru": {
+        "language": "ru",
+        "value": "произведение искусства"
+      },
+      "en": {
+        "language": "en",
+        "value": "work of art"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "aesthetic item or artistic creation of aesthetic value"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "предмет или другой объект непроизводственного труда человека, связанный с эстетикой"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "художественное произведение"
+        },
+        {
+          "language": "ru",
+          "value": "арт-объект"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "artwork"
+        },
+        {
+          "language": "en",
+          "value": "piece of art"
+        },
+        {
+          "language": "en",
+          "value": "art work"
+        },
+        {
+          "language": "en",
+          "value": "art object"
+        },
+        {
+          "language": "en",
+          "value": "art piece"
+        },
+        {
+          "language": "en",
+          "value": "artistic work"
+        },
+        {
+          "language": "en",
+          "value": "art"
+        },
+        {
+          "language": "en",
+          "value": "artworks"
+        },
+        {
+          "language": "en",
+          "value": "art works"
+        },
+        {
+          "language": "en",
+          "value": "artistic works"
+        },
+        {
+          "language": "en",
+          "value": "art objects"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "fbcb4164e60060baa6eee2d89e2113f64194e8f3",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 17537576,
+                "id": "Q17537576"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "dce96d387318e5beda728e5764274d7102adc1a0",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 2424752,
+                "id": "Q2424752"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "87880fe820ce298fb1a837c7815571e44d463575",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 2342494,
+                "id": "Q2342494"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "23301fb5e0c9e789cc3765fca0840e44af6b17fa",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 115923123,
+                "id": "Q115923123"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "9c4abd61e19542d3018ccd1c1d12a449adcfb2aa",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 8205328,
+                "id": "Q8205328"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "deprecated"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "1d5c88f623201d87d4bc8ca20049b81fc7bbc2da",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 16686448,
+                "id": "Q16686448"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "42d54cbd95ec80d030267c364c440eb9d363819d",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 151885,
+                "id": "Q151885"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "537713296d83639694af2595061beffe69f96d49",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 139243747,
+                "id": "Q139243747"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "6395d8e351d3c9e6ff261207d2a281d755cc8eaf",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 133449656,
+                "id": "Q133449656"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q16686448": {
+    "type": "item",
+    "id": "Q16686448",
+    "labels": {
+      "ru": {
+        "language": "ru",
+        "value": "искусственный объект"
+      },
+      "en": {
+        "language": "en",
+        "value": "artificial object"
+      }
+    },
+    "descriptions": {
+      "ru": {
+        "language": "ru",
+        "value": "необязательно материальный, но созданный человеком"
+      },
+      "en": {
+        "language": "en",
+        "value": "anything created through intelligent or artificial means (either material or mental)"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "creation"
+        },
+        {
+          "language": "en",
+          "value": "human-made"
+        },
+        {
+          "language": "en",
+          "value": "man-made"
+        },
+        {
+          "language": "en",
+          "value": "man-made object"
+        },
+        {
+          "language": "en",
+          "value": "human-made object"
+        },
+        {
+          "language": "en",
+          "value": "non-natural object"
+        },
+        {
+          "language": "en",
+          "value": "product"
+        },
+        {
+          "language": "en",
+          "value": "work product"
+        },
+        {
+          "language": "en",
+          "value": "artificial entity"
+        },
+        {
+          "language": "en",
+          "value": "artefact"
+        },
+        {
+          "language": "en",
+          "value": "artifact"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "создано человеком"
+        },
+        {
+          "language": "ru",
+          "value": "артефакт"
+        },
+        {
+          "language": "ru",
+          "value": "результат усилий"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "9f199485b3027d9f715fa2b0f736d7d4ace3295a",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 96251598,
+                "id": "Q96251598"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "7f6fa57fbd3a321af1350d74ce47be79efd616cc",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 33104279,
+                "id": "Q33104279"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "7f7dd87eb24b9d3e17980034bd7511358931d411",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 488383,
+                "id": "Q488383"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "c50602565c388474b71e819b70c16b77fe645195",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141756664,
+                "id": "Q141756664"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q17537576": {
+    "type": "item",
+    "id": "Q17537576",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "creative work"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "творческая работа"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "artistic creation"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "творческое произведение"
+        },
+        {
+          "language": "ru",
+          "value": "продукт творчества"
+        },
+        {
+          "language": "ru",
+          "value": "произведение"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "artwork"
+        },
+        {
+          "language": "en",
+          "value": "work of art"
+        },
+        {
+          "language": "en",
+          "value": "creative works"
+        },
+        {
+          "language": "en",
+          "value": "work"
+        },
+        {
+          "language": "en",
+          "value": "works"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "96a263b1fd5198f7652c95fd715a01064b98706c",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 15621286,
+                "id": "Q15621286"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "3f8e4202e0e9ddd31053f4df1c7d4c8e62e5e1b9",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141524128,
+                "id": "Q141524128"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "6395d8e351d3c9e6ff261207d2a281d755cc8eaf",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 133449656,
+                "id": "Q133449656"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141524128": {
+    "type": "item",
+    "id": "Q141524128",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "narrative scope"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "umbrella category of things a narrative role can be relative to"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "gmeow:NarrativeScope"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "1a32ec960170869ec154b4daa43c641d8ca614fe",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141250146,
+                "id": "Q141250146"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141756664": {
+    "type": "item",
+    "id": "Q141756664",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "human-made thing"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "вещь, созданная человеком"
+      }
+    },
+    "descriptions": {},
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "artificial endurant"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "af12726686921ff07a179775ddaaaa070a7e6806",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141756883,
+                "id": "Q141756883"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q15621286": {
+    "type": "item",
+    "id": "Q15621286",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "intellectual work"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "продукт умственного труда"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "work created through human thought and perception, including creative work"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "интеллектуальная работа"
+        },
+        {
+          "language": "ru",
+          "value": "интеллектуальное произведение"
+        },
+        {
+          "language": "ru",
+          "value": "произведение интеллекта"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "intellectual creation"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "6816cd087fe1d77b43353066e62beb22b242d383",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 386724,
+                "id": "Q386724"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q488383": {
+    "type": "item",
+    "id": "Q488383",
+    "labels": {
+      "ru": {
+        "language": "ru",
+        "value": "объект"
+      },
+      "en": {
+        "language": "en",
+        "value": "object"
+      }
+    },
+    "descriptions": {
+      "ru": {
+        "language": "ru",
+        "value": "философское понятие; то, на что направлена активность субъекта"
+      },
+      "en": {
+        "language": "en",
+        "value": "anything that may be observed or acted upon by a subject"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "objects"
+        },
+        {
+          "language": "en",
+          "value": "dul:Object"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "предмет"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "9d31d99ce62f7f1424d6d2be409f25a62397445f",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 23958852,
+                "id": "Q23958852"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "8fe679fe84844d6142f3d59c8d5341391c097f6c",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141751599,
+                "id": "Q141751599"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141250146": {
+    "type": "item",
+    "id": "Q141250146",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "persistent entity"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "PROV-O class"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "entity (PROV)"
+        },
+        {
+          "language": "en",
+          "value": "PROV entity"
+        },
+        {
+          "language": "en",
+          "value": "prov:Entity"
+        },
+        {
+          "language": "en",
+          "value": "gmeow:Entity"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "af12726686921ff07a179775ddaaaa070a7e6806",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141756883,
+                "id": "Q141756883"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "185a4ee2702b851887e9506e72217deee24bbab9",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141493485,
+                "id": "Q141493485"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141751599": {
+    "type": "item",
+    "id": "Q141751599",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "cognitive entity"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "познаваемая сущность"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "class unifying events, objects, and qualities"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "d0:CognitiveEntity"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "когнитивная сущность"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "f272b2fc7a32a5a41fa0c34364889b5d00562ba4",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 141642415,
+                "id": "Q141642415"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141756883": {
+    "type": "item",
+    "id": "Q141756883",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "persistent thing"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "general class of discrete, identifiable continuant entities"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "thing"
+        },
+        {
+          "language": "en",
+          "value": "crm:Thing"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "5be7ebd8b2dd1ade3648bf7dfd0843e8a3959f00",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 103940464,
+                "id": "Q103940464"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q386724": {
+    "type": "item",
+    "id": "Q386724",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "work"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "произведение"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "intellectual or artistic creation"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "творческая или научная работа (используется как корень в системе классов)"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "творческое или научное произведение"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "creation"
+        },
+        {
+          "language": "en",
+          "value": "artwork"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "1d5c88f623201d87d4bc8ca20049b81fc7bbc2da",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 16686448,
+                "id": "Q16686448"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q103940464": {
+    "type": "item",
+    "id": "Q103940464",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "continuant"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "континуанта"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "entity that persists, endures, or continues to exist through time while maintaining its identity"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "продолжающееся"
+        },
+        {
+          "language": "ru",
+          "value": "продолжаемое"
+        },
+        {
+          "language": "ru",
+          "value": "непрерывное"
+        },
+        {
+          "language": "ru",
+          "value": "длительное"
+        },
+        {
+          "language": "ru",
+          "value": "длящееся"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "continuant entity"
+        },
+        {
+          "language": "en",
+          "value": "bfo:Continuant"
+        },
+        {
+          "language": "en",
+          "value": "snap#Continuant"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "1c5e8fa6972fb543163f82f52d2e8b3211b7bd91",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 124711104,
+                "id": "Q124711104"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        },
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "3979c4ee389f1606f5bce477b936f53ce96d78be",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 134301389,
+                "id": "Q134301389"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "c7bcadc4151fad6c5c4b6246b0fd3a22dc29d3e9",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 136433660,
+                "id": "Q136433660"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141493485": {
+    "type": "item",
+    "id": "Q141493485",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "endurant"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "class of particulars"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "gsoc:Endurant"
+        },
+        {
+          "language": "en",
+          "value": "quality or endurant or abstract"
+        },
+        {
+          "language": "en",
+          "value": "abstract or quality or endurant"
+        },
+        {
+          "language": "en",
+          "value": "abstract or endurant or quality"
+        },
+        {
+          "language": "en",
+          "value": "endurant or quality or abstract"
+        },
+        {
+          "language": "en",
+          "value": "gufo:Endurant"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "6121f87e40b85e0af96b5ba6a38749e36c7254da",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 6502323,
+                "id": "Q6502323"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q141642415": {
+    "type": "item",
+    "id": "Q141642415",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "spatio-temporal particular"
+      }
+    },
+    "descriptions": {},
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "spatiotemporal particular"
+        },
+        {
+          "language": "en",
+          "value": "dol:Spatio-temporal particular"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "6121f87e40b85e0af96b5ba6a38749e36c7254da",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 6502323,
+                "id": "Q6502323"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q136433660": {
+    "type": "item",
+    "id": "Q136433660",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "entity (BFO)"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "сущность"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "top-level class of the BFO ontology"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "класс BFO"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "entity"
+        },
+        {
+          "language": "en",
+          "value": "BFO entity"
+        },
+        {
+          "language": "en",
+          "value": "BFO:entity"
+        }
+      ],
+      "mul": [
+        {
+          "language": "mul",
+          "value": "BFO_0000001"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "1c5e8fa6972fb543163f82f52d2e8b3211b7bd91",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 124711104,
+                "id": "Q124711104"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "07a161639702c3cda624d57463695bfc6c5439e3",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 35120,
+                "id": "Q35120"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q6502323": {
+    "type": "item",
+    "id": "Q6502323",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "particular"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "частное"
+      },
+      "mul": {
+        "language": "mul",
+        "value": "partikularno"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "as opposed to universal, in philosophy"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "в философии - противоположность универсальному"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "individual"
+        },
+        {
+          "language": "en",
+          "value": "entity"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "индивидуальное"
+        }
+      ],
+      "mul": [
+        {
+          "language": "mul",
+          "value": "gfo:Individual"
+        },
+        {
+          "language": "mul",
+          "value": "dol:Particular"
+        },
+        {
+          "language": "mul",
+          "value": "yamato:Particular"
+        },
+        {
+          "language": "mul",
+          "value": "gum:GUMThing"
+        },
+        {
+          "language": "mul",
+          "value": "db:Particular"
+        },
+        {
+          "language": "mul",
+          "value": "gsoc:Particular"
+        },
+        {
+          "language": "mul",
+          "value": "dul:Entity"
+        }
+      ]
+    },
+    "claims": {
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "231af9e88330f5898b34c53a58267fd4a6718b8f",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 132907471,
+                "id": "Q132907471"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q132907471": {
+    "type": "item",
+    "id": "Q132907471",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "individual item"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "предмет"
+      }
+    },
+    "descriptions": {
+      "en": {
+        "language": "en",
+        "value": "a non-class item, largest first order class"
+      }
+    },
+    "aliases": {
+      "en": [
+        {
+          "language": "en",
+          "value": "non-class item"
+        },
+        {
+          "language": "en",
+          "value": "non-class individual item"
+        },
+        {
+          "language": "en",
+          "value": "individual"
+        },
+        {
+          "language": "en",
+          "value": "item"
+        },
+        {
+          "language": "en",
+          "value": "gfo:Item"
+        }
+      ],
+      "ru": [
+        {
+          "language": "ru",
+          "value": "элемент"
+        },
+        {
+          "language": "ru",
+          "value": "вещь"
+        },
+        {
+          "language": "ru",
+          "value": "штука"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "7690277e00ce5abcc3d2c400a80f14b3202c813e",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 104086571,
+                "id": "Q104086571"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P279",
+            "hash": "07a161639702c3cda624d57463695bfc6c5439e3",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 35120,
+                "id": "Q35120"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  },
+  "Q35120": {
+    "type": "item",
+    "id": "Q35120",
+    "labels": {
+      "en": {
+        "language": "en",
+        "value": "entity"
+      },
+      "ru": {
+        "language": "ru",
+        "value": "сущность"
+      }
+    },
+    "descriptions": {
+      "ru": {
+        "language": "ru",
+        "value": "всё, что может быть предметом рассмотрения, обсуждения, наблюдения"
+      },
+      "en": {
+        "language": "en",
+        "value": "anything that can be considered, discussed, or observed"
+      }
+    },
+    "aliases": {
+      "ru": [
+        {
+          "language": "ru",
+          "value": "нечто"
+        },
+        {
+          "language": "ru",
+          "value": "что-то"
+        },
+        {
+          "language": "ru",
+          "value": "энтитет"
+        },
+        {
+          "language": "ru",
+          "value": "существующее"
+        },
+        {
+          "language": "ru",
+          "value": "сущее"
+        }
+      ],
+      "en": [
+        {
+          "language": "en",
+          "value": "thing"
+        },
+        {
+          "language": "en",
+          "value": "object"
+        },
+        {
+          "language": "en",
+          "value": "dul:Entity"
+        },
+        {
+          "language": "en",
+          "value": "owl#Thing"
+        },
+        {
+          "language": "en",
+          "value": "rdfs:Resource"
+        },
+        {
+          "language": "en",
+          "value": "resource"
+        }
+      ]
+    },
+    "claims": {
+      "P31": [
+        {
+          "mainsnak": {
+            "snaktype": "value",
+            "property": "P31",
+            "hash": "9d31d99ce62f7f1424d6d2be409f25a62397445f",
+            "datavalue": {
+              "value": {
+                "entity-type": "item",
+                "numeric-id": 23958852,
+                "id": "Q23958852"
+              },
+              "type": "wikibase-entityid"
+            },
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ],
+      "P279": [
+        {
+          "mainsnak": {
+            "snaktype": "novalue",
+            "property": "P279",
+            "hash": "5707f27eb132cf068fff5b07cbc05d112604f756",
+            "datatype": "wikibase-item"
+          },
+          "rank": "normal"
+        }
+      ]
+    }
+  }
+}
