@@ -4,8 +4,7 @@ from fastapi import HTTPException, Request
 
 from backend.engine import i18n as engine_i18n
 from backend.api.application import errors
-from backend.api.http import dependencies
-from backend.api.http import i18n
+from backend.api.http.transport import i18n
 
 
 def failure(request, status, message):
@@ -14,24 +13,7 @@ def failure(request, status, message):
 
 SESSION_COOKIE = 'movie_session'
 CSRF_COOKIE = 'movie_csrf'
-
-
-async def current_user(request):
-    return await dependencies.get_auth_service(request).current_user(request.cookies.get(SESSION_COOKIE))
-
-
-async def require_user(request):
-    user = await current_user(request)
-    if user is None:
-        raise failure(request, 401, 'Authentication required')
-    return user
-
-
-async def require_admin(request):
-    user = await require_user(request)
-    if user.role != 'admin':
-        raise failure(request, 403, 'Administrator access required')
-    return user
+GUEST_COOKIE = 'movie_search_guest'
 
 
 def csrf_token(request):

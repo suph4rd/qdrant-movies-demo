@@ -679,3 +679,38 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
+#: backend/api/presentation/messages.py
+msgid "An external search is already in progress. Local search is still available."
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "Search task not found."
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "External search failed. Please try again."
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "External search completed"
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "External search failed"
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "External search in progress"
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "Search notifications"
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "Mark as read"
+msgstr ""
+
+#: backend/api/presentation/messages.py
+msgid "View search task"
+msgstr ""

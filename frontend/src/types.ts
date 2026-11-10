@@ -53,3 +53,15 @@ export interface SearchResult {
         recommendations: { id: string; score: number; payload: Movie }[]
     }[]
 }
+
+export interface SearchTask {
+    task_id: string
+    status: 'queued' | 'running' | 'succeeded' | 'failed'
+    params: { q: string; mode: string; limit: string }
+    created_at?: string
+    completed_at?: string | null
+    read?: boolean
+    result?: SearchResult | null
+    error?: string | null
+}
+export type SearchSubmission = { token: string } | { task_id: string; status: SearchTask['status'] }

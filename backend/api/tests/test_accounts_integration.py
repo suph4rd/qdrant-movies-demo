@@ -9,7 +9,7 @@ import sqlalchemy as sa
 
 from backend.api import app as web_app
 from backend.api import create_admin
-from backend.api.http import security
+from backend.api.http.transport import security
 from backend.api.infrastructure import models
 from backend.api.infrastructure import passwords
 

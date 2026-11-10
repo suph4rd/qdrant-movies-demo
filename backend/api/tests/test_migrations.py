@@ -34,8 +34,8 @@ class MigrationTests(unittest.IsolatedAsyncioTestCase):
             db = database.Database(url)
             async with db.engine.connect() as connection:
                 tables = await connection.run_sync(lambda sync: sa.inspect(sync).get_table_names(schema=schema))
-                self.assertEqual(set(tables), {'alembic_version', 'users', 'sessions', 'saved_movies', 'marks'})
-                self.assertEqual(await connection.scalar(sa.text('SELECT version_num FROM alembic_version')), '0001')
+                self.assertEqual(set(tables), {'alembic_version', 'users', 'sessions', 'saved_movies', 'marks', 'search_owners', 'search_tasks', 'search_outbox'})
+                self.assertEqual(await connection.scalar(sa.text('SELECT version_num FROM alembic_version')), '0002')
             async with db.sessions.begin() as session:
                 user = models.User(email='persist@example.com', password_hash='test-only')
                 session.add(user)

@@ -1,4 +1,4 @@
-from backend.api.http import security
+from backend.api.http.transport import security
 
 
 def post(client, path, data=None, **kwargs):

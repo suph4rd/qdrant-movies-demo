@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import SearchNotifications from './components/SearchNotifications.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from './api'
 import { refreshSession, session, setContext } from './session'
@@ -97,6 +98,7 @@ async function logout() {
             <p role="alert" class="error">{{ session.error }}</p>
             <button @click="refreshSession()">{{ t('Retry') }}</button>
         </div>
-        <RouterView v-else-if="session.context" />
+        <SearchNotifications v-if="session.context" />
+        <RouterView v-if="session.context && !session.loading && !session.error" />
     </main>
 </template>

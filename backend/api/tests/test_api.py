@@ -9,7 +9,10 @@ from fastapi.testclient import TestClient
 
 from backend.engine import catalog, constants, errors as engine_errors, i18n, imports, services
 from backend.api.application import dtos, errors
-from backend.api.http import api, dependencies, exception_handlers, security
+from backend.api.http import routes as api
+from backend.api.http import dependencies
+from backend.api.http.transport import exception_handlers
+from backend.api.http.transport import security
 from backend.api.infrastructure import snapshots
 
 
@@ -126,7 +129,7 @@ class ApiTests(unittest.TestCase):
                 self.assertEqual(source['wikidata_id'], 'Q901')
                 self.assertIn(source['mark_reference'], self.state.movie_cards)
                 self.assertEqual(source['title'], 'Новый фильм' if lang == 'ru' else 'New movie')
-            search.assert_awaited_once_with('New movie', limit=5, allow_import=True)
+            search.assert_awaited_once_with('New movie', limit=5, allow_import=False)
         self.assertEqual(result, original)
 
     def test_expired_or_mismatched_snapshot_is_read_only(self):

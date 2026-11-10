@@ -61,3 +61,6 @@ nav a[aria-current="page"]:hover { background: #194236; }
 button:disabled { opacity: .6; cursor: wait; }
 
 .account-status { min-height: 1.6em; }
+
+.search-notifications { margin-block: 1rem; padding: 1rem; border: 1px solid currentColor; border-radius: .5rem; }
+.search-notifications > div { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: .5rem; }

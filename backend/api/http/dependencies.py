@@ -1,6 +1,6 @@
 from fastapi import Request
 
-from backend.api.application.services import account, admin, auth, search
+from backend.api.application.services import account, admin, auth, search, search_tasks
 
 
 def get_settings(request: Request):
@@ -32,3 +32,7 @@ def get_admin_service(request: Request):
 def get_search_service(request: Request):
     state = request.app.state
     return search.SearchService(state.catalog, state.movie_store, state.wikidata, state.search_results)
+
+
+def get_search_task_service(request):
+    return search_tasks.SearchTaskService(request.app.state.database.sessions)

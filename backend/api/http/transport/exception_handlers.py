@@ -4,7 +4,7 @@ from starlette.exceptions import HTTPException
 
 from backend.engine import i18n as engine_i18n
 from backend.api.application import errors
-from backend.api.http import i18n, security
+from backend.api.http.transport import i18n, security
 
 
 def error_response(request, status, message, headers=None):

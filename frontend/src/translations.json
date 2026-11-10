@@ -154,5 +154,14 @@
   "Cannot connect to the server. Try again.": "Не удалось подключиться к серверу. Попробуйте ещё раз.",
   "The request failed. Try again.": "Не удалось выполнить запрос. Попробуйте ещё раз.",
   "Retry": "Повторить",
-  "Page not found.": "Страница не найдена."
+  "Page not found.": "Страница не найдена.",
+  "An external search is already in progress. Local search is still available.": "Внешний поиск уже выполняется. Локальный поиск по-прежнему доступен.",
+  "Search task not found.": "Задача поиска не найдена.",
+  "External search failed. Please try again.": "Внешний поиск завершился ошибкой. Повторите попытку.",
+  "External search completed": "Внешний поиск завершён",
+  "External search failed": "Ошибка внешнего поиска",
+  "External search in progress": "Внешний поиск выполняется",
+  "Search notifications": "Уведомления о поиске",
+  "Mark as read": "Отметить прочитанным",
+  "View search task": "Открыть задачу поиска"
 }

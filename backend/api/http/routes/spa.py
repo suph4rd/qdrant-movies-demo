@@ -3,10 +3,10 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 
-from backend.api.http import i18n
+from backend.api.http.transport import i18n
 
 
-CLIENT_PATH = Path(__file__).resolve().parents[3] / 'frontend' / 'dist'
+CLIENT_PATH = Path(__file__).resolve().parents[4] / 'frontend' / 'dist'
 router = APIRouter()
 
 

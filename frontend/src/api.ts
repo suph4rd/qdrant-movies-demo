@@ -4,6 +4,8 @@ export class ApiError extends Error {
     constructor(
         message: string,
         public status: number,
+        public code?: string,
+        public task_id?: string,
     ) {
         super(message)
     }
@@ -46,6 +48,8 @@ export async function api<T>(
         throw new ApiError(
             data?.error || t('The request failed. Try again.'),
             response.status,
+            data?.code,
+            data?.task_id,
         )
     }
     return data as T

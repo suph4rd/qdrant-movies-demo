@@ -638,3 +638,32 @@ msgstr "Кабинет"
 
 msgid "Invalid request."
 msgstr "Некорректный запрос."
+
+msgid ""
+"An external search is already in progress. Local search is still "
+"available."
+msgstr "Внешний поиск уже выполняется. Локальный поиск по-прежнему доступен."
+
+msgid "Search task not found."
+msgstr "Задача поиска не найдена."
+
+msgid "External search failed. Please try again."
+msgstr "Внешний поиск завершился ошибкой. Повторите попытку."
+
+msgid "External search completed"
+msgstr "Внешний поиск завершён"
+
+msgid "External search failed"
+msgstr "Ошибка внешнего поиска"
+
+msgid "External search in progress"
+msgstr "Внешний поиск выполняется"
+
+msgid "Search notifications"
+msgstr "Уведомления о поиске"
+
+msgid "Mark as read"
+msgstr "Отметить прочитанным"
+
+msgid "View search task"
+msgstr "Открыть задачу поиска"

@@ -10,7 +10,8 @@ from backend.engine.stores import factory
 from backend.api import app
 from backend.api.application import errors
 from backend.api.http import dependencies
-from backend.api.http import security
+from backend.api.http.transport import security
+from backend.api.http.adapters import security as authentication
 from backend.api.tests import forms
 
 
@@ -19,7 +20,7 @@ class ServiceBoundaryTests(unittest.TestCase):
         self.enterContext(patch.object(factory, 'create_store', return_value=AsyncMock()))
         self.client = self.enterContext(TestClient(app.create_app(), follow_redirects=False))
         self.user = SimpleNamespace(id=1, email='user@example.com', role='admin')
-        self.enterContext(patch.object(security, 'current_user', return_value=self.user))
+        self.enterContext(patch.object(authentication, 'current_user', return_value=self.user))
 
     def test_admin_errors_are_localized_with_original_status(self):
         service = AsyncMock()

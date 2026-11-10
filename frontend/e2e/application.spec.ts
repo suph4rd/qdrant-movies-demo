@@ -8,6 +8,7 @@ const movie: Movie = { id: movieId, title: 'A distant planet', year: 2026, genre
 
 type Call = { path: string; method: string; body: Record<string, unknown> | null; query: URLSearchParams; csrf: string | undefined }
 async function mockApi(page: Page, user: User | null = null) {
+  await page.routeWebSocket('**/api/notifications/ws', () => {})
   const state = { user, csrf: 'initial-csrf', marks: {} as Record<string, Mark>, calls: [] as Call[], error: '', delaySearch: false, blocked: false }
   await page.route('**/api/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname.slice(4), method = request.method()
@@ -17,6 +18,7 @@ async function mockApi(page: Page, user: User | null = null) {
     const shownMovie = { ...movie, title: ru ? 'Далёкая планета' : movie.title }
     const context = (): Context => ({ user: state.user, lang: ru ? 'ru' : 'en', csrf_token: state.csrf, catalog: [shownMovie], search_modes: ['movie', 'description'], limit_options: ['5', '10', '20', '50'], default_mode: 'movie', default_limit: '10', movie_count: 251, marks: state.marks })
     const respond = (json: unknown, status = 200) => route.fulfill({ status, json })
+    if (path === '/search-tasks') return respond({ tasks: [] })
     if (path === '/context') return respond(context())
     if (path === '/login' || path === '/register') {
       if (state.error) return respond({ error: state.error }, 400)
@@ -272,4 +274,58 @@ test('removing the last watchlist movie updates lists and clamps scroll to the s
   expect(await scrollY(page)).toBeLessThan(before)
   expect(await scrollY(page)).toBeGreaterThan(500)
   await expect(page.getByRole('region', { name: 'Watched (24)', exact: true }).locator('article')).toHaveCount(12)
+})
+
+test('queued searches free the form and restore completion notifications across pages and reloads', async ({ page }) => {
+  await mockApi(page, target)
+  const task = { task_id: 'a'.repeat(32), status: 'queued', params: { q: 'External title', mode: 'movie', limit: '10' }, read: false }
+  let started = false
+  let completed = false
+  let read = false
+  let ws: { send: (data: string) => void } | undefined
+  await page.routeWebSocket('**/api/notifications/ws', socket => { ws = socket })
+  await page.route('**/api/search-tasks**', async route => {
+    const path = new URL(route.request().url()).pathname
+    if (path.endsWith('/read')) { read = true; return route.fulfill({ json: { ok: true } }) }
+    if (path.endsWith('/search-tasks')) return route.fulfill({ json: { tasks: started && !read ? [{ ...task, status: completed ? 'succeeded' : 'queued' }] : [] } })
+    return route.fulfill({ json: { task: { ...task, status: completed ? 'succeeded' : 'queued', result: completed ? { messages: [], groups: [{ source: null, recommendations: [{ id: movieId, score: .93, payload: movie }] }] } : null }, marks: {} } })
+  })
+  await page.route('**/api/search?*', async route => {
+    if (route.request().method() !== 'POST') return route.fallback()
+    const body = route.request().postDataJSON()
+    if (body.q === '1') return route.fulfill({ json: { token: 'local' } })
+    if (started && body.q !== task.params.q) return route.fulfill({ status: 409, json: { code: 'external_search_in_progress', task_id: task.task_id, error: 'An external search is already in progress. Local search is still available.' } })
+    started = true
+    return route.fulfill({ status: 202, json: { task_id: task.task_id, status: 'queued' } })
+  })
+  await page.goto('/?lang=en')
+  await page.getByLabel('Movie title, ID, or description').fill(task.params.q)
+  await page.getByRole('button', { name: 'Find similar movies' }).click()
+  await expect(page.getByRole('link', { name: 'External search in progress: External title' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Find similar movies' })).toBeEnabled()
+  await expect(page).toHaveURL('/?lang=en')
+  await page.getByLabel('Movie title, ID, or description').fill('Different external title')
+  ws?.send(JSON.stringify({ event: 'heartbeat' }))
+  await expect(page.getByLabel('Movie title, ID, or description')).toHaveValue('Different external title')
+  await page.getByRole('button', { name: 'Find similar movies' }).click()
+  await expect(page.getByRole('alert')).toContainText('An external search is already in progress.')
+  await expect(page.getByRole('link', { name: 'View search task' })).toBeVisible()
+  await page.getByLabel('Movie title, ID, or description').fill('1')
+  await page.getByRole('button', { name: 'Find similar movies' }).click()
+  await expect(page).toHaveURL(/result=local/)
+  await page.getByRole('link', { name: 'Account', exact: true }).click()
+  completed = true
+  ws?.send(JSON.stringify({ event: 'search.completed', task_id: task.task_id, status: 'succeeded' }))
+  ws?.send(JSON.stringify({ event: 'search.completed', task_id: task.task_id, status: 'succeeded' }))
+  await expect(page.getByRole('link', { name: 'External search completed: External title' })).toHaveCount(1)
+  await expect(page).toHaveURL('/account?lang=en')
+  await page.reload()
+  await expect(page.getByRole('link', { name: 'External search completed: External title' })).toBeVisible()
+  await page.getByRole('link', { name: 'RU', exact: true }).click()
+  await expect(page.getByRole('link', { name: 'Внешний поиск завершён: External title' })).toBeVisible()
+  await page.getByRole('link', { name: 'Внешний поиск завершён: External title' }).click()
+  await expect(page.getByRole('heading', { name: movie.title })).toBeVisible()
+  await expect.poll(() => read).toBe(true)
+  await expect(page.getByRole('link', { name: 'Внешний поиск завершён: External title' })).toHaveCount(0)
+  await noOverflow(page)
 })

@@ -70,3 +70,15 @@ MESSAGES = (
 )
 
 API_MESSAGES = (i18n.N_('Invalid request.'),)
+
+SEARCH_TASK_MESSAGES = (
+    i18n.N_('An external search is already in progress. Local search is still available.'),
+    i18n.N_('Search task not found.'),
+    i18n.N_('External search failed. Please try again.'),
+    i18n.N_('External search completed'),
+    i18n.N_('External search failed'),
+    i18n.N_('External search in progress'),
+    i18n.N_('Search notifications'),
+    i18n.N_('Mark as read'),
+    i18n.N_('View search task'),
+)

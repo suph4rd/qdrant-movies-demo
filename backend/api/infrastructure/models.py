@@ -45,3 +45,36 @@ class Mark(Base):
     __table_args__ = (sa.CheckConstraint('NOT (watched AND watchlist)', name='exclusive_watch_state'),)
 
 
+
+class SearchOwner(Base):
+    __tablename__ = 'search_owners'
+    id: orm.Mapped[str] = orm.mapped_column(sa.String(80), primary_key=True)
+    user_id: orm.Mapped[int | None] = orm.mapped_column(sa.ForeignKey('users.id'), unique=True)
+
+
+class SearchTask(Base):
+    __tablename__ = 'search_tasks'
+    id: orm.Mapped[str] = orm.mapped_column(sa.String(32), primary_key=True)
+    owner_id: orm.Mapped[str] = orm.mapped_column(sa.ForeignKey('search_owners.id'), index=True)
+    query: orm.Mapped[str] = orm.mapped_column(sa.Text)
+    mode: orm.Mapped[str] = orm.mapped_column(sa.String(16))
+    limit: orm.Mapped[str] = orm.mapped_column(sa.String(2))
+    status: orm.Mapped[str] = orm.mapped_column(sa.String(16), default='queued')
+    result: orm.Mapped[dict | None] = orm.mapped_column(sa.JSON)
+    error: orm.Mapped[dict | None] = orm.mapped_column(sa.JSON)
+    created_at: orm.Mapped[datetime] = orm.mapped_column(sa.DateTime(timezone=True), default=clock.now)
+    completed_at: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))
+    read_at: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))
+    attempt_token: orm.Mapped[str | None] = orm.mapped_column(sa.String(32))
+    lease_until: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))
+    __table_args__ = (
+        sa.CheckConstraint("status IN ('queued', 'running', 'succeeded', 'failed')", name='search_task_status'),
+        sa.Index('uq_search_tasks_active_owner', 'owner_id', unique=True,
+                 postgresql_where=sa.text("status IN ('queued', 'running')")),
+    )
+
+
+class SearchOutbox(Base):
+    __tablename__ = 'search_outbox'
+    task_id: orm.Mapped[str] = orm.mapped_column(sa.ForeignKey('search_tasks.id'), primary_key=True)
+    published_at: orm.Mapped[datetime | None] = orm.mapped_column(sa.DateTime(timezone=True))

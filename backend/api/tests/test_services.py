@@ -98,7 +98,7 @@ class SearchServiceTests(unittest.IsolatedAsyncioTestCase):
             params = {**self.params, 'mode': 'movie'}
             await self.service.submit(params)
             service_type.assert_called_once_with(self.store, self.service.catalog, self.service.wikidata)
-            service_type.return_value.search.assert_awaited_once_with('space', limit=5, allow_import=True)
+            service_type.return_value.search.assert_awaited_once_with('space', limit=5, allow_import=False)
 
     def test_fifo_limits_and_reads_do_not_refresh_eviction_order(self):
         first = self.results.put({'params': ('a', 'movie', '5')})
@@ -326,6 +326,34 @@ class LayerBoundaryTests(unittest.TestCase):
                     for name in names:
                         self.assertFalse(any(name == item or name.startswith(item + '.') for item in forbidden),
                                          f'{path}: {name}')
+
+    def test_http_layers_do_not_import_higher_layers(self):
+        root = Path(__file__).resolve().parents[1] / 'http'
+        restrictions = {
+            'transport': {'backend.api.http.routes', 'backend.api.http.adapters',
+                          'backend.api.http.dependencies'},
+            'adapters': {'backend.api.http.routes'},
+        }
+        for layer, forbidden in restrictions.items():
+            for path in (root / layer).rglob('*.py'):
+                parts = path.relative_to(root.parent.parent.parent).with_suffix('').parts
+                package = '.'.join(parts if path.name == '__init__.py' else parts[:-1])
+                if path.name == '__init__.py':
+                    package = package.removesuffix('.__init__')
+                for node in ast.walk(ast.parse(path.read_text())):
+                    if isinstance(node, ast.Import):
+                        names = [item.name for item in node.names]
+                    elif isinstance(node, ast.ImportFrom):
+                        module = node.module or ''
+                        if node.level:
+                            base = package.split('.')[:len(package.split('.')) - node.level + 1]
+                            module = '.'.join([*base, *([module] if module else [])])
+                        names = [module, *[f'{module}.{item.name}' for item in node.names]]
+                    else:
+                        continue
+                    for name in names:
+                        self.assertFalse(any(name == prefix or name.startswith(prefix + '.')
+                                             for prefix in forbidden), f'{path}: {name}')
 
     def test_http_and_presentation_do_not_import_sql_or_models(self):
         root = Path(__file__).resolve().parents[1]

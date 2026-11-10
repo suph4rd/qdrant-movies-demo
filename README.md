@@ -41,7 +41,7 @@ curl --fail http://127.0.0.1:6333/readyz
 ```
 
 The application runs as an unprivileged user. Ports are bound to IPv4 loopback:
-web 18000, TEI 18080, Qdrant REST 6333 and gRPC 6334. On macOS use `127.0.0.1`;
+web 18000, TEI 18080, Qdrant REST 6333, gRPC 6334 and Kafka 19092. On macOS use `127.0.0.1`;
 `localhost:18000` may reach AirPlay over IPv6 instead. This is a local demo without
 TLS or external access. Qdrant dashboard: http://127.0.0.1:6333/dashboard.
 
@@ -58,6 +58,7 @@ Settings in `env/.env`:
 | `EMBEDDING_URL` | `http://tei:18080` | `http://127.0.0.1:18080` |
 | `MOVIES_COLLECTION` | `movies_semantic_v1` | `movies_semantic_v1` |
 | `EMBEDDING_CACHE` | `/home/app/.cache/embeddings` (fixed in Compose) | repository-root `.cache/embeddings` |
+| `KAFKA_BOOTSTRAP_SERVERS` | `kafka:9092` | `127.0.0.1:19092` |
 | `MOVIES_PATH` | `/app/backend/api/movies.json` | package-relative `backend/api/movies.json` |
 
 `WEB_PORT`, `TEI_PORT`, `QDRANT_HTTP_PORT` and `QDRANT_GRPC_PORT` change host ports
@@ -115,7 +116,7 @@ Stop with `docker compose --env-file env/.env -f docker/compose.yaml stop`.
 volumes**, including accounts, Qdrant data, weights and cached embeddings.
 
 The repository root is the build context for both `backend/api/Dockerfile` and
-`frontend/Dockerfile`. Backend, loader and migrate share one Python image with
+`frontend/Dockerfile`. Backend, loader, migrate, publisher and worker share one Python image with
 no Node dependency. Python startup and health scripts live in `backend/scripts/`;
 the TEI entrypoint remains in `docker/scripts/`. Nginx returns 404 for missing
 assets, disables index caching and caches hashed assets for one year.
@@ -129,7 +130,7 @@ python3.15 --version
 python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r backend/api/requirements.txt
-docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei postgres
+docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei postgres kafka kafka-init
 curl --fail http://127.0.0.1:6333/readyz
 curl --fail http://127.0.0.1:18080/health
 python -m backend.engine.load --url http://127.0.0.1:6333 --embedding-url http://127.0.0.1:18080 --data backend/api/movies.json
@@ -190,8 +191,8 @@ year, original title and Wikidata QID where available. All source movies are exc
 from every recommendation group.
 
 The search checks the original catalog and saved Qdrant movies first. If neither
-contains a match, submitting **By movie** searches Wikidata in English and Russian
-and automatically imports exact title/year matches, including aliases and original
+contains a match, submitting **By movie** queues a background Wikidata search in
+English and Russian and automatically imports exact title/year matches, including aliases and original
 titles. Only film entities with complete required metadata are imported. English
 names, descriptions and genres are required. Missing Russian metadata falls back
 to English, with a visible description-language label. New movies receive semantic
@@ -201,7 +202,7 @@ in the interface. Successful imports remain saved if a later import fails; statu
 messages explain added and skipped cards. Repeated imports do not create duplicate
 records. Existing TMDB imports retain their original IDs, metadata and source links.
 
-External imports require no account, API key or token. The web server reads the
+External imports require no account, API key or token. The queue worker reads the
 public [Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access) over HTTPS;
 network access to Wikidata is required. Its structured data is published under
 CC0. No requests are sent to the TMDB API. `TMDB_API_TOKEN` is no longer used and
@@ -212,12 +213,15 @@ movies can therefore produce less precise plot-based recommendations than the
 original catalog. The interface marks these descriptions. Incomplete entities are
 skipped rather than filled with invented text. Wikipedia text is not imported.
 
-Only POST `/api/search` can import. GET links, refreshes and language switches never
-contact Wikidata or write movies. Search POST results and messages are kept in a
-bounded server-side cache of 128 searches, addressed by an opaque `result`
-parameter in the client URL. This demo uses one web worker; snapshots expire
-on restart or eviction. An expired link performs a read-only search of saved
-movies. Imported movies themselves persist in Qdrant across restarts.
+POST `/api/search` returns a synchronous result token for saved movies and description
+queries. External searches return 202 and run through PostgreSQL outbox → Kafka →
+worker → PostgreSQL → WebSocket. Only queue workers contact Wikidata or import movies;
+GET links, refreshes and language switches never do. Local result snapshots use a
+bounded process-local cache of 128 searches, addressed by `result` in the URL;
+they expire on restart or eviction. An expired local link performs a read-only
+search of saved movies. External task results are durable and addressed by `task`
+in the URL. Their messages and movie cards are localized when read, with fresh
+verified mark references. Imported movies persist in Qdrant across restarts.
 
 **By description** accepts free text in Russian or English. Select that mode,
 enter a plot or mood and submit. TEI encodes the query and Qdrant searches all
@@ -324,8 +328,12 @@ models; `database.py` manages database resources, `clock.py` supplies UTC time,
 and `passwords.py` handles Argon2, rehash checks, and token hashing.
 `backend/api/infrastructure/snapshots.py` owns per-application FIFO caches
 (128 search results and 1024 movie card references).
-`backend/api/http/api.py` exposes the same application services through JSON under `/api`.
-`backend/api/http/security.py` checks cookie sessions, Origin and the `X-CSRF-Token`
+`backend/api/http/dependencies.py` constructs application services. HTTP routes depend on
+adapters and transport helpers; adapters depend on transport, while transport never
+imports routes, adapters or service factories. The combined router registers SPA last.
+`backend/api/http/routes/` exposes the same application services through JSON under `/api`.
+`backend/api/http/adapters/security.py` resolves cookie sessions and checks roles.
+`backend/api/http/transport/security.py` checks Origin and the `X-CSRF-Token`
 header. `/api/context` supplies the user, language, CSRF token, catalog, marks
 and search options; authentication rotates both session and CSRF tokens.
 `backend/api/presentation/api.py` localizes and serializes data without database access.
@@ -335,7 +343,7 @@ Movie IDs are decimal strings throughout JSON, preserving unsigned 64-bit IDs.
 `frontend/src/` contains Vue pages, shared components, a typed fetch client,
 session state and EN/RU dictionaries. Vue Router preserves search snapshots,
 query parameters, language and pagination in browser history. The original CSS
-is retained in `frontend/src/style.css`. `backend/api/http/spa.py` serves `frontend/dist`
+is retained in `frontend/src/style.css`. `backend/api/http/routes/spa.py` serves `frontend/dist`
 relative to package files, including direct links to account and admin pages.
 Unknown API/static paths return 404; a missing client build returns a localized
 503 with build instructions. No Jinja2 templates or HTML form handlers remain.
@@ -497,3 +505,95 @@ python -m unittest -v
 Do not point integration tests at the application database. Tests cover account
 isolation, session expiry/revocation, state transitions, CSRF, imported snapshots,
 pagination and administration. Qdrant and TEI are mocked for these scenarios.
+
+## External search queue
+
+Each account can have one `queued` or `running` external search across tabs,
+browsers and backend processes. Guests share a slot within a random HttpOnly
+browser cookie; the database stores a hash, never the cookie secret. The saved
+catalog/Qdrant lookup runs first, so local movie and description searches remain
+available. Submitting the same trimmed query, mode and limit returns the active
+`task_id` with 202. A different external request gets 409
+`external_search_in_progress` with a link to that task. Logging in uses the
+account slot for new tasks and also checks this browser's active guest task.
+
+Notifications appear on every page without automatic navigation. WebSocket
+reconnects restore unread completions, deduplicated by task ID. Opening a result
+or selecting **Mark as read** acknowledges it. Only terminal status releases the
+slot; acknowledgement does not. Browser disconnection and infrastructure outages
+do not release it. No automatic cancellation or result deletion is implemented.
+Expected failures are stored with localization metadata; unexpected worker errors
+are logged with tracebacks and shown as a safe localized message. Completed
+failures are not retried automatically.
+
+Owner rows are locked in stable order in a short transaction; a partial unique
+index additionally enforces one active task per owner. The same transaction
+creates its outbox record. The publisher sends `{version:1,task_id}` keyed by
+`task_id` to `movie-search.requests.v1`, and marks publication only after broker
+acknowledgement. Delivery is at least once. Worker group
+`movie-search-workers-v1` skips completed tasks, uses a fenced 60-second attempt
+lease renewed every 15 seconds, and commits the partition offset only after
+terminal state is durable. Network operations hold no database transaction.
+Expired attempts can be reclaimed; Qdrant's deterministic IDs and atomic
+insert-only import make re-execution safe after an interrupted write. Graceful
+shutdown cancels work and releases its attempt lease before closing clients,
+while keeping the user's slot occupied until completion.
+
+Compose includes a single KRaft broker, Apache Kafka **4.1.2**, pinned by digest,
+with persistent `kafka-storage`. `kafka-init` creates three partitions with
+replication factor 1 and seven-day retention. Publisher and worker use the shared
+Python image and pinned `aiokafka==0.15.0`, verified on Python 3.15.2. Nginx and
+Vite forward WebSocket upgrades; the server sends heartbeat messages every 15
+seconds. Kafka is published only on `127.0.0.1:19092` by default. For an existing
+`env/.env`, merge `KAFKA_PORT=19092` and `KAFKA_BOOTSTRAP_SERVERS=kafka:9092`
+without replacing other settings. Changing `KAFKA_PORT` changes both its host port
+and advertised external listener; local clients must use the new port.
+
+The normal `docker compose ... up -d --build` command runs migrations, broker
+initialization, publisher and worker. For local Python, start Kafka with the
+infrastructure command above, wait for `kafka-init` to exit successfully, and run
+these in separate terminals with the same database and store settings as FastAPI:
+
+```sh
+source .venv/bin/activate
+export DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies'
+export KAFKA_BOOTSTRAP_SERVERS='127.0.0.1:19092'
+python -m backend.api.queue.publisher
+# In another terminal with the same environment:
+python -m backend.api.queue.worker
+```
+
+Diagnose pending tasks without deleting volumes or clearing active slots:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml ps -a
+docker compose --env-file env/.env -f docker/compose.yaml logs --tail=100 kafka kafka-init publisher worker
+docker compose --env-file env/.env -f docker/compose.yaml exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server kafka:9092 --describe --group movie-search-workers-v1
+```
+
+An unpublished outbox row indicates the publisher/broker needs recovery. A
+published queued task points to worker availability or consumer lag. A running
+task with an expired lease can be resumed by redelivery after worker restart.
+PostgreSQL remains the source of truth. Recover infrastructure rather than
+manually releasing the user slot. Keep outages shorter than Kafka's seven-day
+retention; if records expire, an operator must republish the affected active task
+IDs. `down` preserves Kafka data; `down -v` deletes its volume as well.
+
+Queue verification uses disposable PostgreSQL schemas. With a separate test
+database and ready Kafka/Qdrant/TEI on their default loopback ports:
+
+```sh
+export TEST_DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies_test'
+python -m unittest -v
+QUEUE_INTEGRATION=1 python -m unittest -v backend.api.tests.test_search_queue
+```
+
+The optional integration test creates and removes its own Kafka topic and Qdrant
+collection. A deterministic Wikidata fixture exercises the real publisher,
+consumer, PostgreSQL, TEI and Qdrant without depending on live provider data. It
+kills the worker after the Qdrant insert, expires the abandoned lease, starts a
+new worker process, and verifies completion, committed offsets and one movie
+after duplicate Kafka deliveries. HTTP/database tests cover concurrent owners,
+authentication transitions, failures, CSRF and account isolation; WebSocket and
+desktop/mobile browser tests cover origin checks, reconnects, both languages and
+notifications across navigation and reloads.

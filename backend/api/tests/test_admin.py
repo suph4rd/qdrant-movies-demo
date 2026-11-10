@@ -10,8 +10,9 @@ from sqlalchemy.ext import asyncio as sa_async
 import httpx
 import sqlalchemy as sa
 
-from backend.api.http import security
-from backend.api.http import api, exception_handlers
+from backend.api.http.transport import security
+from backend.api.http import routes as api
+from backend.api.http.transport import exception_handlers
 from backend.api.infrastructure import clock
 from backend.api.infrastructure import database
 from backend.api.infrastructure import models

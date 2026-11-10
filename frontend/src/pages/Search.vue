@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api } from '../api'
+import { readTask, rememberTask, searchTasks } from '../searchTasks'
+import { ApiError, api } from '../api'
 import { session } from '../session'
 import { t } from '../i18n'
-import type { Mark, SearchResult } from '../types'
+import type { SearchTask, SearchSubmission, Mark, SearchResult } from '../types'
 import MovieCard from '../components/MovieCard.vue'
 import MovieMarks from '../components/MovieMarks.vue'
 const route = useRoute(),
@@ -25,7 +26,7 @@ function value(key: string, fallback: string) {
     return typeof raw === 'string' ? raw : fallback
 }
 watch(
-    () => route.fullPath,
+    [() => route.fullPath, () => searchTasks.tasks.find(task => task.task_id === value('task', ''))?.status],
     async () => {
         const current = ++revision
         query.value = value('q', '')
@@ -34,6 +35,30 @@ watch(
         result.value = null
         error.value = ''
         loading.value = false
+        if (value('task', '')) {
+            loading.value = true
+            try {
+                const data = await api<{ task: SearchTask; marks: Record<string, Mark>; movie_count?: number | null }>(`/search-tasks/${encodeURIComponent(value('task', ''))}`)
+                if (current !== revision) return
+                query.value = data.task.params.q
+                mode.value = data.task.params.mode
+                limit.value = data.task.params.limit
+                result.value = data.task.result || null
+                error.value = data.task.error || ''
+                if (session.context) {
+                    session.context.marks = data.marks
+                    if (data.movie_count !== undefined) session.context.movie_count = data.movie_count
+                }
+                if (data.task.status === 'succeeded' || data.task.status === 'failed') {
+                    await readTask(data.task.task_id).catch(cause => { searchTasks.error = cause instanceof Error ? cause.message : String(cause) })
+                } else {
+                    rememberTask(data.task)
+                }
+            } catch (cause) {
+                if (current === revision) error.value = cause instanceof Error ? cause.message : String(cause)
+            } finally { if (current === revision) loading.value = false }
+            return
+        }
         if (!Object.hasOwn(route.query, 'q')) return
         loading.value = true
         try {
@@ -67,23 +92,30 @@ watch(
     },
     { immediate: true },
 )
+const conflictTask = ref('')
 async function submit() {
     if (busy.value) return
     busy.value = true
     error.value = ''
+    conflictTask.value = ''
     const current = revision
     const params = { q: query.value, mode: mode.value, limit: limit.value }
     try {
-        const data = await api<{ token: string }>('/search', {
+        const data = await api<SearchSubmission>('/search', {
             method: 'POST',
             body: params,
         })
         if (current !== revision) return
+        if ('task_id' in data) {
+            rememberTask({ ...data, params })
+            return
+        }
         await router.push({
             path: '/',
             query: { ...params, result: data.token, lang: session.lang },
         })
     } catch (cause) {
+        if (cause instanceof ApiError && cause.task_id) conflictTask.value = cause.task_id
         error.value = cause instanceof Error ? cause.message : String(cause)
     } finally {
         busy.value = false
@@ -158,7 +190,9 @@ async function submit() {
         </p>
     </form>
     <p v-if="busy || loading" role="status">{{ t('Loading…') }}</p>
-    <p v-if="error" role="alert" class="error">{{ error }}</p>
+    <p v-if="error" role="alert" class="error">{{ error }}
+        <RouterLink v-if="conflictTask" :to="{ path: '/', query: { task: conflictTask, lang: session.lang } }">{{ t('View search task') }}</RouterLink>
+    </p>
     <template v-else-if="result">
         <p
             v-for="(message, index) in result.messages"

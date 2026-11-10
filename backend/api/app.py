@@ -4,9 +4,8 @@ from backend.engine import catalog
 from backend.engine import wikidata
 from backend.engine.stores import factory
 from backend.api import config
-from backend.api.http import api
-from backend.api.http import spa
-from backend.api.http import exception_handlers
+from backend.api.http import routes
+from backend.api.http.transport import exception_handlers
 from backend.api.infrastructure import database
 from backend.api.infrastructure import snapshots
 
@@ -64,6 +63,5 @@ def create_app(settings=None):
     exception_handlers.register_exception_handlers(app)
 
     app.state.settings = settings
-    app.include_router(api.router)
-    app.include_router(spa.router)
+    app.include_router(routes.router)
     return app

@@ -6,7 +6,13 @@ import unittest
 from fastapi.testclient import TestClient
 
 from backend.api import app
-from backend.api.http import spa
+from backend.api.http.routes import spa
+
+
+class SpaPathTests(unittest.TestCase):
+    def test_client_path_resolves_to_repository_frontend(self):
+        expected = Path(__file__).resolve().parents[3] / 'frontend' / 'dist'
+        self.assertEqual(spa.CLIENT_PATH, expected)
 
 
 class SpaDeliveryTests(unittest.TestCase):

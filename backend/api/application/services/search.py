@@ -32,9 +32,11 @@ class SearchService:
     async def submit(self, params):
         result, error = None, None
         try:
-            result = await self.search(params, allow_import=True)
+            result = await self.search(params, allow_import=False)
         except Exception as exc:
             if not errors.is_expected_error(exc):
+                raise
+            if getattr(exc, '_localization', (None,))[0] == 'search_saved_only':
                 raise
             error = exc
         return self.results.put({'params': (params['q'], params['mode'], params['limit']),

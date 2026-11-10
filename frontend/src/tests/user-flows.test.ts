@@ -6,6 +6,7 @@ import Search from '../pages/Search.vue'
 import Auth from '../pages/Auth.vue'
 import Account from '../pages/Account.vue'
 import MovieMarks from '../components/MovieMarks.vue'
+import { resetTasks, searchTasks } from '../searchTasks'
 import { session, setContext } from '../session'
 import type { Context, Movie, MovieList } from '../types'
 const movie: Movie = {
@@ -52,7 +53,7 @@ async function setup(component: typeof Search, path: string) {
     await flushPromises()
     return { wrapper, router }
 }
-beforeEach(() => setContext(structuredClone(context)))
+beforeEach(() => { setContext(structuredClone(context)); resetTasks() })
 afterEach(() => vi.unstubAllGlobals())
 describe('user flows', () => {
     it('submits a search once and restores saved results using GET through history', async () => {
@@ -253,4 +254,45 @@ describe('user flows', () => {
         wrapper.unmount()
     })
 
+})
+
+describe('external search queue', () => {
+    it('releases the form after 202 and permits a subsequent local search', async () => {
+        const fetcher = vi.fn(async (_url: unknown, options?: RequestInit) => {
+            if (options?.method === 'POST') {
+                const params = JSON.parse(options.body as string)
+                return params.q === '1' ? response({ token: 'local' }) : response({ task_id: 'task', status: 'queued' }, 202)
+            }
+            return response({ result: { messages: [], groups: [] }, marks: {} })
+        })
+        vi.stubGlobal('fetch', fetcher)
+        const { wrapper, router } = await setup(Search, '/?lang=en')
+        await wrapper.get('#query').setValue('external')
+        await wrapper.get('form').trigger('submit')
+        await flushPromises()
+        expect(wrapper.get('button').attributes('disabled')).toBeUndefined()
+        expect(router.currentRoute.value.query.result).toBeUndefined()
+        expect(searchTasks.tasks).toHaveLength(1)
+        await wrapper.get('#query').setValue('1')
+        await wrapper.get('form').trigger('submit')
+        await flushPromises()
+        expect(router.currentRoute.value.query.result).toBe('local')
+        expect(searchTasks.tasks).toHaveLength(1)
+        wrapper.unmount()
+    })
+    it('renders the occupied task link from structured 409 responses', async () => {
+        vi.stubGlobal('fetch', vi.fn(async () => response({
+            code: 'external_search_in_progress', task_id: 'active-task', error: 'Внешний поиск уже выполняется.',
+        }, 409)))
+        session.lang = 'ru'
+        const { wrapper } = await setup(Search, '/?lang=ru')
+        await wrapper.get('#query').setValue('another external movie')
+        await wrapper.get('form').trigger('submit')
+        await flushPromises()
+        expect(wrapper.get('[role="alert"]').text()).toContain('Внешний поиск уже выполняется.')
+        expect(wrapper.get('[role="alert"] a').attributes('href')).toContain('task=active-task')
+        expect(wrapper.get('[role="alert"] a').text()).toBe('Открыть задачу поиска')
+        expect(wrapper.get('button').attributes('disabled')).toBeUndefined()
+        wrapper.unmount()
+    })
 })

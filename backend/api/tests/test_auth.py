@@ -14,8 +14,10 @@ import httpx
 import sqlalchemy as sa
 
 from backend.api.application import credential_validation
-from backend.api.http import security
-from backend.api.http import api, exception_handlers
+from backend.api.http.transport import security
+from backend.api.http.adapters import security as authentication
+from backend.api.http import routes as api
+from backend.api.http.transport import exception_handlers
 from backend.api.infrastructure import clock
 from backend.api.infrastructure import database
 from backend.api.infrastructure import models
@@ -122,7 +124,7 @@ class AuthenticationPostgresTests(unittest.TestCase):
 
         async def user_for_cookie():
             request = SimpleNamespace(cookies={security.SESSION_COOKIE: token}, app=self.app)
-            return await security.current_user(request)
+            return await authentication.current_user(request)
 
         self.assertIsNotNone(asyncio.run(user_for_cookie()))
 

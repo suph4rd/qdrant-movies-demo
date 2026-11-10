@@ -15,7 +15,7 @@ import sqlalchemy as sa
 from backend.engine import errors
 from backend.api import app as web_app
 from backend.api.application.services import account as account_service
-from backend.api.http import security
+from backend.api.http.transport import security
 from backend.api.infrastructure import clock
 from backend.api.infrastructure import database
 from backend.api.infrastructure import models
