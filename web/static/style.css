@@ -26,4 +26,35 @@ select { max-width: 100%; border: 1px solid #818f87; background: #fff; }
 .search + label { margin-top: 16px; }
 nav { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; }
 nav a { color: #245c4d; padding: 6px 12px; border-radius: 6px; }
-nav a[aria-current] { background: #245c4d; color: white; text-decoration: none; }
+nav a[aria-current="page"] { background: #245c4d; color: white; text-decoration: none; }
+nav { flex-wrap: wrap; align-items: center; }
+nav form { margin: 0; }
+nav button { padding: 6px 12px; }
+.account-form { max-width: 540px; }
+.account-form input { display: block; width: 100%; margin-bottom: 16px; }
+.actions, .marks { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+.actions form, .marks form { margin: 0; }
+button, a { overflow-wrap: anywhere; }
+input { max-width: 100%; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #d8ded5; overflow-wrap: anywhere; }
+.pagination { justify-content: flex-start; margin-top: 24px; }
+@media (max-width: 600px) { table { display: block; overflow-x: auto; } nav { justify-content: flex-start; gap: 12px; } }
+.movie-marks { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.movie-marks button { padding: 8px 12px; font-size: .88rem; }
+.movie-marks button[aria-pressed="true"] { color: #862d25; border: 1px solid #862d25; background: #fff5f2; }
+.movie-marks button[aria-pressed="true"]:hover { background: #fbe5df; }
+.movie-marks button { border: 1px solid transparent; }
+.language-switcher { display: flex; flex-wrap: wrap; gap: 12px; }
+.language-switcher a[aria-current="true"] { border: 1px solid #245c4d; text-decoration: none; }
+nav .logout { margin-left: auto; }
+.button-danger { background: #862d25; color: #fff; }
+.button-danger:hover { background: #642019; }
+.admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 12px 0; }
+.admin-actions label, .admin-actions p { flex-basis: 100%; margin: 0; }
+main, form, .movie-marks > form { min-width: 0; }
+main { overflow-wrap: anywhere; }
+button { max-width: 100%; }
+
+nav a:hover { background: #e0e9e2; }
+nav a[aria-current="page"]:hover { background: #194236; }

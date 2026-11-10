@@ -1,17 +1,20 @@
+from contextlib import ExitStack
+from unittest.mock import patch
 import os
 import tempfile
 import unittest
-from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from contextlib import ExitStack
 
 from engine import catalog as movie_catalog
 from engine import constants
 from engine import errors
 from engine import services
+from engine.stores import semantic
 from engine.tests import helpers
 from web import app as web_app
+from web import config
+from web.tests import forms
 
 
 DATA = constants.DEFAULT_DATA_PATH
@@ -19,15 +22,28 @@ DATA = constants.DEFAULT_DATA_PATH
 
 class WebTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(semantic.SemanticMovieStore, 'count_movies', return_value=250))
         self.stack = self.enterContext(ExitStack())
-        self.app = web_app.create_app(web_app.Settings(qdrant_url='http://test:6333'))
+        self.app = web_app.create_app(config.Settings(qdrant_url='http://test:6333'))
         self.client = self.stack.enter_context(TestClient(self.app, follow_redirects=False))
         self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
         self.client.headers['Accept-Language'] = 'ru'
 
+    def test_search_requires_csrf_before_any_import(self):
+        with patch.object(services.MovieSearchService, 'search') as search:
+            response = self.client.post('/search', data={'query': 'New movie'})
+            self.assertEqual(response.status_code, 403)
+            search.assert_not_called()
+        self.client.get('/')
+        with patch.object(services.MovieSearchService, 'search') as search:
+            response = forms.post(self.client, '/search', data={'query': 'New movie'},
+                                  headers={'Origin': 'https://other.example'})
+            self.assertEqual(response.status_code, 403)
+            search.assert_not_called()
+
     def test_apps_have_independent_stores_and_configuration(self):
         with patch.object(movie_catalog, 'read_movies', wraps=movie_catalog.read_movies) as read:
-            other = web_app.create_app(web_app.Settings(qdrant_url='http://other:6333'))
+            other = web_app.create_app(config.Settings(qdrant_url='http://other:6333'))
             read.assert_not_called()
             with TestClient(other) as client:
                 self.assertIsNot(self.app.state.movie_store, other.state.movie_store)
@@ -37,7 +53,7 @@ class WebTests(unittest.TestCase):
                 read.assert_called_once_with(constants.DEFAULT_DATA_PATH)
 
     def test_invalid_catalog_fails_startup(self):
-        with helpers.expected_error(self), TestClient(web_app.create_app(web_app.Settings(movies_path='missing.json'))):
+        with helpers.expected_error(self), TestClient(web_app.create_app(config.Settings(movies_path='missing.json'))):
             pass
 
     def test_programming_errors_propagate(self):
@@ -61,7 +77,7 @@ class WebTests(unittest.TestCase):
             {'id': m['id'], 'payload': m, 'score': .9} for m in self.catalog[1:6]
         ]}
         with patch.object(services.MovieSearchService, 'search', return_value=result) as search:
-            response = self.client.post('/search', data={'query': ' Матрица '})
+            response = forms.post(self.client, '/search', data={'query': ' Матрица '})
             self.assertEqual(response.status_code, 303)
             self.assertTrue(search.called)
             response = self.client.get(response.headers['Location'])
@@ -79,7 +95,7 @@ class WebTests(unittest.TestCase):
         for value in ('5', '10', '20', '50'):
             self.assertIn(f'<option value="{value}"', html)
             with patch.object(services.MovieSearchService, 'search', side_effect=errors.IndexStateError('response')) as search:
-                redirect = self.client.post('/search', data={'query': '1', 'limit': value})
+                redirect = forms.post(self.client, '/search', data={'query': '1', 'limit': value})
                 self.assertEqual(redirect.status_code, 303)
                 self.assertIn('limit=' + value, redirect.headers['Location'])
                 for _ in range(2):
@@ -97,7 +113,7 @@ class WebTests(unittest.TestCase):
     def test_invalid_limits(self):
         for value in ('', '0', '6', '249', '250', '-1', '5.0', 'abc', '<script>'):
             with self.subTest(value=value), patch.object(services.MovieSearchService, 'search') as search:
-                response = self.client.post('/search', data={'query': 'Матрица', 'limit': value})
+                response = forms.post(self.client, '/search', data={'query': 'Матрица', 'limit': value})
                 html = self.client.get(response.headers['Location']).text
                 self.assertIn('Выберите количество', html)
                 self.assertIn('value="Матрица"', html)
@@ -141,7 +157,7 @@ class WebTests(unittest.TestCase):
         self.assertNotIn('<article>', response.text)
 
     def test_missing_post_field(self):
-        response = self.client.post('/search')
+        response = forms.post(self.client, '/search')
         self.assertEqual(response.status_code, 303)
         html = self.client.get(response.headers['Location']).text
         self.assertIn('Введите название или ID', html)

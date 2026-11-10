@@ -16,6 +16,8 @@ RUN python -m venv /opt/venv \
 COPY movies.json ./
 COPY engine ./engine
 COPY web ./web
+COPY alembic.ini ./
+COPY migrations ./migrations
 COPY docker/scripts/wait_for_qdrant.py docker/scripts/healthcheck.py ./docker/scripts/
 COPY docker/scripts/start-loader.sh docker/scripts/start-web.sh ./docker/scripts/
 

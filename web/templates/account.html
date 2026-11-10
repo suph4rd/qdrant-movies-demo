@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('My account') }}{% endblock %}
+{% block content %}
+<h1>{{ _('My account') }}</h1>
+<p>{{ user.email }}</p>
+{% for listing in lists %}
+<section aria-labelledby="list-{{ listing.flag }}">
+  <h2 id="list-{{ listing.flag }}">{{ _(listing.label) }} ({{ listing.total }})</h2>
+  <div class="cards">
+  {% for entry in listing.movies %}
+    {% set movie = entry.movie %}
+    {% set mark = entry.mark %}
+    <article>
+      <p class="muted">{{ movie.year }} · {{ movie.genres | join(' / ') }}</p>
+      <h3>{{ movie.title }}</h3>
+      <p>{{ movie.description }}</p>
+      {% include 'marks.html' %}
+    </article>
+  {% else %}
+    <p>{{ _('No movies in this list yet.') }}</p>
+  {% endfor %}
+  </div>
+  {% if listing.has_multiple_pages %}
+  <nav class="pagination" aria-label="{{ _(listing.label) }}">
+    {% if listing.page > 1 %}<a href="{{ listing.previous_url }}">{{ _('Previous') }}</a>{% endif %}
+    <span>{{ _('Page %(page)s', page=listing.page) }}</span>
+    {% if listing.has_next %}<a href="{{ listing.next_url }}">{{ _('Next') }}</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

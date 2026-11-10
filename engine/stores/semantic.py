@@ -73,6 +73,10 @@ class SemanticMovieStore:
             errors.annotate_error(exc, 'connection', url=self.base_url, detail=exc)
             raise
 
+    async def count_movies(self):
+        result = await self.request('count', collection_name=self.collection_name, exact=True)
+        return result.count
+
     async def check_index(self):
         try:
             info = await self.request('get_collection', collection_name=self.collection_name)

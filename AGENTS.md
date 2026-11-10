@@ -16,9 +16,11 @@ This is a local movie-recommendation demo using Python 3.15.2, FastAPI for the w
 - `engine/embeddings/`: client, cache, pinned specification, text preparation, and validation; public exports in `__init__.py`.
 - `engine/stores/`: standalone `SemanticMovieStore` and `create_store`; semantic-only runtime, with `movies` reserved.
 - `evaluation/config/`, `runners/`, `data/`, `results/`: package-relative settings, executable probes/evaluation, frozen inputs, and historical measurements.
-- `web/app.py`: FastAPI application factory, Settings, and a fresh `ApplicationLifespan` per startup; web/router.py defines APIRouter routes.
-- `web/i18n.py`: request language selection and response cookies/headers; `web/services.py`: request-scoped `IndexService` preparation, localization, context, and rendering.
-- `web/routes.py`: thin GET and POST handlers; `web/router.py`: route registration.
+- `web/app.py`: application factory, composition, and a fresh `ApplicationLifespan` per startup; `web/config.py` holds Settings and `web/create_admin.py` remains the administrator CLI.
+- `web/http/`: route registration, dependencies, security, response cookies, and request-local language selection; `routes/` contains search, auth, account, and admin handlers.
+- `web/application/`: services that own transactions, DTOs, scenario errors, credential validation, movie snapshot cleaning, and search/session constants. Services may depend on infrastructure and SQLAlchemy, but not HTTP or presentation.
+- `web/infrastructure/`: database resource management, ORM models, SQL repositories, password and token hashing, bounded snapshot caches, and UTC clock. Repositories use caller-owned sessions and do not commit.
+- `web/presentation/`: page contexts, localized search/account/admin/auth views, translation messages, and package-relative template/static paths in `pages.py`; no database access.
 - `web/templates/index.html`, `web/static/style.css`: responsive English/Russian interface without JavaScript or a build pipeline.
 - `requirements.txt`: pinned FastAPI, Uvicorn, qdrant-client, Jinja2, python-multipart, pydantic-settings, Babel, and HTTPX dependencies.
 - `engine/tests/`, `web/tests/`: offline unittest engine, loader, and FastAPI TestClient checks with lifespan and async engine tests.

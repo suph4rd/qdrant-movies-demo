@@ -204,6 +204,20 @@ class StoreContractTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(raised.exception._localization[0], 'semantic_schema')
             client.assert_not_called()
 
+    async def test_count_preserves_annotated_connection_error(self):
+        import httpx
+        client, embeddings = AsyncMock(), AsyncMock()
+        embeddings.spec = embedding_spec.SPEC
+        store = semantic.SemanticMovieStore('http://test', client=client, embeddings=embeddings,
+                                            collection_name='custom_semantic')
+        failure = httpx.ConnectError('offline')
+        client.count.side_effect = failure
+        with helpers.expected_error(self) as raised:
+            await store.count_movies()
+        self.assertIs(raised.exception, failure)
+        self.assertEqual(failure._localization[0], 'connection')
+        client.count.assert_awaited_once_with(collection_name='custom_semantic', exact=True)
+
     async def test_request_translates_sdk_failures(self):
         import httpx
         from qdrant_client.http.exceptions import ResponseHandlingException, UnexpectedResponse

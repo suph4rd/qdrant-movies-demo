@@ -1,17 +1,20 @@
+from contextlib import ExitStack
 from html.parser import HTMLParser
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 import unittest
-from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from contextlib import ExitStack
 
 from engine import catalog as movie_catalog
 from engine import constants
 from engine import errors
 from engine import i18n as engine_i18n
 from engine import services
+from engine.stores import semantic
 from web import app as web_app
+from web import config
+from web.tests import forms
 
 
 class LanguageLinks(HTMLParser):
@@ -28,8 +31,9 @@ class LanguageLinks(HTMLParser):
 
 class WebLocalizationTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(semantic.SemanticMovieStore, 'count_movies', return_value=250))
         self.stack = self.enterContext(ExitStack())
-        self.app = web_app.create_app(web_app.Settings(qdrant_url='http://test:6333'))
+        self.app = web_app.create_app(config.Settings(qdrant_url='http://test:6333'))
         self.client = self.stack.enter_context(TestClient(self.app, follow_redirects=False))
         self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
 
@@ -63,7 +67,7 @@ class WebLocalizationTests(unittest.TestCase):
                 with patch.object(services.MovieSearchService, 'search', side_effect=errors.MovieNotFoundError('search_saved_only')):
                     self.assert_language(self.client.get(link), target)
             with patch.object(services.MovieSearchService, 'search', side_effect=errors.IndexStateError('response')) as search:
-                response = self.client.post('/search', data={'query': query, 'limit': '20', 'lang': lang})
+                response = forms.post(self.client, '/search', data={'query': query, 'limit': '20', 'lang': lang})
                 self.assertEqual(response.status_code, 303)
                 search.assert_called_once()
                 redirect_params = parse_qs(urlsplit(response.headers['Location']).query)

@@ -1,14 +1,16 @@
+from unittest.mock import AsyncMock, patch
+from urllib.parse import parse_qs, urlencode, urlsplit
 import copy
 import unittest
-from urllib.parse import parse_qs, urlencode, urlsplit
-from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
 
 from engine import errors
 from engine import imports
 from engine import services
+from engine.stores import semantic
 from web import app as web_app
+from web.tests import forms
 from web.tests import test_i18n
 
 
@@ -23,6 +25,7 @@ def imported_movie(qid=901):
 
 class ImportWebTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(semantic.SemanticMovieStore, 'count_movies', return_value=250))
         self.wikidata = AsyncMock()
         self.enterContext(patch.object(web_app.wikidata, 'WikidataClient', return_value=self.wikidata))
         self.app = web_app.create_app()
@@ -35,7 +38,7 @@ class ImportWebTests(unittest.TestCase):
                   'messages': [{'key': 'import_added', 'params': {'title': movie['title']}}]}
         original = copy.deepcopy(result)
         with patch.object(services.MovieSearchService, 'search', return_value=result) as search:
-            redirect = self.client.post('/search', data={'query': 'New movie (2005)', 'lang': 'ru'})
+            redirect = forms.post(self.client, '/search', data={'query': 'New movie (2005)', 'lang': 'ru'})
             self.assertEqual(redirect.status_code, 303)
             search.assert_awaited_once_with('New movie (2005)', limit=5, allow_import=True)
             location = redirect.headers['location']
@@ -58,7 +61,7 @@ class ImportWebTests(unittest.TestCase):
     def test_get_and_tampered_snapshot_are_read_only(self):
         result = {'groups': [], 'messages': []}
         with patch.object(services.MovieSearchService, 'search', return_value=result) as search:
-            redirect = self.client.post('/search', data={'query': 'New movie'})
+            redirect = forms.post(self.client, '/search', data={'query': 'New movie'})
             params = {key: value[0] for key, value in parse_qs(urlsplit(redirect.headers['location']).query).items()}
             params['q'] = 'Other movie'
             self.client.get('/?' + urlencode(params))
@@ -73,7 +76,7 @@ class ImportWebTests(unittest.TestCase):
             {'key': 'import_failed', 'params': {'title': 'Skipped',
                                                'error': errors.InputValidationError('wikidata_invalid')}}]}
         with patch.object(services.MovieSearchService, 'search', return_value=result):
-            redirect = self.client.post('/search', data={'query': 'New movie', 'lang': 'ru'})
+            redirect = forms.post(self.client, '/search', data={'query': 'New movie', 'lang': 'ru'})
             page = self.client.get(redirect.headers['location'])
         self.assertIn('Добавлен фильм: Saved', page.text)
         self.assertIn('Не удалось обработать Skipped', page.text)
@@ -95,12 +98,12 @@ class ImportWebTests(unittest.TestCase):
     def test_snapshots_are_bounded(self):
         with patch.object(services.MovieSearchService, 'search', return_value={'groups': [], 'messages': []}):
             for _ in range(130):
-                self.client.post('/search', data={'query': 'New movie'})
+                forms.post(self.client, '/search', data={'query': 'New movie'})
         self.assertEqual(len(self.app.state.search_results), 128)
 
     def test_description_never_imports(self):
         with patch.object(services, 'semantic_search', return_value={'source': None, 'recommendations': []}):
-            redirect = self.client.post('/search', data={'query': 'space', 'mode': 'description'})
+            redirect = forms.post(self.client, '/search', data={'query': 'space', 'mode': 'description'})
             self.client.get(redirect.headers['location'])
         self.wikidata.search.assert_not_awaited()
 

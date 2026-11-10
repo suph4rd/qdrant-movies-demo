@@ -1,0 +1,22 @@
+{% set route = request.scope.get('route') %}
+{% set current = route.name if route else '' %}
+<nav aria-label="{{ _('Navigation') }}">
+  <a href="{{ url_for('index') }}?lang={{ lang }}"{% if current in ('index', 'search') %} aria-current="page"{% endif %}>{{ _('Search') }}</a>
+  {% if user %}
+  <a href="/account?lang={{ lang }}"{% if current in ('account',) %} aria-current="page"{% endif %}>{{ _('Account') }}</a>
+  {% if user.role == 'admin' %}<a href="/admin/users?lang={{ lang }}"{% if current in ('admin_users', 'admin_user', 'admin_change_user') %} aria-current="page"{% endif %}>{{ _('Users') }}</a>{% endif %}
+  {% else %}
+  <a href="/login?lang={{ lang }}"{% if current in ('login',) %} aria-current="page"{% endif %}>{{ _('Log in') }}</a>
+  <a href="/register?lang={{ lang }}"{% if current in ('register',) %} aria-current="page"{% endif %}>{{ _('Register') }}</a>
+  {% endif %}
+  <div class="language-switcher">
+  {% for language in ('en', 'ru') %}<a href="{{ switches[language] }}" lang="{{ language }}" hreflang="{{ language }}"{% if lang == language %} aria-current="true"{% endif %}>{{ language | upper }}</a>{% endfor %}
+  </div>
+  {% if user %}
+  <form class="logout" action="/logout?lang={{ lang }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="lang" value="{{ lang }}">
+    <button class="button-danger" type="submit">{{ _('Log out') }}</button>
+  </form>
+  {% endif %}
+</nav>

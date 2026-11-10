@@ -305,8 +305,11 @@ msgid "Your next movie"
 msgstr "Следующий фильм"
 
 #: engine/i18n.py:77 web/templates/index.html:16
-msgid "MOVIE CATALOG · 250 MOVIES"
-msgstr "КИНОКАТАЛОГ · 250 ФИЛЬМОВ"
+msgid "MOVIE CATALOG · MOVIES: %(count)s"
+msgstr "КИНОКАТАЛОГ · ФИЛЬМОВ: %(count)s"
+
+msgid "MOVIE CATALOG · Count unavailable"
+msgstr "КИНОКАТАЛОГ · Количество недоступно"
 
 #: engine/i18n.py:78 web/templates/index.html:17
 msgid "What to watch next?"
@@ -434,3 +437,201 @@ msgstr ""
 "аргумент %(argument)s: недопустимое значение: %(value)s (выберите из "
 "%(choices)s)"
 
+
+msgid "Register"
+msgstr "Регистрация"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "Email"
+msgstr "Электронная почта"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Repeat password"
+msgstr "Повторите пароль"
+
+msgid "Use 12–128 characters."
+msgstr "Используйте от 12 до 128 символов."
+
+msgid "Enter a valid email address."
+msgstr "Введите корректный адрес электронной почты."
+
+msgid "Password must contain 12–128 characters."
+msgstr "Пароль должен содержать от 12 до 128 символов."
+
+msgid "Passwords do not match."
+msgstr "Пароли не совпадают."
+
+msgid "This email is already registered."
+msgstr "Этот адрес электронной почты уже зарегистрирован."
+
+msgid "Invalid email or password."
+msgstr "Неверная электронная почта или пароль."
+
+msgid "Administrator created."
+msgstr "Администратор создан."
+
+msgid "An active administrator already exists."
+msgstr "Действующий администратор уже существует."
+
+msgid "Account creation cancelled."
+msgstr "Создание учётной записи отменено."
+
+msgid "My account"
+msgstr "Мой кабинет"
+
+msgid "Watched"
+msgstr "Просмотрено"
+
+msgid "Liked"
+msgstr "Понравилось"
+
+msgid "Watchlist"
+msgstr "Собираюсь посмотреть"
+
+msgid "No movies in this list yet."
+msgstr "В этом списке пока нет фильмов."
+
+#, python-format
+msgid "Add to %(list)s"
+msgstr "Добавить: %(list)s"
+
+#, python-format
+msgid "Remove from %(list)s"
+msgstr "Убрать: %(list)s"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далее"
+
+#, python-format
+msgid "Page %(page)s"
+msgstr "Страница %(page)s"
+
+msgid "Invalid movie selection. Search for the movie again."
+msgstr "Некорректный выбор фильма. Найдите фильм ещё раз."
+
+msgid "Invalid movie mark."
+msgstr "Некорректная отметка фильма."
+
+msgid "Invalid page number."
+msgstr "Некорректный номер страницы."
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Search email"
+msgstr "Поиск по email"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "State"
+msgstr "Состояние"
+
+msgid "All"
+msgstr "Все"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "Blocked"
+msgstr "Заблокирован"
+
+msgid "Deleted"
+msgstr "Удалён"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "No users found."
+msgstr "Пользователи не найдены."
+
+msgid "Created"
+msgstr "Создан"
+
+msgid "Deleted at"
+msgstr "Дата удаления"
+
+msgid "Block"
+msgstr "Заблокировать"
+
+msgid "Unblock"
+msgstr "Разблокировать"
+
+msgid "Make administrator"
+msgstr "Назначить администратором"
+
+msgid "Remove administrator role"
+msgstr "Снять роль администратора"
+
+msgid "Restore as blocked"
+msgstr "Восстановить заблокированным"
+
+msgid "Delete user"
+msgstr "Удалить пользователя"
+
+msgid "Confirm deletion by entering the user email."
+msgstr "Для подтверждения удаления введите email пользователя."
+
+msgid "Deletion preserves the email and movie lists."
+msgstr "Удаление сохраняет email и списки фильмов."
+
+msgid "You cannot block, delete, or demote yourself."
+msgstr "Нельзя блокировать, удалять себя или снимать собственную роль."
+
+msgid "The last active administrator must be preserved."
+msgstr "Должен оставаться хотя бы один действующий администратор."
+
+msgid "The confirmation email does not match."
+msgstr "Email подтверждения не совпадает."
+
+msgid "Invalid user action."
+msgstr "Недопустимое действие с пользователем."
+
+msgid "User not found."
+msgstr "Пользователь не найден."
+
+msgid "Administrator access required"
+msgstr "Требуются права администратора"
+
+msgid "Authentication required"
+msgstr "Необходимо войти в аккаунт"
+
+msgid "Invalid page."
+msgstr "Недопустимый номер страницы."
+
+msgid "Invalid user filters."
+msgstr "Недопустимые фильтры пользователей."
+
+msgid "This list is empty."
+msgstr "Этот список пуст."
+
+msgid "Movie lists are read-only for administrators."
+msgstr "Администраторы могут только просматривать списки фильмов."
+
+msgid "Invalid CSRF token"
+msgstr "Недействительный токен защиты формы"
+
+msgid "Invalid origin"
+msgstr "Недопустимый источник запроса"
+
+msgid "Navigation"
+msgstr "Навигация"
+
+msgid "Account"
+msgstr "Кабинет"

@@ -39,6 +39,15 @@ class ImportStoreTests(unittest.IsolatedAsyncioTestCase):
         self.client.upsert.side_effect = upsert
         self.store = semantic.SemanticMovieStore('http://test', client=self.client, embeddings=self.embeddings)
 
+    async def test_count_tracks_empty_collection_import_and_repeat(self):
+        self.client.count.side_effect = lambda **kwargs: NS(count=len(self.records))
+        self.assertEqual(await self.store.count_movies(), 0)
+        await self.store.import_movie(movie(), [])
+        self.assertEqual(await self.store.count_movies(), 1)
+        await self.store.import_movie(movie(), [])
+        self.assertEqual(await self.store.count_movies(), 1)
+        self.client.count.assert_awaited_with(collection_name=self.store.collection_name, exact=True)
+
     async def test_repeat_and_parallel_import_are_one_record(self):
         results = await asyncio.gather(*(self.store.import_movie(movie(), []) for _ in range(8)))
         self.assertEqual(sum(r['created'] for r in results), 1)

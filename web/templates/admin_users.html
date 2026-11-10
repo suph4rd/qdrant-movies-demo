@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ _('Users') }}{% endblock %}
+{% block content %}
+<h1>{{ _('Users') }}</h1>
+<form method="get" action="{{ url_for('admin_users') }}">
+  <input type="hidden" name="lang" value="{{ lang }}">
+  <label for="email-search">{{ _('Search email') }}</label>
+  <input id="email-search" name="q" value="{{ q }}" maxlength="254">
+  <label for="role">{{ _('Role') }}</label>
+  <select id="role" name="role">
+    {% for value, label in (('', 'All'), ('user', 'User'), ('admin', 'Administrator')) %}
+    <option value="{{ value }}"{% if role_filter == value %} selected{% endif %}>{{ _(label) }}</option>
+    {% endfor %}
+  </select>
+  <label for="state">{{ _('State') }}</label>
+  <select id="state" name="state">
+    {% for value, label in (('', 'All'), ('active', 'Active'), ('blocked', 'Blocked'), ('deleted', 'Deleted')) %}
+    <option value="{{ value }}"{% if state_filter == value %} selected{% endif %}>{{ _(label) }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">{{ _('Search') }}</button>
+</form>
+<div class="cards">
+{% for target in users %}
+<article>
+  <h2><a href="{{ url_for('admin_user', user_id=target.id) }}?lang={{ lang }}">{{ target.email }}</a></h2>
+  <p>{{ _('Administrator') if target.role == 'admin' else _('User') }} · {{ _(state_name(target)) }}</p>
+</article>
+{% else %}
+<p>{{ _('No users found.') }}</p>
+{% endfor %}
+</div>
+{% if previous_url or next_url %}
+<nav aria-label="{{ _('Users') }}">
+{% if previous_url %}<a href="{{ previous_url }}">{{ _('Previous') }}</a>{% endif %}
+{% if next_url %}<a href="{{ next_url }}">{{ _('Next') }}</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

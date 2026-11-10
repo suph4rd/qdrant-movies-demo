@@ -1,18 +1,15 @@
 from urllib.parse import urlencode
 
-from fastapi.templating import Jinja2Templates
-
 from engine import errors
 from engine import i18n as engine_i18n
-from engine import services
-from web import constants as web_constants
-from web import i18n as web_i18n
+from web.application import constants as web_constants
+from web.http import dependencies
+from web.http import i18n as web_i18n
+from web.http import responses
+from web.presentation import pages
 
 
-templates = Jinja2Templates(directory=web_constants.TEMPLATES_PATH)
-
-
-class IndexService:
+class IndexPage:
     def __init__(self, request, catalog, store, params=None):
         self.request = request
         self.params = request.query_params if params is None else params
@@ -23,26 +20,6 @@ class IndexService:
         self.query = self.params.get('q', '')
         self.limit = self.params.get('limit', web_constants.DEFAULT_WEB_LIMIT)
 
-    async def prepare_result(self, allow_import=False, raw=False):
-        if self.mode not in web_constants.SEARCH_MODES:
-            raise errors.InputValidationError('search_mode')
-        if self.limit not in web_constants.LIMIT_OPTIONS:
-            raise errors.InputValidationError('web_limit')
-        if 'q' not in self.params:
-            return None
-        snapshot = self.request.app.state.search_results.get(self.params.get('result'))
-        if not allow_import and snapshot and snapshot['params'] == (self.query, self.mode, self.limit):
-            if snapshot['error'] is not None:
-                raise snapshot['error']
-            return self.localize_result(snapshot['result'])
-        if self.mode == 'description':
-            result = await services.semantic_search(self.store, self.query, limit=int(self.limit))
-        else:
-            search = services.MovieSearchService(
-                self.store, self.catalog, self.request.app.state.wikidata)
-            result = await search.search(self.query, limit=int(self.limit), allow_import=allow_import)
-        return result if raw else self.localize_result(result)
-
     def localize_result(self, result):
         by_id = {m['id']: m for m in self.catalog}
 
@@ -50,7 +27,14 @@ class IndexService:
             movie = by_id.get(movie_id if movie_id is not None else movie.get('id'), movie)
             if not isinstance(movie, dict) or not movie.get('title'):
                 raise errors.MovieNotFoundError('unknown_id', id=movie_id)
-            return engine_i18n.localize_movie(movie, self.lang)
+            localized = engine_i18n.localize_movie(movie, self.lang)
+            if getattr(self, 'shared_context', {}).get('user'):
+                try:
+                    localized['mark_reference'] = self.request.app.state.movie_cards.reference(self.catalog, movie)
+                except Exception as exc:
+                    if not errors.is_expected_error(exc):
+                        raise
+            return localized
 
         groups = []
         for group in result.get('groups', [result]):
@@ -73,7 +57,7 @@ class IndexService:
                 for language in engine_i18n.LANGUAGES}
 
     def gettext(self, message, **params):
-        return engine_i18n.translate_message(message, self.lang, **params)
+        return pages.translate(message, self.lang, **params)
 
     def context(self, result, error):
         return {'query': self.query, 'mode': self.mode, 'result': result, 'error': error,
@@ -82,15 +66,32 @@ class IndexService:
                 'search_modes': web_constants.SEARCH_MODES, 'limit_options': web_constants.LIMIT_OPTIONS}
 
     def render_template(self, context):
-        response = templates.TemplateResponse(request=self.request, name='index.html', context=context)
-        return web_i18n.remember_language(response, self.lang)
+        context.update({key: value for key, value in getattr(self, 'shared_context', {}).items()
+                        if key != 'switches'})
+        response = pages.templates.TemplateResponse(request=self.request, name='index.html', context=context)
+        return responses.finish(self.request, response, context)
 
     async def render(self):
+        self.shared_context = await pages.context(self.request)
         result, error = None, None
         try:
-            result = await self.prepare_result()
+            raw = await dependencies.get_search_service(self.request).search(self.params)
+            result = self.localize_result(raw) if raw is not None else None
         except Exception as exc:
             if not errors.is_expected_error(exc):
                 raise
             error = errors.format_error(exc, self.lang)
-        return self.render_template(self.context(result, error))
+        user = self.shared_context['user']
+        marks = {}
+        if user is not None:
+            marks = await dependencies.get_account_service(self.request).all_marks(user.id)
+        movie_count = None
+        try:
+            movie_count = await self.store.count_movies()
+        except Exception as exc:
+            if not errors.is_expected_error(exc):
+                raise
+        context = self.context(result, error)
+        context['movie_count'] = movie_count
+        context['marks'] = marks
+        return self.render_template(context)

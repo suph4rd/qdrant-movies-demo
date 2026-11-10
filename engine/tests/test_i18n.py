@@ -113,7 +113,7 @@ class LocalizationTests(unittest.TestCase):
 
     def test_web_locale_is_request_scoped(self):
         from fastapi.testclient import TestClient
-        with TestClient(web_app.create_app()) as client:
+        with patch('engine.stores.semantic.SemanticMovieStore.count_movies', return_value=250), TestClient(web_app.create_app()) as client:
             for lang in ('en', 'ru', 'en'):
                 response = client.get('/?lang=' + lang)
                 self.assertIn(engine_i18n.translate('heading', lang), response.text)

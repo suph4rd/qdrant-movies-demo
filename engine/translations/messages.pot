@@ -1,15 +1,14 @@
-# Translations template for qdrant-movies-demo.
+# Translations template for PROJECT.
 # Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the qdrant-movies-demo
-# project.
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: qdrant-movies-demo VERSION\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-10 00:11+0300\n"
+"POT-Creation-Date: 2026-11-10 02:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,7 +51,7 @@ msgstr ""
 msgid "Description language: %(language)s"
 msgstr ""
 
-#: engine/i18n.py:23 web/templates/index.html:55 web/templates/index.html:64
+#: engine/i18n.py:23 web/templates/index.html:52 web/templates/index.html:64
 msgid "Source: TMDB"
 msgstr ""
 
@@ -77,7 +76,7 @@ msgstr ""
 msgid "Skipped incomplete Wikidata movie %(id)s."
 msgstr ""
 
-#: engine/i18n.py:29 web/templates/index.html:53 web/templates/index.html:64
+#: engine/i18n.py:29 web/templates/index.html:50 web/templates/index.html:64
 msgid "Source: Wikidata"
 msgstr ""
 
@@ -85,17 +84,17 @@ msgstr ""
 msgid "Short description from Wikidata"
 msgstr ""
 
-#: engine/i18n.py:31 web/templates/index.html:54
+#: engine/i18n.py:31 web/templates/index.html:51
 msgid ""
 "Wikidata provides a short description, not a plot summary. Plot-based "
 "recommendations may be less precise."
 msgstr ""
 
-#: engine/i18n.py:32 web/templates/index.html:77
+#: engine/i18n.py:32 web/templates/index.html:78
 msgid "Wikidata structured data is available under CC0. No API key is required."
 msgstr ""
 
-#: engine/i18n.py:33 web/templates/index.html:76
+#: engine/i18n.py:33 web/templates/index.html:77
 msgid "Credits"
 msgstr ""
 
@@ -103,37 +102,37 @@ msgstr ""
 msgid "Choose movie or description search."
 msgstr ""
 
-#: engine/i18n.py:36 web/templates/index.html:22
+#: engine/i18n.py:36 web/templates/index.html:19
 msgid "Search mode"
 msgstr ""
 
-#: engine/i18n.py:37 web/templates/index.html:25
+#: engine/i18n.py:37 web/templates/index.html:22
 msgid "By movie"
 msgstr ""
 
-#: engine/i18n.py:38 web/templates/index.html:26
+#: engine/i18n.py:38 web/templates/index.html:23
 msgid "By description"
 msgstr ""
 
-#: engine/i18n.py:39 web/templates/index.html:18
+#: engine/i18n.py:39 web/templates/index.html:14
 msgid "Choose a movie or describe what you want to watch in English or Russian."
 msgstr ""
 
-#: engine/i18n.py:40 web/templates/index.html:28
+#: engine/i18n.py:40 web/templates/index.html:25
 msgid "Movie title, ID, or description"
 msgstr ""
 
-#: engine/i18n.py:41 web/templates/index.html:31
+#: engine/i18n.py:41 web/templates/index.html:28
 msgid "For example, The Matrix, 1, or an astronaut stranded on Mars"
 msgstr ""
 
-#: engine/i18n.py:42 web/templates/index.html:44
+#: engine/i18n.py:42 web/templates/index.html:41
 msgid ""
 "In movie mode, enter a title or ID. In description mode, describe a plot "
 "or mood in English or Russian."
 msgstr ""
 
-#: engine/i18n.py:43 web/templates/index.html:52
+#: engine/i18n.py:43 web/templates/index.html:49
 msgid "Movies matching your description"
 msgstr ""
 
@@ -278,15 +277,18 @@ msgstr ""
 msgid "Choose the number of similar movies: 5, 10, 20, or 50."
 msgstr ""
 
-#: engine/i18n.py:76 web/templates/index.html:6
+#: engine/i18n.py:76 web/templates/base.html:6 web/templates/index.html:6
 msgid "Your next movie"
 msgstr ""
 
-#: engine/i18n.py:77 web/templates/index.html:16
-msgid "MOVIE CATALOG · 250 MOVIES"
+#: engine/i18n.py:77 web/templates/index.html:12
+msgid "MOVIE CATALOG · Count unavailable"
 msgstr ""
 
-#: engine/i18n.py:78 web/templates/index.html:17
+msgid "MOVIE CATALOG · MOVIES: %(count)s"
+msgstr ""
+
+#: engine/i18n.py:78 web/templates/index.html:13
 msgid "What to watch next?"
 msgstr ""
 
@@ -302,15 +304,15 @@ msgstr ""
 msgid "For example, The Matrix or 1"
 msgstr ""
 
-#: engine/i18n.py:82 web/templates/index.html:32
+#: engine/i18n.py:82 web/templates/index.html:29
 msgid "Find similar movies"
 msgstr ""
 
-#: engine/i18n.py:83 web/templates/index.html:34
+#: engine/i18n.py:83 web/templates/index.html:31
 msgid "Number of similar movies"
 msgstr ""
 
-#: engine/i18n.py:84 web/templates/index.html:24 web/templates/index.html:37
+#: engine/i18n.py:84 web/templates/index.html:21 web/templates/index.html:34
 #, python-format
 msgid "Invalid value: %(value)s"
 msgstr ""
@@ -321,7 +323,7 @@ msgid ""
 "case."
 msgstr ""
 
-#: engine/i18n.py:86 web/templates/index.html:52
+#: engine/i18n.py:86 web/templates/index.html:49
 #, python-format
 msgid "Similar to “%(title)s”"
 msgstr ""
@@ -332,19 +334,19 @@ msgid ""
 "probability that you will like a movie."
 msgstr ""
 
-#: engine/i18n.py:88 web/templates/index.html:65
+#: engine/i18n.py:88 web/templates/index.html:66
 msgid "Cosine similarity"
 msgstr ""
 
-#: engine/i18n.py:89 web/templates/index.html:68
+#: engine/i18n.py:89 web/templates/index.html:69
 msgid "No similar movies yet."
 msgstr ""
 
-#: engine/i18n.py:90 web/templates/index.html:74
+#: engine/i18n.py:90 web/templates/index.html:75
 msgid "Start with a favorite movie. Recommendations will appear here."
 msgstr ""
 
-#: engine/i18n.py:91 web/templates/index.html:11
+#: engine/i18n.py:91
 msgid "Interface language"
 msgstr ""
 
@@ -404,5 +406,276 @@ msgstr ""
 #: engine/i18n.py:104
 #, python-format
 msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
+msgstr ""
+
+#: web/messages.py:5 web/templates/navigation.html:13
+msgid "Register"
+msgstr ""
+
+#: web/messages.py:6 web/templates/navigation.html:12
+msgid "Log in"
+msgstr ""
+
+#: web/messages.py:7 web/templates/navigation.html:9
+msgid "Log out"
+msgstr ""
+
+#: web/messages.py:8 web/templates/auth.html:8
+msgid "Email"
+msgstr ""
+
+#: web/messages.py:9 web/templates/auth.html:10
+msgid "Password"
+msgstr ""
+
+#: web/messages.py:10 web/templates/auth.html:14
+msgid "Repeat password"
+msgstr ""
+
+#: web/messages.py:11 web/templates/auth.html:13
+msgid "Use 12–128 characters."
+msgstr ""
+
+#: web/messages.py:12
+msgid "Enter a valid email address."
+msgstr ""
+
+#: web/messages.py:13
+msgid "Password must contain 12–128 characters."
+msgstr ""
+
+#: web/messages.py:14
+msgid "Passwords do not match."
+msgstr ""
+
+#: web/messages.py:15
+msgid "This email is already registered."
+msgstr ""
+
+#: web/messages.py:16
+msgid "Invalid email or password."
+msgstr ""
+
+#: web/messages.py:17
+msgid "Administrator created."
+msgstr ""
+
+#: web/messages.py:18
+msgid "An active administrator already exists."
+msgstr ""
+
+#: web/messages.py:19
+msgid "Account creation cancelled."
+msgstr ""
+
+#: web/messages.py:20 web/templates/account.html:2 web/templates/account.html:4
+#: web/templates/marks.html:2
+msgid "My account"
+msgstr ""
+
+#: web/messages.py:21
+msgid "Watched"
+msgstr ""
+
+#: web/messages.py:22
+msgid "Liked"
+msgstr ""
+
+#: web/messages.py:23
+msgid "Watchlist"
+msgstr ""
+
+#: web/messages.py:24 web/templates/account.html:20
+msgid "No movies in this list yet."
+msgstr ""
+
+#: web/messages.py:25
+#, python-format
+msgid "Add to %(list)s"
+msgstr ""
+
+#: web/messages.py:26
+#, python-format
+msgid "Remove from %(list)s"
+msgstr ""
+
+#: web/messages.py:27 web/templates/account.html:24
+#: web/templates/admin_user.html:42 web/templates/admin_users.html:34
+msgid "Previous"
+msgstr ""
+
+#: web/messages.py:28 web/templates/account.html:26
+#: web/templates/admin_user.html:43 web/templates/admin_users.html:35
+msgid "Next"
+msgstr ""
+
+#: web/messages.py:29 web/templates/account.html:25
+#, python-format
+msgid "Page %(page)s"
+msgstr ""
+
+#: web/messages.py:30
+msgid "Invalid movie selection. Search for the movie again."
+msgstr ""
+
+#: web/messages.py:31
+msgid "Invalid movie mark."
+msgstr ""
+
+#: web/messages.py:32
+msgid "Invalid page number."
+msgstr ""
+
+#: web/messages.py:33 web/templates/admin_user.html:41
+#: web/templates/admin_users.html:2 web/templates/admin_users.html:4
+#: web/templates/admin_users.html:33 web/templates/navigation.html:5
+msgid "Users"
+msgstr ""
+
+#: web/messages.py:34 web/templates/admin_users.html:7
+msgid "Search email"
+msgstr ""
+
+#: web/messages.py:35 web/templates/admin_users.html:9
+msgid "Role"
+msgstr ""
+
+#: web/messages.py:36 web/templates/admin_users.html:15
+msgid "State"
+msgstr ""
+
+#: web/messages.py:37
+msgid "All"
+msgstr ""
+
+#: web/messages.py:38 web/templates/admin_user.html:5
+#: web/templates/admin_users.html:27
+msgid "User"
+msgstr ""
+
+#: web/messages.py:39 web/templates/admin_user.html:5
+#: web/templates/admin_users.html:27
+msgid "Administrator"
+msgstr ""
+
+#: web/messages.py:40
+msgid "Active"
+msgstr ""
+
+#: web/messages.py:41
+msgid "Blocked"
+msgstr ""
+
+#: web/messages.py:42
+msgid "Deleted"
+msgstr ""
+
+#: web/messages.py:43 web/templates/admin_users.html:21
+#: web/templates/navigation.html:2
+msgid "Search"
+msgstr ""
+
+#: web/messages.py:44 web/templates/admin_users.html:30
+msgid "No users found."
+msgstr ""
+
+#: web/messages.py:45 web/templates/admin_user.html:6
+msgid "Created"
+msgstr ""
+
+#: web/messages.py:46 web/templates/admin_user.html:7
+msgid "Deleted at"
+msgstr ""
+
+#: web/messages.py:47 web/templates/admin_user.html:17
+msgid "Block"
+msgstr ""
+
+#: web/messages.py:48 web/templates/admin_user.html:17
+msgid "Unblock"
+msgstr ""
+
+#: web/messages.py:49 web/templates/admin_user.html:18
+msgid "Make administrator"
+msgstr ""
+
+#: web/messages.py:50 web/templates/admin_user.html:18
+msgid "Remove administrator role"
+msgstr ""
+
+#: web/messages.py:51 web/templates/admin_user.html:11
+msgid "Restore as blocked"
+msgstr ""
+
+#: web/messages.py:52 web/templates/admin_user.html:26
+msgid "Delete user"
+msgstr ""
+
+#: web/messages.py:53 web/templates/admin_user.html:23
+msgid "Confirm deletion by entering the user email."
+msgstr ""
+
+#: web/messages.py:54 web/templates/admin_user.html:25
+msgid "Deletion preserves the email and movie lists."
+msgstr ""
+
+#: web/messages.py:55
+msgid "You cannot block, delete, or demote yourself."
+msgstr ""
+
+#: web/messages.py:56
+msgid "The last active administrator must be preserved."
+msgstr ""
+
+#: web/messages.py:57
+msgid "The confirmation email does not match."
+msgstr ""
+
+#: web/messages.py:58
+msgid "Invalid user action."
+msgstr ""
+
+#: web/messages.py:59
+msgid "User not found."
+msgstr ""
+
+#: web/messages.py:60
+msgid "Administrator access required"
+msgstr ""
+
+#: web/messages.py:61
+msgid "Authentication required"
+msgstr ""
+
+#: web/messages.py:62
+msgid "Invalid page."
+msgstr ""
+
+#: web/messages.py:63
+msgid "Invalid user filters."
+msgstr ""
+
+#: web/messages.py:64 web/templates/admin_user.html:37
+msgid "This list is empty."
+msgstr ""
+
+#: web/messages.py:65 web/templates/admin_user.html:30
+msgid "Movie lists are read-only for administrators."
+msgstr ""
+
+#: web/messages.py:66
+msgid "Invalid CSRF token"
+msgstr ""
+
+#: web/messages.py:67
+msgid "Invalid origin"
+msgstr ""
+
+#: web/messages.py:68 web/templates/navigation.html:1
+msgid "Navigation"
+msgstr ""
+
+#: web/messages.py:69 web/templates/navigation.html:4
+msgid "Account"
 msgstr ""
 

@@ -1,20 +1,23 @@
 from html import escape
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 import unittest
-from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
 from engine import errors
 from engine import i18n as engine_i18n
 from engine import services
+from engine.stores import semantic
 from engine.tests import helpers
 from web import app as web_app
+from web.tests import forms
 from web.tests import test_i18n
 
 
 class DescriptionWebTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(semantic.SemanticMovieStore, 'count_movies', return_value=250))
         self.app = web_app.create_app()
         self.client = self.enterContext(TestClient(self.app,follow_redirects=False))
 
@@ -24,10 +27,11 @@ class DescriptionWebTests(unittest.TestCase):
                 query='Космонавт & <test>' if lang == 'ru' else 'Astronaut & <test>'
                 result={'source':None,'recommendations':[{'id':4,'score':.9,'payload':{}}]}
                 with patch.object(services,'semantic_search',return_value=result) as search, patch.object(services.MovieSearchService,'search') as movie_search:
-                    redirect=self.client.post('/search',data={'mode':'description','query':query,'limit':limit,'lang':lang})
+                    redirect=forms.post(self.client, '/search',data={'mode':'description','query':query,'limit':limit,'lang':lang})
                     self.assertEqual(redirect.status_code,303)
-                    search.assert_not_called()
+                    search.assert_awaited_once_with(self.app.state.movie_store,query,limit=int(limit))
                     params=parse_qs(urlsplit(redirect.headers['location']).query)
+                    self.assertTrue(params.pop('result')[0])
                     self.assertEqual(params,{'mode':['description'],'q':[query],'limit':[limit],'lang':[lang]})
                     response=self.client.get(redirect.headers['location'])
                     search.assert_called_once_with(self.app.state.movie_store,query,limit=int(limit))
