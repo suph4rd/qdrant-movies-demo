@@ -1,5 +1,7 @@
+import asyncio
 import hashlib
 import json
+import uuid
 
 from qdrant_client import AsyncQdrantClient, models
 from qdrant_client.http.exceptions import ResponseHandlingException, UnexpectedResponse
@@ -9,6 +11,7 @@ import httpx
 from engine import catalog as movie_catalog
 from engine import constants
 from engine import errors
+from engine import imports
 from engine import validators
 from engine.embeddings import cache as embedding_cache
 from engine.embeddings import client as embedding_client
@@ -38,6 +41,7 @@ class SemanticMovieStore:
         self._owns_embeddings = embeddings is None
         self.spec = self.embeddings.spec
         self.cache = embedding_cache.EmbeddingCache(cache_path, self.spec)
+        self._import_lock = asyncio.Lock()
 
     async def close(self):
         try:
@@ -68,6 +72,10 @@ class SemanticMovieStore:
         except OSError as exc:
             errors.annotate_error(exc, 'connection', url=self.base_url, detail=exc)
             raise
+
+    async def count_movies(self):
+        result = await self.request('count', collection_name=self.collection_name, exact=True)
+        return result.count
 
     async def check_index(self):
         try:
@@ -119,11 +127,84 @@ class SemanticMovieStore:
         await self.check_index()
         await self.request('upsert', collection_name=self.collection_name, points=points, wait=True)
         count = (await self.request('count', collection_name=self.collection_name, exact=True)).count
-        if count != constants.MOVIE_COUNT:
+        records = await self.request('retrieve', collection_name=self.collection_name,
+                                     ids=[movie['id'] for movie in movies], with_payload=False)
+        if count < len(movies) or {record.id for record in records} != {m['id'] for m in movies}:
             raise errors.CollectionCountError('count')
         return {'loaded': len(points), 'count': count}
 
-    async def recommend(self, movie_id, limit=constants.DEFAULT_LIMIT):
+    async def find_movies(self, title, year=None):
+        await self.check_index()
+        matches = []
+        offset = None
+        seen_offsets = set()
+        while True:
+            records, next_offset = await self.request(
+                'scroll', collection_name=self.collection_name, offset=offset,
+                limit=256, with_payload=True, with_vectors=False)
+            for record in records:
+                payload = record.payload or {}
+                if imports.matches(payload, title, year):
+                    matches.append({**payload, 'id': record.id})
+            if next_offset is None:
+                return matches
+            if next_offset in seen_offsets:
+                raise errors.IndexStateError('response')
+            seen_offsets.add(next_offset)
+            offset = next_offset
+
+    async def import_movie(self, movie, catalog):
+        imports.validate_movie(movie)
+        for original in catalog:
+            if original['year'] == movie['year'] and imports.titles(original) & imports.titles(movie):
+                return {'movie': original, 'created': False}
+        async with self._import_lock:
+            await self.check_index()
+            records = await self.request('retrieve', collection_name=self.collection_name,
+                                         ids=[movie['id']], with_payload=True)
+            if records:
+                return {'movie': self._owned_import(records[0], movie), 'created': False}
+            if movie['source'] == 'wikidata' and 'tmdb_id' in movie:
+                legacy_id = imports.TMDB_ID_BASE + movie['tmdb_id']
+                legacy_records = await self.request('retrieve', collection_name=self.collection_name,
+                                                    ids=[legacy_id], with_payload=True)
+                if legacy_records:
+                    legacy = {'id': legacy_id, 'source': 'tmdb', 'tmdb_id': movie['tmdb_id']}
+                    return {'movie': self._owned_import(legacy_records[0], legacy), 'created': False}
+            batch = await self.embeddings.encode_documents([movie])
+            embedding_validators.validate_vectors(batch, 1, self.spec.dimensions)
+            text = embedding_texts.document_text(movie)
+            operation_id = uuid.uuid4().hex
+            payload = {**movie, '_import_operation': operation_id,
+                       '_embedding': {**self.spec.metadata(),
+                                      'text_sha256': hashlib.sha256(text.encode('utf-8')).hexdigest()}}
+            # Insert-only is atomic in Qdrant, including between application processes.
+            await self.request('upsert', collection_name=self.collection_name,
+                               points=[models.PointStruct(id=movie['id'],
+                                   vector={VECTOR_NAME: batch[0]}, payload=payload)],
+                               wait=True, ordering=models.WriteOrdering.STRONG,
+                               update_mode=models.UpdateMode.INSERT_ONLY)
+            records = await self.request('retrieve', collection_name=self.collection_name,
+                                         ids=[movie['id']], with_payload=True)
+            if not records:
+                raise errors.IndexStateError('response')
+            saved = self._owned_import(records[0], movie)
+            return {'movie': saved, 'created': saved.get('_import_operation') == operation_id}
+
+    @staticmethod
+    def _owned_import(record, movie):
+        payload = record.payload or {}
+        source = movie['source']
+        external_key = 'wikidata_id' if source == 'wikidata' else 'tmdb_id'
+        if (record.id != movie['id'] or payload.get('source') != source
+                or payload.get(external_key) != movie[external_key]
+                or type(payload.get(external_key)) is not type(movie[external_key])
+                or payload.get('id') != movie['id']):
+            raise errors.IndexStateError('import_conflict', id=movie['id'])
+        imports.validate_movie(payload)
+        return payload
+
+    async def recommend(self, movie_id, limit=constants.DEFAULT_LIMIT, exclude_ids=None):
         validators.validate_limit(limit)
         validators.validate_id(movie_id)
         await self.check_index()
@@ -131,9 +212,12 @@ class SemanticMovieStore:
                                     ids=[movie_id], with_payload=True)
         if not points:
             raise errors.MovieNotFoundError('unknown_id', id=movie_id)
+        excluded = sorted(set([movie_id, *(exclude_ids or [])]))
+        for excluded_id in excluded:
+            validators.validate_id(excluded_id)
         result = await self.request(
             'query_points', collection_name=self.collection_name, query=movie_id, using=VECTOR_NAME,
-            query_filter=models.Filter(must_not=[models.HasIdCondition(has_id=[movie_id])]),
+            query_filter=models.Filter(must_not=[models.HasIdCondition(has_id=excluded)]),
             limit=limit, with_payload=True, search_params=models.SearchParams(exact=True,
                 quantization=models.QuantizationSearchParams(ignore=True)))
         return {'source': points[0].payload, 'recommendations': self.results(result)}

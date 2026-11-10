@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qdrant-movies-demo VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-01 02:03+0300\n"
+"POT-Creation-Date: 2026-11-10 00:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,248 +20,122 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
+#: engine/i18n.py:16
+msgid "Invalid imported movie metadata."
+msgstr "Некорректные метаданные импортируемого фильма."
+
+#: engine/i18n.py:17
+msgid "Movie ID conflict. The existing record was preserved."
+msgstr "Конфликт ID фильма. Существующая запись сохранена."
+
+#: engine/i18n.py:18
 #, python-format
-msgid "Qdrant HTTP %(status)s: %(detail)s"
-msgstr "Qdrant HTTP %(status)s: %(detail)s"
+msgid "Added: %(title)s."
+msgstr "Добавлен фильм: %(title)s."
 
-msgid "Invalid Qdrant response."
-msgstr "Некорректный ответ Qdrant."
-
+#: engine/i18n.py:19
 #, python-format
-msgid "Cannot connect to Qdrant (%(url)s): %(detail)s"
-msgstr "Нет соединения с Qdrant (%(url)s): %(detail)s"
+msgid "Already saved: %(title)s."
+msgstr "Уже сохранён: %(title)s."
 
+#: engine/i18n.py:20
+#, python-format
+msgid "Could not process %(title)s: %(detail)s"
+msgstr "Не удалось обработать %(title)s: %(detail)s"
+
+#: engine/i18n.py:21
 msgid ""
-"Incompatible movies collection: one unnamed 10-dimensional vector with "
-"Cosine distance is required. Existing data is unchanged."
+"No saved movie found. Submit the form to search Wikidata and import exact"
+" matches."
 msgstr ""
-"Несовместимая коллекция movies: требуется один безымянный вектор "
-"размерности 10, метрика Cosine. Существующие данные не изменены."
+"Сохранённый фильм не найден. Отправьте форму для поиска в Wikidata и "
+"импорта точных совпадений."
 
+#: engine/i18n.py:22 web/templates/index.html:63
+#, python-format
+msgid "Description language: %(language)s"
+msgstr "Язык описания: %(language)s"
+
+#: engine/i18n.py:23 web/templates/index.html:55 web/templates/index.html:64
+msgid "Source: TMDB"
+msgstr "Источник: TMDB"
+
+#: engine/i18n.py:24
+msgid "Movie not found in Wikidata."
+msgstr "Фильм не найден в Wikidata."
+
+#: engine/i18n.py:25
+msgid "Invalid Wikidata response or incomplete movie metadata."
+msgstr "Некорректный ответ Wikidata или неполные данные фильма."
+
+#: engine/i18n.py:26
+msgid "Wikidata request limit reached. Try again later."
+msgstr "Достигнут лимит запросов Wikidata. Повторите позже."
+
+#: engine/i18n.py:27
+msgid "Wikidata is unavailable. Try again later."
+msgstr "Wikidata недоступна. Повторите позже."
+
+#: engine/i18n.py:28
+#, python-format
+msgid "Skipped incomplete Wikidata movie %(id)s."
+msgstr "Пропущена неполная карточка Wikidata %(id)s."
+
+#: engine/i18n.py:29 web/templates/index.html:53 web/templates/index.html:64
+msgid "Source: Wikidata"
+msgstr "Источник: Wikidata"
+
+#: engine/i18n.py:30 web/templates/index.html:64
+msgid "Short description from Wikidata"
+msgstr "Краткое описание из Wikidata"
+
+#: engine/i18n.py:31 web/templates/index.html:54
 msgid ""
-"The movies collection contains additional records; they are preserved. "
-"This demo expects 250."
+"Wikidata provides a short description, not a plot summary. Plot-based "
+"recommendations may be less precise."
 msgstr ""
-"В movies есть дополнительные записи; они сохранены. Для демо ожидается "
-"250."
+"Wikidata предоставляет краткое описание, а не пересказ сюжета. "
+"Рекомендации по сюжету могут быть менее точными."
 
-#, python-format
-msgid "Unknown movie ID: %(id)s. See movies.json for IDs."
-msgstr "Неизвестный ID фильма: %(id)s. Посмотрите ID в movies.json."
+#: engine/i18n.py:32 web/templates/index.html:77
+msgid "Wikidata structured data is available under CC0. No API key is required."
+msgstr "Структурированные данные Wikidata доступны по CC0. Ключ API не требуется."
 
-#, python-format
-msgid "Cannot read the movie catalog: %(detail)s"
-msgstr "Не удалось прочитать каталог фильмов: %(detail)s"
+#: engine/i18n.py:33 web/templates/index.html:76
+msgid "Credits"
+msgstr "Источники"
 
-msgid "JSON must contain exactly 250 movies."
-msgstr "В JSON должно быть ровно 250 фильмов."
-
-msgid "Each movie must be an object."
-msgstr "Каждый фильм должен быть объектом."
-
-#, python-format
-msgid "Invalid or duplicate ID: %(id)s"
-msgstr "Некорректный или повторяющийся ID: %(id)s"
-
-#, python-format
-msgid "Movie %(id)s: a nonzero vector of 10 numbers in the range 0–1 is required."
-msgstr "Фильм %(id)s: нужен ненулевой вектор из 10 чисел в диапазоне 0–1."
-
-#, python-format
-msgid ""
-"Movie %(id)s: title, description, and genres are required in both "
-"languages."
-msgstr "Фильм %(id)s: нужны название, описание и жанры на обоих языках."
-
-#, python-format
-msgid "Movie %(id)s: invalid year or genres."
-msgstr "Фильм %(id)s: некорректные год или жанры."
-
-msgid "ID must be an integer from 0 to 2^64−1."
-msgstr "ID должен быть целым числом от 0 до 2^64−1."
-
-msgid "Enter a movie title or ID."
-msgstr "Введите название или ID фильма."
-
-msgid "Movie not found. Enter another title or ID."
-msgstr "Фильм не найден. Введите другое название или ID."
-
-#, python-format
-msgid "Multiple movies found. Please specify the title: %(titles)s."
-msgstr "Найдено несколько фильмов. Уточните название: %(titles)s."
-
-msgid "The recommendation count must be an integer from 1 to 249."
-msgstr "Количество рекомендаций должно быть целым числом от 1 до 249."
-
-msgid "Choose the number of similar movies: 5, 10, 20, or 50."
-msgstr "Выберите количество похожих фильмов: 5, 10, 20 или 50."
-
-msgid "Your next movie"
-msgstr "Следующий фильм"
-
-msgid "MOVIE CATALOG · 250 MOVIES"
-msgstr "КИНОКАТАЛОГ · 250 ФИЛЬМОВ"
-
-msgid "What to watch next?"
-msgstr "Что посмотреть дальше?"
-
-msgid "Choose a familiar movie to find similar movies by mood and genre."
-msgstr "Выберите знакомый фильм — найдём похожие фильмы по настроению и жанру."
-
-msgid "Movie title or ID"
-msgstr "Название или ID фильма"
-
-msgid "For example, The Matrix or 1"
-msgstr "Например, Матрица или 1"
-
-msgid "Find similar movies"
-msgstr "Найти похожие"
-
-msgid "Number of similar movies"
-msgstr "Количество похожих фильмов"
-
-#, python-format
-msgid "Invalid value: %(value)s"
-msgstr "Некорректное значение: %(value)s"
-
-msgid ""
-"You can enter part of a title in English or Russian. Matching ignores "
-"case."
-msgstr ""
-"Можно ввести часть названия на русском или английском. Регистр букв не "
-"важен."
-
-#, python-format
-msgid "Similar to “%(title)s”"
-msgstr "Похожие на «%(title)s»"
-
-msgid ""
-"Cosine similarity measures manually assigned vector similarity, not the "
-"probability that you will like a movie."
-msgstr ""
-"Cosine similarity — сходство ручных векторов, а не вероятность того, что "
-"фильм понравится."
-
-msgid "Cosine similarity"
-msgstr "Косинусное сходство"
-
-msgid "No similar movies yet."
-msgstr "Похожих фильмов пока нет."
-
-msgid "Start with a favorite movie. Recommendations will appear here."
-msgstr "Начните с любимого фильма. Рекомендации появятся здесь."
-
-msgid "Interface language"
-msgstr "Язык интерфейса"
-
-#, python-format
-msgid "Loaded %(loaded)s movies. Total in movies: %(count)s."
-msgstr "Загружено %(loaded)s фильмов. Всего в movies: %(count)s."
-
-#, python-format
-msgid "Error: %(detail)s"
-msgstr "Ошибка: %(detail)s"
-
-msgid "Validate and load the movie catalog into Qdrant."
-msgstr "Проверить и загрузить каталог фильмов в Qdrant."
-
-msgid "Qdrant REST URL"
-msgstr "REST URL Qdrant"
-
-msgid "Path to the JSON catalog of 250 movies"
-msgstr "Путь к JSON с 250 фильмами"
-
-msgid "Output language (default: en)"
-msgstr "Язык вывода (по умолчанию: en)"
-
-msgid "Show this help message and exit"
-msgstr "Показать справку и выйти"
-
-msgid "usage: "
-msgstr "использование: "
-
-msgid "options"
-msgstr "параметры"
-
-#, python-format
-msgid "unrecognized arguments: %(value)s"
-msgstr "нераспознанные аргументы: %(value)s"
-
-#, python-format
-msgid "argument %(value)s: expected one argument"
-msgstr "аргумент %(value)s: требуется одно значение"
-
-#, python-format
-msgid "argument %(argument)s: ignored explicit argument %(value)s"
-msgstr "аргумент %(argument)s: явное значение %(value)s не допускается"
-
-#, python-format
-msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
-msgstr ""
-"аргумент %(argument)s: недопустимое значение: %(value)s (выберите из "
-"%(choices)s)"
-
-msgid "Enter a description in English or Russian."
-msgstr "Введите описание на русском или английском языке."
-
-#, python-format
-msgid "Cannot reach the embedding model (%(url)s). Check that TEI is ready."
-msgstr "Модель embeddings недоступна (%(url)s). Проверьте готовность TEI."
-
-msgid ""
-"Invalid embedding response: expected finite, nonzero 384-dimensional "
-"vectors."
-msgstr ""
-"Некорректный ответ модели: ожидаются конечные ненулевые векторы "
-"размерности 384."
-
-msgid ""
-"TEI model configuration does not match the pinned model, revision, "
-"pooling, or dtype."
-msgstr ""
-"Настройки модели TEI не соответствуют закреплённой модели, revision, "
-"pooling или dtype."
-
-msgid ""
-"Incompatible semantic index. Reindex into a new collection with the "
-"pinned model, revision, and text format."
-msgstr ""
-"Несовместимый семантический индекс. Переиндексируйте данные в новую "
-"коллекцию с закреплённой моделью, revision и форматом текста."
-
-#, python-format
-msgid "Cannot write the embedding cache (%(path)s)."
-msgstr "Не удалось записать кеш embeddings (%(path)s)."
-
-msgid "TEI embedding service URL"
-msgstr "URL сервиса embeddings TEI"
-
-msgid "Embedding cache directory"
-msgstr "Каталог кеша embeddings"
-
+#: engine/i18n.py:35
 msgid "Choose movie or description search."
 msgstr "Выберите поиск по фильму или по описанию."
 
+#: engine/i18n.py:36 web/templates/index.html:22
 msgid "Search mode"
 msgstr "Режим поиска"
 
+#: engine/i18n.py:37 web/templates/index.html:25
 msgid "By movie"
 msgstr "По фильму"
 
+#: engine/i18n.py:38 web/templates/index.html:26
 msgid "By description"
 msgstr "По описанию"
 
+#: engine/i18n.py:39 web/templates/index.html:18
 msgid "Choose a movie or describe what you want to watch in English or Russian."
 msgstr ""
 "Выберите фильм или опишите, что хотите посмотреть, на русском или "
 "английском языке."
 
+#: engine/i18n.py:40 web/templates/index.html:28
 msgid "Movie title, ID, or description"
 msgstr "Название, ID фильма или описание"
 
+#: engine/i18n.py:41 web/templates/index.html:31
 msgid "For example, The Matrix, 1, or an astronaut stranded on Mars"
 msgstr "Например, Матрица, 1 или космонавт, застрявший на Марсе"
 
+#: engine/i18n.py:42 web/templates/index.html:44
 msgid ""
 "In movie mode, enter a title or ID. In description mode, describe a plot "
 "or mood in English or Russian."
@@ -269,9 +143,11 @@ msgstr ""
 "В режиме «По фильму» введите название или ID. В режиме «По описанию» "
 "опишите сюжет или настроение на русском или английском языке."
 
+#: engine/i18n.py:43 web/templates/index.html:52
 msgid "Movies matching your description"
 msgstr "Фильмы по вашему описанию"
 
+#: engine/i18n.py:44 web/templates/index.html:56
 msgid ""
 "Cosine similarity measures vector similarity, not the probability that "
 "you will like a movie."
@@ -279,10 +155,483 @@ msgstr ""
 "Косинусная близость показывает сходство векторов, а не вероятность того, "
 "что фильм вам понравится."
 
+#: engine/i18n.py:46
+msgid ""
+"Incompatible semantic index. Reindex into a new collection with the "
+"pinned model, revision, and text format."
+msgstr ""
+"Несовместимый семантический индекс. Переиндексируйте данные в новую "
+"коллекцию с закреплённой моделью, revision и форматом текста."
+
+#: engine/i18n.py:47
+#, python-format
+msgid "Cannot write the embedding cache (%(path)s)."
+msgstr "Не удалось записать кеш embeddings (%(path)s)."
+
+#: engine/i18n.py:48
+msgid "TEI embedding service URL"
+msgstr "URL сервиса embeddings TEI"
+
+#: engine/i18n.py:49
+msgid "Semantic collection name (movies is reserved)"
+msgstr "Имя семантической коллекции (movies зарезервировано)"
+
+#: engine/i18n.py:50
+msgid "Embedding cache directory"
+msgstr "Каталог кеша embeddings"
+
+#: engine/i18n.py:52
+msgid "Enter a description in English or Russian."
+msgstr "Введите описание на русском или английском языке."
+
+#: engine/i18n.py:53
+#, python-format
+msgid "Cannot reach the embedding model (%(url)s). Check that TEI is ready."
+msgstr "Модель embeddings недоступна (%(url)s). Проверьте готовность TEI."
+
+#: engine/i18n.py:54
+msgid ""
+"Invalid embedding response: expected finite, nonzero 384-dimensional "
+"vectors."
+msgstr ""
+"Некорректный ответ модели: ожидаются конечные ненулевые векторы "
+"размерности 384."
+
+#: engine/i18n.py:55
+msgid ""
+"TEI model configuration does not match the pinned model, revision, "
+"pooling, or dtype."
+msgstr ""
+"Настройки модели TEI не соответствуют закреплённой модели, revision, "
+"pooling или dtype."
+
+#: engine/i18n.py:57
+#, python-format
+msgid "Qdrant HTTP %(status)s: %(detail)s"
+msgstr "Qdrant HTTP %(status)s: %(detail)s"
+
+#: engine/i18n.py:58
+msgid "Invalid Qdrant response."
+msgstr "Некорректный ответ Qdrant."
+
+#: engine/i18n.py:59
+#, python-format
+msgid "Cannot connect to Qdrant (%(url)s): %(detail)s"
+msgstr "Нет соединения с Qdrant (%(url)s): %(detail)s"
+
+#: engine/i18n.py:60
+msgid ""
+"Incompatible movies collection: one unnamed 10-dimensional vector with "
+"Cosine distance is required. Existing data is unchanged."
+msgstr ""
+"Несовместимая коллекция movies: требуется один безымянный вектор "
+"размерности 10, метрика Cosine. Существующие данные не изменены."
+
+#: engine/i18n.py:61
+msgid ""
+"The movies collection contains additional records; they are preserved. "
+"This demo expects 250."
+msgstr ""
+"В movies есть дополнительные записи; они сохранены. Для демо ожидается "
+"250."
+
+#: engine/i18n.py:62
+#, python-format
+msgid "Unknown movie ID: %(id)s. See movies.json for IDs."
+msgstr "Неизвестный ID фильма: %(id)s. Посмотрите ID в movies.json."
+
+#: engine/i18n.py:63
+#, python-format
+msgid "Cannot read the movie catalog: %(detail)s"
+msgstr "Не удалось прочитать каталог фильмов: %(detail)s"
+
+#: engine/i18n.py:64
+msgid "JSON must contain exactly 250 movies."
+msgstr "В JSON должно быть ровно 250 фильмов."
+
+#: engine/i18n.py:65
+msgid "Each movie must be an object."
+msgstr "Каждый фильм должен быть объектом."
+
+#: engine/i18n.py:66
+#, python-format
+msgid "Invalid or duplicate ID: %(id)s"
+msgstr "Некорректный или повторяющийся ID: %(id)s"
+
+#: engine/i18n.py:67
+#, python-format
+msgid "Movie %(id)s: a nonzero vector of 10 numbers in the range 0–1 is required."
+msgstr "Фильм %(id)s: нужен ненулевой вектор из 10 чисел в диапазоне 0–1."
+
+#: engine/i18n.py:68
+#, python-format
+msgid ""
+"Movie %(id)s: title, description, and genres are required in both "
+"languages."
+msgstr "Фильм %(id)s: нужны название, описание и жанры на обоих языках."
+
+#: engine/i18n.py:69
+#, python-format
+msgid "Movie %(id)s: invalid year or genres."
+msgstr "Фильм %(id)s: некорректные год или жанры."
+
+#: engine/i18n.py:70
+msgid "ID must be an integer from 0 to 2^64−1."
+msgstr "ID должен быть целым числом от 0 до 2^64−1."
+
+#: engine/i18n.py:71
+msgid "Enter a movie title or ID."
+msgstr "Введите название или ID фильма."
+
+#: engine/i18n.py:72
+msgid "Movie not found. Enter another title or ID."
+msgstr "Фильм не найден. Введите другое название или ID."
+
+#: engine/i18n.py:73
+#, python-format
+msgid "Multiple movies found. Please specify the title: %(titles)s."
+msgstr "Найдено несколько фильмов. Уточните название: %(titles)s."
+
+#: engine/i18n.py:74
+msgid "The recommendation count must be an integer from 1 to 249."
+msgstr "Количество рекомендаций должно быть целым числом от 1 до 249."
+
+#: engine/i18n.py:75
+msgid "Choose the number of similar movies: 5, 10, 20, or 50."
+msgstr "Выберите количество похожих фильмов: 5, 10, 20 или 50."
+
+#: engine/i18n.py:76 web/templates/index.html:6
+msgid "Your next movie"
+msgstr "Следующий фильм"
+
+#: engine/i18n.py:77 web/templates/index.html:16
+msgid "MOVIE CATALOG · MOVIES: %(count)s"
+msgstr "КИНОКАТАЛОГ · ФИЛЬМОВ: %(count)s"
+
+msgid "MOVIE CATALOG · Count unavailable"
+msgstr "КИНОКАТАЛОГ · Количество недоступно"
+
+#: engine/i18n.py:78 web/templates/index.html:17
+msgid "What to watch next?"
+msgstr "Что посмотреть дальше?"
+
+#: engine/i18n.py:79
+msgid "Choose a familiar movie to find similar movies by mood and genre."
+msgstr "Выберите знакомый фильм — найдём похожие фильмы по настроению и жанру."
+
+#: engine/i18n.py:80
+msgid "Movie title or ID"
+msgstr "Название или ID фильма"
+
+#: engine/i18n.py:81
+msgid "For example, The Matrix or 1"
+msgstr "Например, Матрица или 1"
+
+#: engine/i18n.py:82 web/templates/index.html:32
+msgid "Find similar movies"
+msgstr "Найти похожие"
+
+#: engine/i18n.py:83 web/templates/index.html:34
+msgid "Number of similar movies"
+msgstr "Количество похожих фильмов"
+
+#: engine/i18n.py:84 web/templates/index.html:24 web/templates/index.html:37
+#, python-format
+msgid "Invalid value: %(value)s"
+msgstr "Некорректное значение: %(value)s"
+
+#: engine/i18n.py:85
+msgid ""
+"You can enter part of a title in English or Russian. Matching ignores "
+"case."
+msgstr ""
+"Можно ввести часть названия на русском или английском. Регистр букв не "
+"важен."
+
+#: engine/i18n.py:86 web/templates/index.html:52
+#, python-format
+msgid "Similar to “%(title)s”"
+msgstr "Похожие на «%(title)s»"
+
+#: engine/i18n.py:87
+msgid ""
+"Cosine similarity measures manually assigned vector similarity, not the "
+"probability that you will like a movie."
+msgstr ""
+"Cosine similarity — сходство ручных векторов, а не вероятность того, что "
+"фильм понравится."
+
+#: engine/i18n.py:88 web/templates/index.html:65
+msgid "Cosine similarity"
+msgstr "Косинусное сходство"
+
+#: engine/i18n.py:89 web/templates/index.html:68
+msgid "No similar movies yet."
+msgstr "Похожих фильмов пока нет."
+
+#: engine/i18n.py:90 web/templates/index.html:74
+msgid "Start with a favorite movie. Recommendations will appear here."
+msgstr "Начните с любимого фильма. Рекомендации появятся здесь."
+
+#: engine/i18n.py:91 web/templates/index.html:11
+msgid "Interface language"
+msgstr "Язык интерфейса"
+
+#: engine/i18n.py:92
 #, python-format
 msgid "Loaded %(loaded)s movies. Total in collection: %(count)s."
 msgstr "Загружено фильмов: %(loaded)s. Всего в коллекции: %(count)s."
 
-msgid "Semantic collection name (movies is reserved)"
-msgstr "Имя семантической коллекции (movies зарезервировано)"
+#: engine/i18n.py:93
+#, python-format
+msgid "Error: %(detail)s"
+msgstr "Ошибка: %(detail)s"
 
+#: engine/i18n.py:94
+msgid "Validate and load the movie catalog into Qdrant."
+msgstr "Проверить и загрузить каталог фильмов в Qdrant."
+
+#: engine/i18n.py:95
+msgid "Qdrant REST URL"
+msgstr "REST URL Qdrant"
+
+#: engine/i18n.py:96
+msgid "Path to the JSON catalog of 250 movies"
+msgstr "Путь к JSON с 250 фильмами"
+
+#: engine/i18n.py:97
+msgid "Output language (default: en)"
+msgstr "Язык вывода (по умолчанию: en)"
+
+#: engine/i18n.py:98
+msgid "Show this help message and exit"
+msgstr "Показать справку и выйти"
+
+#: engine/i18n.py:99
+msgid "usage: "
+msgstr "использование: "
+
+#: engine/i18n.py:100
+msgid "options"
+msgstr "параметры"
+
+#: engine/i18n.py:101
+#, python-format
+msgid "unrecognized arguments: %(value)s"
+msgstr "нераспознанные аргументы: %(value)s"
+
+#: engine/i18n.py:102
+#, python-format
+msgid "argument %(value)s: expected one argument"
+msgstr "аргумент %(value)s: требуется одно значение"
+
+#: engine/i18n.py:103
+#, python-format
+msgid "argument %(argument)s: ignored explicit argument %(value)s"
+msgstr "аргумент %(argument)s: явное значение %(value)s не допускается"
+
+#: engine/i18n.py:104
+#, python-format
+msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
+msgstr ""
+"аргумент %(argument)s: недопустимое значение: %(value)s (выберите из "
+"%(choices)s)"
+
+
+msgid "Register"
+msgstr "Регистрация"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "Email"
+msgstr "Электронная почта"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Repeat password"
+msgstr "Повторите пароль"
+
+msgid "Use 12–128 characters."
+msgstr "Используйте от 12 до 128 символов."
+
+msgid "Enter a valid email address."
+msgstr "Введите корректный адрес электронной почты."
+
+msgid "Password must contain 12–128 characters."
+msgstr "Пароль должен содержать от 12 до 128 символов."
+
+msgid "Passwords do not match."
+msgstr "Пароли не совпадают."
+
+msgid "This email is already registered."
+msgstr "Этот адрес электронной почты уже зарегистрирован."
+
+msgid "Invalid email or password."
+msgstr "Неверная электронная почта или пароль."
+
+msgid "Administrator created."
+msgstr "Администратор создан."
+
+msgid "An active administrator already exists."
+msgstr "Действующий администратор уже существует."
+
+msgid "Account creation cancelled."
+msgstr "Создание учётной записи отменено."
+
+msgid "My account"
+msgstr "Мой кабинет"
+
+msgid "Watched"
+msgstr "Просмотрено"
+
+msgid "Liked"
+msgstr "Понравилось"
+
+msgid "Watchlist"
+msgstr "Собираюсь посмотреть"
+
+msgid "No movies in this list yet."
+msgstr "В этом списке пока нет фильмов."
+
+#, python-format
+msgid "Add to %(list)s"
+msgstr "Добавить: %(list)s"
+
+#, python-format
+msgid "Remove from %(list)s"
+msgstr "Убрать: %(list)s"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далее"
+
+#, python-format
+msgid "Page %(page)s"
+msgstr "Страница %(page)s"
+
+msgid "Invalid movie selection. Search for the movie again."
+msgstr "Некорректный выбор фильма. Найдите фильм ещё раз."
+
+msgid "Invalid movie mark."
+msgstr "Некорректная отметка фильма."
+
+msgid "Invalid page number."
+msgstr "Некорректный номер страницы."
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Search email"
+msgstr "Поиск по email"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "State"
+msgstr "Состояние"
+
+msgid "All"
+msgstr "Все"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "Blocked"
+msgstr "Заблокирован"
+
+msgid "Deleted"
+msgstr "Удалён"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "No users found."
+msgstr "Пользователи не найдены."
+
+msgid "Created"
+msgstr "Создан"
+
+msgid "Deleted at"
+msgstr "Дата удаления"
+
+msgid "Block"
+msgstr "Заблокировать"
+
+msgid "Unblock"
+msgstr "Разблокировать"
+
+msgid "Make administrator"
+msgstr "Назначить администратором"
+
+msgid "Remove administrator role"
+msgstr "Снять роль администратора"
+
+msgid "Restore as blocked"
+msgstr "Восстановить заблокированным"
+
+msgid "Delete user"
+msgstr "Удалить пользователя"
+
+msgid "Confirm deletion by entering the user email."
+msgstr "Для подтверждения удаления введите email пользователя."
+
+msgid "Deletion preserves the email and movie lists."
+msgstr "Удаление сохраняет email и списки фильмов."
+
+msgid "You cannot block, delete, or demote yourself."
+msgstr "Нельзя блокировать, удалять себя или снимать собственную роль."
+
+msgid "The last active administrator must be preserved."
+msgstr "Должен оставаться хотя бы один действующий администратор."
+
+msgid "The confirmation email does not match."
+msgstr "Email подтверждения не совпадает."
+
+msgid "Invalid user action."
+msgstr "Недопустимое действие с пользователем."
+
+msgid "User not found."
+msgstr "Пользователь не найден."
+
+msgid "Administrator access required"
+msgstr "Требуются права администратора"
+
+msgid "Authentication required"
+msgstr "Необходимо войти в аккаунт"
+
+msgid "Invalid page."
+msgstr "Недопустимый номер страницы."
+
+msgid "Invalid user filters."
+msgstr "Недопустимые фильтры пользователей."
+
+msgid "This list is empty."
+msgstr "Этот список пуст."
+
+msgid "Movie lists are read-only for administrators."
+msgstr "Администраторы могут только просматривать списки фильмов."
+
+msgid "Invalid CSRF token"
+msgstr "Недействительный токен защиты формы"
+
+msgid "Invalid origin"
+msgstr "Недопустимый источник запроса"
+
+msgid "Navigation"
+msgstr "Навигация"
+
+msgid "Account"
+msgstr "Кабинет"

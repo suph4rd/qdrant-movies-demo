@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}{{ target.email }}{% endblock %}
+{% block content %}
+<h1>{{ target.email }}</h1>
+<p>{{ _('Administrator') if target.role == 'admin' else _('User') }} · {{ _(state_name(target)) }}</p>
+<p>{{ _('Created') }}: <time datetime="{{ target.created_at.isoformat() }}">{{ target.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</time></p>
+{% if target.deleted_at %}<p>{{ _('Deleted at') }}: {{ target.deleted_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>{% endif %}
+{% if target.deleted_at %}
+<form class="admin-actions" method="post" action="{{ url_for('admin_change_user', user_id=target.id) }}?lang={{ lang }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button name="action" value="restore" type="submit">{{ _('Restore as blocked') }}</button>
+</form>
+{% else %}
+{% if target.id != user.id %}
+<form class="admin-actions" method="post" action="{{ url_for('admin_change_user', user_id=target.id) }}?lang={{ lang }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button name="action" value="{{ 'unblock' if target.blocked else 'block' }}" type="submit">{{ _('Unblock') if target.blocked else _('Block') }}</button>
+  <button name="action" value="{{ 'demote' if target.role == 'admin' else 'promote' }}" type="submit">{{ _('Remove administrator role') if target.role == 'admin' else _('Make administrator') }}</button>
+</form>
+<form class="admin-actions" method="post" action="{{ url_for('admin_change_user', user_id=target.id) }}?lang={{ lang }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="action" value="delete">
+  <label for="confirmation-email">{{ _('Confirm deletion by entering the user email.') }}</label>
+  <input id="confirmation-email" type="email" name="confirmation_email" required autocomplete="off">
+  <p class="muted">{{ _('Deletion preserves the email and movie lists.') }}</p>
+  <button type="submit">{{ _('Delete user') }}</button>
+</form>
+{% endif %}
+{% endif %}
+<p class="muted">{{ _('Movie lists are read-only for administrators.') }}</p>
+{% for group in lists %}
+<section>
+  <h2>{{ _(group.title) }}</h2>
+  <div class="cards">
+    {% for movie in group.movies %}
+    <article><h3>{{ movie.title }}</h3><p>{{ movie.year }} · {{ movie.genres | join(' / ') }}</p><p>{{ movie.description }}</p></article>
+    {% else %}<p>{{ _('This list is empty.') }}</p>{% endfor %}
+  </div>
+</section>
+{% endfor %}
+<nav aria-label="{{ _('Users') }}">
+{% if previous_url %}<a href="{{ previous_url }}">{{ _('Previous') }}</a>{% endif %}
+{% if next_url %}<a href="{{ next_url }}">{{ _('Next') }}</a>{% endif %}
+</nav>
+{% endblock %}

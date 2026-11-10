@@ -80,8 +80,8 @@ Qdrant v1.20.0 is also pinned by digest in Compose.
 
 ## Persistence and reloads
 
-Compose keeps three named volumes: `movies-storage` for Qdrant, `model-weights`
-for TEI and `embedding-cache` for document embeddings. A normal restart reuses
+Compose keeps four named volumes: `movies-storage` for Qdrant, `model-weights`
+for TEI, `embedding-cache` for document embeddings and `accounts-storage` for PostgreSQL. A normal restart reuses
 weights and cached embeddings. Reload the catalog included in the image:
 
 ```sh
@@ -94,13 +94,13 @@ After editing code, JSON, translations or templates, rebuild/recreate:
 docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader web
 ```
 
-Two loads of unchanged IDs leave exactly 250 points. The loader validates JSON
+Two loads of unchanged IDs preserve the 250 original movies and any imported movies. The loader validates JSON
 and an existing collection's schema/model metadata before encoding. Documents
 are encoded in batches of 32. It obtains and validates the complete set before
 creating a collection or issuing one Qdrant upsert with `wait=true`; an inference
 failure never writes an incomplete set. This is not a transactional replacement
-of an index across network/server failures. Extra records are preserved and a
-count other than 250 is reported as an error.
+of an index across network/server failures. Extra records are preserved. The loader checks that every original ID is present
+instead of requiring a total of exactly 250.
 
 Cache keys hash the exact prepared text and the model, revision, text version,
 dimension, pooling, dtype and normalization contract. Every cached vector is
@@ -109,8 +109,8 @@ not call TEI. Files are replaced atomically. The cache is regenerable and ignore
 by Git. Removing it only makes the next load encode documents again.
 
 Stop with `docker compose --env-file env/.env -f docker/compose.yaml stop`.
-`down` removes containers while preserving volumes. **`down -v` deletes all three
-volumes**, including Qdrant data, weights and cached embeddings.
+`down` removes containers while preserving volumes. **`down -v` deletes all four
+volumes**, including accounts, Qdrant data, weights and cached embeddings.
 
 ## Local Python
 
@@ -121,10 +121,12 @@ python3.15 --version
 python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei
+docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei postgres
 curl --fail http://127.0.0.1:6333/readyz
 curl --fail http://127.0.0.1:18080/health
 python -m engine.load --url http://127.0.0.1:6333 --embedding-url http://127.0.0.1:18080 --data movies.json
+export DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies'
+python -m alembic upgrade head
 python -m uvicorn web.app:create_app --factory --host 127.0.0.1 --port 18000
 ```
 
@@ -136,10 +138,43 @@ variables provide defaults for the endpoint, collection and cache settings.
 
 ## Search and languages
 
-**By movie** is the default. Enter an ID, exact title or unique title fragment
-in either language; matching ignores case and surrounding whitespace. An
-ambiguous title asks for a more specific title. Qdrant uses the saved source
-movie's semantic vector and excludes that ID. No model request is needed.
+**By movie** is the default. Enter an internal ID, a title, or `Title (2005)`
+in English or Russian. Matching normalizes Unicode, case and whitespace. A
+numeric query always means an internal ID; for a numeric title use its year,
+for example `1917 (2019)`. Original-catalog title fragments remain supported.
+Each matching movie has a separate recommendation group, labelled with its
+year, original title and Wikidata QID where available. All source movies are excluded
+from every recommendation group.
+
+The search checks the original catalog and saved Qdrant movies first. If neither
+contains a match, submitting **By movie** searches Wikidata in English and Russian
+and automatically imports exact title/year matches, including aliases and original
+titles. Only film entities with complete required metadata are imported. English
+names, descriptions and genres are required. Missing Russian metadata falls back
+to English, with a visible description-language label. New movies receive semantic
+embeddings from TEI and deterministic internal IDs `2000000000000 + numeric QID`
+(for example, `Q83495` maps to `2000000083495`). Their Wikidata source links appear
+in the interface. Successful imports remain saved if a later import fails; status
+messages explain added and skipped cards. Repeated imports do not create duplicate
+records. Existing TMDB imports retain their original IDs, metadata and source links.
+
+External imports require no account, API key or token. The web server reads the
+public [Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access) over HTTPS;
+network access to Wikidata is required. Its structured data is published under
+CC0. No requests are sent to the TMDB API. `TMDB_API_TOKEN` is no longer used and
+can be removed from existing local environment files.
+
+Wikidata descriptions are short identifying phrases, not plot summaries. Imported
+movies can therefore produce less precise plot-based recommendations than the
+original catalog. The interface marks these descriptions. Incomplete entities are
+skipped rather than filled with invented text. Wikipedia text is not imported.
+
+Only POST `/search` can import. GET links, refreshes and language switches never
+contact Wikidata or write movies. Search POST results and messages are kept in a
+bounded server-side cache of 128 searches, addressed by an opaque `result`
+parameter through the redirect. This demo uses one web worker; snapshots expire
+on restart or eviction. An expired link performs a read-only search of saved
+movies. Imported movies themselves persist in Qdrant across restarts.
 
 **By description** accepts free text in Russian or English. Select that mode,
 enter a plot or mood and submit. TEI encodes the query and Qdrant searches all
@@ -152,7 +187,8 @@ Cosine scores measure vector similarity, not a probability of liking a movie.
 
 Language priority: supported `lang=en|ru`, saved cookie, `Accept-Language`, then
 English. Each request uses its own gettext translator. Catalog metadata is
-localized from the application catalog by result ID, without mutating it.
+localized from the application catalog by result ID or from imported Qdrant
+payloads, without mutating them.
 
 ## Model and text format
 
@@ -197,6 +233,25 @@ specification, text preparation and validation. Public imports are available
 from `engine.stores` and `engine.embeddings`. The engine has no web dependency.
 The official async Qdrant SDK uses REST with a 15-second timeout and exact search.
 
+`engine/wikidata/` separates transport, entity pagination and batching, parsing,
+validation, classification, movie mapping and search. `WikidataClient` is the
+public facade for `search`, `movie` and `close`; `EntityClassifier`, `MovieMapper`
+and `WikidataSearch` implement the provider-specific work. Each search shares an
+entity cache, and injected HTTP clients remain owned by their caller.
+
+`engine/imports/` owns title normalization, matching, external identifiers and
+imported-card validation, including legacy TMDB cards. Its public exports remain
+available through `engine.imports`. `engine.services.MovieSearchService` receives
+the store, catalog and optional Wikidata client. It searches exact catalog titles,
+saved cards and partial catalog titles in that order, then imports only when
+explicitly allowed. `services.search_movies` remains a compatible wrapper with
+structured `groups` and `messages` results.
+
+`engine.i18n` handles shared source-string translation and movie localization;
+`engine.errors` formats structured notifications and nested expected errors.
+The web layer chooses the request language and uses `MovieSearchService` without
+moving HTTP language selection into the engine.
+
 ```python
 from engine import services
 from engine.stores import create_store
@@ -215,9 +270,27 @@ client stays owned by its caller. Owned clients close in `finally` or lifespan.
 `web/app.py`'s `ApplicationLifespan` has a fresh instance per startup. The factory performs no catalog reads or network requests. Lifespan
 reads/validates JSON once per application, creates clients and closes them on
 shutdown; it never indexes data. Restart after catalog/settings changes.
-`web/services.py` prepares request-scoped results; routes stay thin. Templates
-and CSS are package-relative. Shared `movies.json` resolution does not depend on
-working directory; no `sys.path` changes are used.
+`web/application/services/` contains search, authentication, account, and
+administration scenarios with injected dependencies and transaction ownership.
+`web/application/` also holds plain DTOs, scenario errors, credential validation,
+search constants, and movie snapshot cleaning. Services may depend on SQLAlchemy
+and infrastructure, but never on HTTP or presentation.
+`web/infrastructure/repositories/` contains SQL and locking operations using the
+caller's session, without committing. `web/infrastructure/models.py` owns ORM
+models; `database.py` manages database resources, `clock.py` supplies UTC time,
+and `passwords.py` handles Argon2, rehash checks, and token hashing.
+`web/infrastructure/snapshots.py` owns per-application FIFO caches
+(128 search results and 1024 movie card references).
+`web/http/routes/` contains search, authentication, account, and administration
+handlers; `web/http/router.py` registers them. HTTP helpers retain CSRF, cookies,
+redirects, language selection, status codes, and localized error mapping.
+`web/http/dependencies.py` assembles services. `web/presentation/` localizes
+cards, builds page contexts and links, and renders templates, including auth
+forms, without database access. Template and static paths are defined relative
+to the `web` package in `web/presentation/pages.py`.
+`web/config.py` holds settings; `python -m web.create_admin` uses the same
+application authentication service as the web interface. Shared `movies.json`
+resolution does not depend on working directory; no `sys.path` changes are used.
 
 ## Verification and evaluation
 
@@ -227,11 +300,17 @@ requires both services ready and tests the semantic collection:
 ```sh
 python -m unittest -v
 python -m engine.tests.verify
+python -m engine.tests.verify_imports
 python -m evaluation.runners.probe
 python -m evaluation.runners.run
 ```
 
-`verify` performs repeated loads, checks 250 points, both languages, 5/10/20/50
+`verify_imports` uses a separate temporary collection with real Qdrant and TEI
+to check concurrent/repeated import, restart persistence, source exclusion and
+reloading all original movies while retaining imports; it deletes only that
+temporary collection in `finally`. It does not call Wikidata.
+
+`verify` performs repeated loads, checks the original 250 IDs, both languages, 5/10/20/50
 results, source exclusion, unknown IDs, localized catalog metadata and
 independent cosine ranking. Verification also proves repeat loads use
 no inference. Offline tests cover schema/model incompatibility before writes,
@@ -273,3 +352,97 @@ Official references: [TEI hardware/images](https://huggingface.co/docs/text-embe
 [model card](https://huggingface.co/intfloat/multilingual-e5-small),
 [Qdrant Query Points](https://api.qdrant.tech/api-reference/search/query-points),
 [Compose startup order](https://docs.docker.com/compose/how-tos/startup-order/).
+
+## Accounts, movie lists and administration
+
+Guests retain access to search and recommendations. `/register` accepts an email,
+a password of 12–128 characters and its confirmation. Emails are normalized and
+remain reserved after soft deletion. Passwords use Argon2id. Registration signs
+in the new user; `/login` creates a seven-day session. The HttpOnly session cookie
+contains a random token; PostgreSQL stores only its SHA-256 hash. POST `/logout`
+revokes the current session. Blocked and deleted users cannot sign in or use
+protected routes. Every modifying form, including search/import, requires CSRF.
+
+`/account` shows Watched, Liked and Watchlist, with 20 movies per page. Movie cards
+provide forms that set the requested state, so repeating a POST is safe. Watched
+and Watchlist are mutually exclusive; Liked is independent. Server-validated
+bilingual snapshots are saved in PostgreSQL and survive restarts and Qdrant
+outages. Imported-card form references expire on server restart or cache eviction;
+search again if an unsaved card's reference expires. Saved cards remain usable.
+Changing a mark redirects back to the current search or account page, preserving
+query parameters and the result snapshot. Pagination controls appear only for
+lists containing more than one page. Lists do not change recommendation rankings.
+
+The search page reads the exact movie count from the active Qdrant collection on
+every visit, including after imports and snapshot refreshes. If Qdrant is
+unavailable, the count is shown as unavailable while saved results remain visible.
+
+PostgreSQL 18.1 has a separate `accounts-storage` volume and a readiness check.
+Compose runs the `migrate` service before web starts. Migrations are explicit;
+the application factory and startup never apply schema changes. For local Python:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml up -d postgres
+export DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies'
+export COOKIE_SECURE=false  # Explicit local HTTP setting; use true with HTTPS.
+python -m alembic upgrade head
+python -m web.create_admin --lang en
+python -m uvicorn web.app:create_app --factory --host 127.0.0.1 --port 18000
+```
+
+Use the credentials configured in `env/.env`; URL-encode special password
+characters in `DATABASE_URL`. Compose's URL uses hostname `postgres`, whereas
+local Python uses the published loopback endpoint. Set `POSTGRES_DB`,
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`, `DATABASE_URL` and
+`COOKIE_SECURE` in an existing env file without replacing other settings.
+Changing PostgreSQL initialization variables does not change an existing database.
+SQLAlchemy 2.1.8, psycopg 3.3.8, Alembic 1.20.1 and argon2-cffi 25.1.0 are pinned;
+the installed packages were checked under Python 3.15.2.
+
+Create the first administrator interactively; passwords are never command-line
+arguments. In Docker:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml exec web python -m web.create_admin --lang ru
+```
+
+The command refuses if an active administrator already exists. `/admin/users`
+provides email search, role/state filters, pagination and read-only user lists.
+Administrators can block/unblock, grant/revoke administrator roles, and soft-delete
+users by confirming their email in a separate form. Blocking and deletion revoke
+all sessions. Restoring a deleted user preserves their email and lists and leaves
+them blocked; unblock them separately before they can sign in again. Self-block,
+self-deletion and self-demotion are prohibited. A transaction-level PostgreSQL
+advisory lock serializes administrative changes and protects the last active
+administrator, including concurrent actions and initial administrator creation.
+
+Email confirmation, email password recovery, OAuth and recommendation
+personalization are outside this version.
+
+### PostgreSQL backup and restore
+
+Keep backups outside Docker volumes. Replace the database/user if customized:
+
+```sh
+docker compose --env-file env/.env -f docker/compose.yaml exec -T postgres pg_dump -U movies -d movies -Fc > accounts.dump
+# Restore into a separate, empty database created by your PostgreSQL operator:
+docker compose --env-file env/.env -f docker/compose.yaml exec -T postgres pg_restore -U movies -d movies_restore --no-owner < accounts.dump
+```
+
+`down` preserves account data. `down -v` also deletes `accounts-storage`, including
+users, sessions and saved lists. Back it up before removing volumes.
+
+### Account integration tests
+
+Offline unittest discovery skips PostgreSQL tests unless `TEST_DATABASE_URL` is
+set. Use a separate, disposable database, apply migrations, then run all tests:
+
+```sh
+export TEST_DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies_test'
+DATABASE_URL="$TEST_DATABASE_URL" python -m alembic upgrade head
+python -m unittest -v
+```
+
+Do not point integration tests at the application database. Tests cover account
+isolation, session expiry/revocation, state transitions, CSRF, imported snapshots,
+pagination and administration. Qdrant and TEI are mocked for these scenarios.

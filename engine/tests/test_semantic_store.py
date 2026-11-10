@@ -45,6 +45,7 @@ class SemanticLoaderTests(unittest.IsolatedAsyncioTestCase):
         self.client.get_collection.return_value = collection()
         self.client.count.return_value = NS(count=250)
         self.movies = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
+        self.client.retrieve.return_value = [models.Record(id=m['id']) for m in self.movies]
 
     async def test_batches_payload_and_repeated_load(self):
         for _ in range(2):
@@ -202,6 +203,20 @@ class StoreContractTests(unittest.IsolatedAsyncioTestCase):
                 factory.create_store('http://test', collection_name='movies')
             self.assertEqual(raised.exception._localization[0], 'semantic_schema')
             client.assert_not_called()
+
+    async def test_count_preserves_annotated_connection_error(self):
+        import httpx
+        client, embeddings = AsyncMock(), AsyncMock()
+        embeddings.spec = embedding_spec.SPEC
+        store = semantic.SemanticMovieStore('http://test', client=client, embeddings=embeddings,
+                                            collection_name='custom_semantic')
+        failure = httpx.ConnectError('offline')
+        client.count.side_effect = failure
+        with helpers.expected_error(self) as raised:
+            await store.count_movies()
+        self.assertIs(raised.exception, failure)
+        self.assertEqual(failure._localization[0], 'connection')
+        client.count.assert_awaited_once_with(collection_name='custom_semantic', exact=True)
 
     async def test_request_translates_sdk_failures(self):
         import httpx

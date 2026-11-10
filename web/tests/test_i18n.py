@@ -1,17 +1,20 @@
+from contextlib import ExitStack
 from html.parser import HTMLParser
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 import unittest
-from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from contextlib import ExitStack
 
 from engine import catalog as movie_catalog
 from engine import constants
 from engine import errors
 from engine import i18n as engine_i18n
 from engine import services
+from engine.stores import semantic
 from web import app as web_app
+from web import config
+from web.tests import forms
 
 
 class LanguageLinks(HTMLParser):
@@ -28,8 +31,9 @@ class LanguageLinks(HTMLParser):
 
 class WebLocalizationTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(semantic.SemanticMovieStore, 'count_movies', return_value=250))
         self.stack = self.enterContext(ExitStack())
-        self.app = web_app.create_app(web_app.Settings(qdrant_url='http://test:6333'))
+        self.app = web_app.create_app(config.Settings(qdrant_url='http://test:6333'))
         self.client = self.stack.enter_context(TestClient(self.app, follow_redirects=False))
         self.catalog = movie_catalog.read_movies(constants.DEFAULT_DATA_PATH)
 
@@ -54,17 +58,21 @@ class WebLocalizationTests(unittest.TestCase):
     def test_switch_preserves_parameters_and_post_redirect_get(self):
         for lang in ('en', 'ru'):
             query = ' Матрица & <test> '
-            response = self.client.get('/', params={'q': query, 'limit': '20', 'lang': lang})
+            with patch.object(services.MovieSearchService, 'search', side_effect=errors.MovieNotFoundError('search_saved_only')):
+                response = self.client.get('/', params={'q': query, 'limit': '20', 'lang': lang})
             links = LanguageLinks(response.text).links
             self.assertEqual(set(links), {'en', 'ru'})
             for target, link in links.items():
                 self.assertEqual(parse_qs(urlsplit(link).query), {'q': [query], 'limit': ['20'], 'mode': ['movie'], 'lang': [target]})
-                self.assert_language(self.client.get(link), target)
-            with patch.object(services, 'search', side_effect=errors.IndexStateError('response')) as search:
-                response = self.client.post('/search', data={'query': query, 'limit': '20', 'lang': lang})
+                with patch.object(services.MovieSearchService, 'search', side_effect=errors.MovieNotFoundError('search_saved_only')):
+                    self.assert_language(self.client.get(link), target)
+            with patch.object(services.MovieSearchService, 'search', side_effect=errors.IndexStateError('response')) as search:
+                response = forms.post(self.client, '/search', data={'query': query, 'limit': '20', 'lang': lang})
                 self.assertEqual(response.status_code, 303)
-                search.assert_not_called()
-                self.assertEqual(parse_qs(urlsplit(response.headers['Location']).query), {'q': [query], 'limit': ['20'], 'mode': ['movie'], 'lang': [lang]})
+                search.assert_called_once()
+                redirect_params = parse_qs(urlsplit(response.headers['Location']).query)
+                self.assertTrue(redirect_params.pop('result'))
+                self.assertEqual(redirect_params, {'q': [query], 'limit': ['20'], 'mode': ['movie'], 'lang': [lang]})
                 for _ in range(2):
                     page = self.client.get(response.headers['Location'])
                     self.assert_language(page, lang)
@@ -94,11 +102,11 @@ class WebLocalizationTests(unittest.TestCase):
 
     def test_localized_validation_and_ambiguity_without_network(self):
         for lang in ('en', 'ru'):
-            for params, key in (({'q': ''}, 'empty'), ({'q': 'absent title'}, 'not_found'), ({'q': '1', 'limit': '6'}, 'web_limit')):
+            for params, key in (({'q': ''}, 'empty'), ({'q': '1', 'limit': '6'}, 'web_limit')):
                 with patch.object(self.app.state.movie_store.client, 'retrieve') as api:
                     response = self.client.get('/', params={**params, 'lang': lang})
                     api.assert_not_called()
                 self.assertIn(engine_i18n.translate(key, lang), response.text)
-            response = self.client.get('/', params={'q': 'Гарри', 'lang': lang})
-            title = 'Harry Potter' if lang == 'en' else 'Гарри Поттер'
-            self.assertIn(title, response.text.split('role="alert">')[1])
+            with patch.object(self.app.state.movie_store, 'find_movies', return_value=[]):
+                response = self.client.get('/', params={'q': 'absent title', 'lang': lang})
+            self.assertIn(engine_i18n.translate('search_saved_only', lang), response.text)

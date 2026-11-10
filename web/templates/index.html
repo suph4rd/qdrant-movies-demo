@@ -8,16 +8,13 @@
 </head>
 <body>
 <main>
-  <nav aria-label="{{ _('Interface language') }}">
-    {% for language in ('en', 'ru') %}
-    <a href="{{ switches[language] }}" lang="{{ language }}" hreflang="{{ language }}"{% if language == lang %} aria-current="true"{% endif %}>{{ language | upper }}</a>
-    {% endfor %}
-  </nav>
-  <header><p class="eyebrow">{{ _('MOVIE CATALOG · 250 MOVIES') }}</p>
+  {% include 'navigation.html' %}
+  <header><p class="eyebrow">{% if movie_count is not none %}{{ _('MOVIE CATALOG · MOVIES: %(count)s', count=movie_count) }}{% else %}{{ _('MOVIE CATALOG · Count unavailable') }}{% endif %}</p>
     <h1>{{ _('What to watch next?') }}</h1>
     <p>{{ _('Choose a movie or describe what you want to watch in English or Russian.') }}</p>
   </header>
   <form action="{{ url_for('search') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="lang" value="{{ lang }}">
     <label for="mode">{{ _('Search mode') }}</label>
     <select id="mode" name="mode">
@@ -46,15 +43,26 @@
   {% if error %}
     <p class="error" role="alert">{{ error }}</p>
   {% elif result is not none %}
-    <section aria-labelledby="results">
-      <h2 id="results">{% if result.source %}{{ _('Similar to “%(title)s”', title=result.source.title) }}{% else %}{{ _('Movies matching your description') }}{% endif %}</h2>
+    {% for message in result.messages %}<p role="status">{{ message }}</p>{% endfor %}
+    {% for group in result.groups %}
+    <section aria-labelledby="results-{{ loop.index }}">
+      <h2 id="results-{{ loop.index }}">{% if group.source %}{{ _('Similar to “%(title)s”', title=group.source.title) }} ({{ group.source.year }}){% if group.source.original_title %} · {{ group.source.original_title }}{% endif %}{% if group.source.wikidata_id %} · {{ group.source.wikidata_id }}{% elif group.source.tmdb_id %} · TMDB {{ group.source.tmdb_id }}{% endif %}{% else %}{{ _('Movies matching your description') }}{% endif %}</h2>
+      {% if group.source and group.source.wikidata_id %}<p><a href="https://www.wikidata.org/wiki/{{ group.source.wikidata_id }}">{{ _('Source: Wikidata') }}</a></p>
+      <p class="muted">{{ _('Wikidata provides a short description, not a plot summary. Plot-based recommendations may be less precise.') }}</p>
+      {% elif group.source and group.source.tmdb_id %}<p><a href="https://www.themoviedb.org/movie/{{ group.source.tmdb_id }}">{{ _('Source: TMDB') }}</a></p>{% endif %}
+      {% if group.source and group.source.mark_reference %}
+      {% with movie=group.source, mark=marks.get(group.source.id | string) %}{% include 'marks.html' %}{% endwith %}
+      {% endif %}
       <p class="muted">{{ _('Cosine similarity measures vector similarity, not the probability that you will like a movie.') }}</p>
       <div class="cards">
-      {% for point in result.recommendations %}
+      {% for point in group.recommendations %}
         <article>
           <p class="muted">{{ point.payload.year }} · {{ point.payload.genres | join(' / ') }}</p>
           <h3>{{ point.payload.title }}</h3>
           <p>{{ point.payload.description }}</p>
+          {% if point.payload.description_language %}<p class="muted">{{ _('Description language: %(language)s', language=point.payload.description_language | upper) }}</p>{% endif %}
+          {% if point.payload.wikidata_id %}<p class="muted">{{ _('Short description from Wikidata') }}</p><a href="https://www.wikidata.org/wiki/{{ point.payload.wikidata_id }}">{{ _('Source: Wikidata') }}</a>{% elif point.payload.tmdb_id %}<a href="https://www.themoviedb.org/movie/{{ point.payload.tmdb_id }}">{{ _('Source: TMDB') }}</a>{% endif %}
+          {% if point.payload.mark_reference %}{% with movie=point.payload, mark=marks.get(point.payload.id | string) %}{% include 'marks.html' %}{% endwith %}{% endif %}
           <p class="score">{{ _('Cosine similarity') }}: {{ '%.4f' | format(point.score) }}</p>
         </article>
       {% else %}
@@ -62,6 +70,7 @@
       {% endfor %}
       </div>
     </section>
+    {% endfor %}
   {% else %}
     <p class="initial">{{ _('Start with a favorite movie. Recommendations will appear here.') }}</p>
   {% endif %}
