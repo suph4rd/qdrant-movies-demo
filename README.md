@@ -1,13 +1,14 @@
 # Movie recommendations with Qdrant
 
 A local demo with 250 movies, semantic embeddings, an async Python engine and
-loader, and a FastAPI interface in English and Russian. Python **3.15.2** is used
-locally and in Docker. No JavaScript or build pipeline is required.
+loader, and a Vue 3 / TypeScript interface in English and Russian served by Nginx in Docker and FastAPI locally.
+Python **3.15.2** is used locally and in Docker. Node **24** is required only
+for client development and builds; Docker builds the client in a separate image.
 
 The default index is `movies_semantic_v1`: one named `semantic` vector, 384
 components, Cosine distance. Embeddings come from a local Hugging Face Text
 Embeddings Inference (TEI) CPU service using `intfloat/multilingual-e5-small`.
-The original `movies` collection and the ten manual features in `movies.json`
+The original `movies` collection and the ten manual features in `backend/api/movies.json`
 are preserved as historical data. The runtime supports semantic search only;
 `movies` is reserved and rejected. IDs and both catalog languages are preserved.
 
@@ -29,11 +30,12 @@ verified on Apple Silicon; Docker uses CPU cores, without Metal/MPS acceleration
 
 TEI has a `/health` readiness check. Compose waits for TEI to be healthy before
 starting the loader. The loader additionally waits up to 60 seconds for Qdrant's
-`/readyz`. Web starts only after a successful load. A failure prevents web startup;
+`/readyz`. The backend starts after migration and loading succeed; the frontend
+starts after the backend is healthy. A failure prevents application startup;
 inspect logs, fix the problem and repeat the startup command:
 
 ```sh
-docker compose --env-file env/.env -f docker/compose.yaml logs --tail=100 tei loader web qdrant
+docker compose --env-file env/.env -f docker/compose.yaml logs --tail=100 tei loader backend qdrant
 curl --fail http://127.0.0.1:18080/health
 curl --fail http://127.0.0.1:6333/readyz
 ```
@@ -45,8 +47,8 @@ TLS or external access. Qdrant dashboard: http://127.0.0.1:6333/dashboard.
 
 For an existing `env/.env`, merge `WEB_PORT=18000` and `TEI_PORT=18080`;
 if it defines `EMBEDDING_URL`, change it to `http://tei:18080`.
-Do not replace the file: preserve other local settings. Web and TEI listen on
-18000 and 18080 inside their containers as well.
+Do not replace the file: preserve other local settings. The backend listens on 18000 inside the Docker network without a published port.
+The frontend publishes host port 18000 to Nginx port 80; TEI listens on 18080.
 
 Settings in `env/.env`:
 
@@ -55,8 +57,8 @@ Settings in `env/.env`:
 | `QDRANT_URL` | `http://qdrant:6333` | `http://127.0.0.1:6333` |
 | `EMBEDDING_URL` | `http://tei:18080` | `http://127.0.0.1:18080` |
 | `MOVIES_COLLECTION` | `movies_semantic_v1` | `movies_semantic_v1` |
-| `EMBEDDING_CACHE` | `/home/app/.cache/embeddings` (fixed in Compose) | package-relative `.cache/embeddings` |
-| `MOVIES_PATH` | `/app/movies.json` | package-relative `movies.json` |
+| `EMBEDDING_CACHE` | `/home/app/.cache/embeddings` (fixed in Compose) | repository-root `.cache/embeddings` |
+| `MOVIES_PATH` | `/app/backend/api/movies.json` | package-relative `backend/api/movies.json` |
 
 `WEB_PORT`, `TEI_PORT`, `QDRANT_HTTP_PORT` and `QDRANT_GRPC_PORT` change host ports
 only. Update browser/local URLs accordingly. Compose's env file is not read by
@@ -88,10 +90,10 @@ weights and cached embeddings. Reload the catalog included in the image:
 docker compose --env-file env/.env -f docker/compose.yaml run --rm loader
 ```
 
-After editing code, JSON, translations or templates, rebuild/recreate:
+After editing code, JSON, translations or client files, rebuild/recreate:
 
 ```sh
-docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader web
+docker compose --env-file env/.env -f docker/compose.yaml up -d --build --force-recreate loader backend frontend
 ```
 
 Two loads of unchanged IDs preserve the 250 original movies and any imported movies. The loader validates JSON
@@ -112,6 +114,12 @@ Stop with `docker compose --env-file env/.env -f docker/compose.yaml stop`.
 `down` removes containers while preserving volumes. **`down -v` deletes all four
 volumes**, including accounts, Qdrant data, weights and cached embeddings.
 
+The repository root is the build context for both `backend/api/Dockerfile` and
+`frontend/Dockerfile`. Backend, loader and migrate share one Python image with
+no Node dependency. Python startup and health scripts live in `backend/scripts/`;
+the TEI entrypoint remains in `docker/scripts/`. Nginx returns 404 for missing
+assets, disables index caching and caches hashed assets for one year.
+
 ## Local Python
 
 Use a virtual environment with Python 3.15.2:
@@ -120,21 +128,56 @@ Use a virtual environment with Python 3.15.2:
 python3.15 --version
 python3.15 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r backend/api/requirements.txt
 docker compose --env-file env/.env -f docker/compose.yaml up -d qdrant tei postgres
 curl --fail http://127.0.0.1:6333/readyz
 curl --fail http://127.0.0.1:18080/health
-python -m engine.load --url http://127.0.0.1:6333 --embedding-url http://127.0.0.1:18080 --data movies.json
+python -m backend.engine.load --url http://127.0.0.1:6333 --embedding-url http://127.0.0.1:18080 --data backend/api/movies.json
 export DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies'
-python -m alembic upgrade head
-python -m uvicorn web.app:create_app --factory --host 127.0.0.1 --port 18000
+python -m alembic -c backend/api/alembic.ini upgrade head
+npm --prefix frontend ci
+npm --prefix frontend run build
+python -m uvicorn backend.api.app:create_app --factory --host 127.0.0.1 --port 18000
 ```
 
-Retry readiness checks until both return successfully. Stop Docker web first if
+Retry readiness checks until both return successfully. Stop Docker frontend first if
 it already occupies port 18000. Loader flags `--url`, `--embedding-url`,
 `--collection`, `--cache`, `--data` and `--lang` override defaults; environment
 variables provide defaults for the endpoint, collection and cache settings.
-`python -m engine.load --lang ru --help` shows Russian help/errors.
+`python -m backend.engine.load --lang ru --help` shows Russian help/errors.
+
+## Client development and verification
+
+Use Node 24 and npm. From the repository root:
+
+```sh
+npm --prefix frontend ci
+npm --prefix frontend run dev
+# In another terminal, run FastAPI on 127.0.0.1:18000 as above.
+```
+
+Vite proxies `/api` to FastAPI, so development uses the same cookie/CSRF
+contract. Open Vite's printed local address. Production uses one origin on
+port 18000; Nginx serves the built assets and SPA, and proxies `/api` and `/api/*`
+to `backend:18000` with the original URI, Host, Origin and cookies. Locally,
+FastAPI serves the root `frontend/dist` build. Node is absent from the
+Python runtime image. Build before running local production or after changes:
+
+```sh
+npm --prefix frontend run build
+npm --prefix frontend test
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
+
+The build checks TypeScript. Component tests cover search, accounts, session
+state and administrative actions. Playwright runs desktop/mobile browser flows
+against a mocked API, including navigation, language, authentication, lists and
+administration. Python API tests use mocked engine/database boundaries; optional
+PostgreSQL tests exercise the same JSON contract with real transactions.
+Docker Compose builds the client automatically. Missing builds are diagnosed
+at request time; the application factory still performs no catalog/network I/O.
 
 ## Search and languages
 
@@ -169,10 +212,10 @@ movies can therefore produce less precise plot-based recommendations than the
 original catalog. The interface marks these descriptions. Incomplete entities are
 skipped rather than filled with invented text. Wikipedia text is not imported.
 
-Only POST `/search` can import. GET links, refreshes and language switches never
+Only POST `/api/search` can import. GET links, refreshes and language switches never
 contact Wikidata or write movies. Search POST results and messages are kept in a
 bounded server-side cache of 128 searches, addressed by an opaque `result`
-parameter through the redirect. This demo uses one web worker; snapshots expire
+parameter in the client URL. This demo uses one web worker; snapshots expire
 on restart or eviction. An expired link performs a read-only search of saved
 movies. Imported movies themselves persist in Qdrant across restarts.
 
@@ -181,8 +224,8 @@ enter a plot or mood and submit. TEI encodes the query and Qdrant searches all
 movies. There is no source movie in the results. Empty descriptions are rejected.
 
 Choose 5, 10, 20 or 50 results. Mode, text, count and language persist through
-POST → GET redirects, refreshes and language links (`mode`, `q`, `limit`, `lang`).
-Old links without `mode` use movie search. The interface works without JavaScript.
+POST → GET navigation, refreshes and language links (`mode`, `q`, `limit`, `lang`).
+Old links without `mode` use movie search. The Vue interface requires JavaScript.
 Cosine scores measure vector similarity, not a probability of liking a movie.
 
 Language priority: supported `lang=en|ru`, saved cookie, `Accept-Language`, then
@@ -194,7 +237,7 @@ payloads, without mutating them.
 
 Model revision: `614241f622f53c4eeff9890bdc4f31cfecc418b3`. Mean pooling,
 float32, normalized output. Text format **`movie-en-v1`** is defined in
-[evaluation/README.md](evaluation/README.md). Documents use English title,
+[backend/evaluation/README.md](backend/evaluation/README.md). Documents use English title,
 genres (original order) and description, with LF separators and no trailing LF:
 
 ```text
@@ -214,7 +257,7 @@ message. Collections are never deleted automatically.
 To change the model or text contract, update the pinned specification and TEI
 configuration together, bump the text version when appropriate and choose a
 **new collection name**, for example `movies_semantic_v2`. Load it before switching
-web's `MOVIES_COLLECTION`; recreate web to apply settings. Changed contracts use
+backend's `MOVIES_COLLECTION`; recreate backend to apply settings. Changed contracts use
 new cache keys. Keep the prior collection for rollback.
 
 ## Preserved manual features
@@ -226,35 +269,35 @@ annotations are preserved in JSON and the legacy collection.
 
 ## Engine and lifecycle
 
-`engine/constants.py` defines shared defaults. `engine/stores/semantic.py` owns
-Qdrant calls and resources; `engine/stores/factory.py` configures this single
-implementation. `engine/embeddings/` separates the HTTP client, cache, model
+`backend/engine/constants.py` defines shared defaults. `backend/engine/stores/semantic.py` owns
+Qdrant calls and resources; `backend/engine/stores/factory.py` configures this single
+implementation. `backend/engine/embeddings/` separates the HTTP client, cache, model
 specification, text preparation and validation. Public imports are available
-from `engine.stores` and `engine.embeddings`. The engine has no web dependency.
+from `backend.engine.stores` and `backend.engine.embeddings`. The engine has no web dependency.
 The official async Qdrant SDK uses REST with a 15-second timeout and exact search.
 
-`engine/wikidata/` separates transport, entity pagination and batching, parsing,
+`backend/engine/wikidata/` separates transport, entity pagination and batching, parsing,
 validation, classification, movie mapping and search. `WikidataClient` is the
 public facade for `search`, `movie` and `close`; `EntityClassifier`, `MovieMapper`
 and `WikidataSearch` implement the provider-specific work. Each search shares an
 entity cache, and injected HTTP clients remain owned by their caller.
 
-`engine/imports/` owns title normalization, matching, external identifiers and
+`backend/engine/imports/` owns title normalization, matching, external identifiers and
 imported-card validation, including legacy TMDB cards. Its public exports remain
-available through `engine.imports`. `engine.services.MovieSearchService` receives
+available through `backend.engine.imports`. `backend.engine.services.MovieSearchService` receives
 the store, catalog and optional Wikidata client. It searches exact catalog titles,
 saved cards and partial catalog titles in that order, then imports only when
 explicitly allowed. `services.search_movies` remains a compatible wrapper with
 structured `groups` and `messages` results.
 
-`engine.i18n` handles shared source-string translation and movie localization;
-`engine.errors` formats structured notifications and nested expected errors.
+`backend.engine.i18n` handles shared source-string translation and movie localization;
+`backend.engine.errors` formats structured notifications and nested expected errors.
 The web layer chooses the request language and uses `MovieSearchService` without
 moving HTTP language selection into the engine.
 
 ```python
-from engine import services
-from engine.stores import create_store
+from backend.engine import services
+from backend.engine.stores import create_store
 
 store = create_store('http://127.0.0.1:6333')
 try:
@@ -267,29 +310,37 @@ finally:
 The engine limit is an integer 1–249 in both modes. An injected SDK or embedding
 client stays owned by its caller. Owned clients close in `finally` or lifespan.
 
-`web/app.py`'s `ApplicationLifespan` has a fresh instance per startup. The factory performs no catalog reads or network requests. Lifespan
+`backend/api/app.py`'s `ApplicationLifespan` has a fresh instance per startup. The factory performs no catalog reads or network requests. Lifespan
 reads/validates JSON once per application, creates clients and closes them on
 shutdown; it never indexes data. Restart after catalog/settings changes.
-`web/application/services/` contains search, authentication, account, and
+`backend/api/application/services/` contains search, authentication, account, and
 administration scenarios with injected dependencies and transaction ownership.
-`web/application/` also holds plain DTOs, scenario errors, credential validation,
+`backend/api/application/` also holds plain DTOs, scenario errors, credential validation,
 search constants, and movie snapshot cleaning. Services may depend on SQLAlchemy
 and infrastructure, but never on HTTP or presentation.
-`web/infrastructure/repositories/` contains SQL and locking operations using the
-caller's session, without committing. `web/infrastructure/models.py` owns ORM
+`backend/api/infrastructure/repositories/` contains SQL and locking operations using the
+caller's session, without committing. `backend/api/infrastructure/models.py` owns ORM
 models; `database.py` manages database resources, `clock.py` supplies UTC time,
 and `passwords.py` handles Argon2, rehash checks, and token hashing.
-`web/infrastructure/snapshots.py` owns per-application FIFO caches
+`backend/api/infrastructure/snapshots.py` owns per-application FIFO caches
 (128 search results and 1024 movie card references).
-`web/http/routes/` contains search, authentication, account, and administration
-handlers; `web/http/router.py` registers them. HTTP helpers retain CSRF, cookies,
-redirects, language selection, status codes, and localized error mapping.
-`web/http/dependencies.py` assembles services. `web/presentation/` localizes
-cards, builds page contexts and links, and renders templates, including auth
-forms, without database access. Template and static paths are defined relative
-to the `web` package in `web/presentation/pages.py`.
-`web/config.py` holds settings; `python -m web.create_admin` uses the same
-application authentication service as the web interface. Shared `movies.json`
+`backend/api/http/api.py` exposes the same application services through JSON under `/api`.
+`backend/api/http/security.py` checks cookie sessions, Origin and the `X-CSRF-Token`
+header. `/api/context` supplies the user, language, CSRF token, catalog, marks
+and search options; authentication rotates both session and CSRF tokens.
+`backend/api/presentation/api.py` localizes and serializes data without database access.
+Movie IDs are decimal strings throughout JSON, preserving unsigned 64-bit IDs.
+`frontend/API.md` documents endpoints, errors and pagination.
+
+`frontend/src/` contains Vue pages, shared components, a typed fetch client,
+session state and EN/RU dictionaries. Vue Router preserves search snapshots,
+query parameters, language and pagination in browser history. The original CSS
+is retained in `frontend/src/style.css`. `backend/api/http/spa.py` serves `frontend/dist`
+relative to package files, including direct links to account and admin pages.
+Unknown API/static paths return 404; a missing client build returns a localized
+503 with build instructions. No Jinja2 templates or HTML form handlers remain.
+`backend/api/config.py` holds settings; `python -m backend.api.create_admin` uses the same
+application authentication service as the web interface. Shared `backend/api/movies.json`
 resolution does not depend on working directory; no `sys.path` changes are used.
 
 ## Verification and evaluation
@@ -299,10 +350,10 @@ requires both services ready and tests the semantic collection:
 
 ```sh
 python -m unittest -v
-python -m engine.tests.verify
-python -m engine.tests.verify_imports
-python -m evaluation.runners.probe
-python -m evaluation.runners.run
+python -m backend.engine.tests.verify
+python -m backend.engine.tests.verify_imports
+python -m backend.evaluation.runners.probe
+python -m backend.evaluation.runners.run
 ```
 
 `verify_imports` uses a separate temporary collection with real Qdrant and TEI
@@ -321,30 +372,30 @@ Python's `-O` flag, which disables integration assertions.
 In Docker:
 
 ```sh
-docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python --version
-docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps web python -m unittest -v
-docker compose --env-file env/.env -f docker/compose.yaml run --rm loader python -m engine.tests.verify
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps backend python --version
+docker compose --env-file env/.env -f docker/compose.yaml run --rm --no-deps backend python -m unittest -v
+docker compose --env-file env/.env -f docker/compose.yaml run --rm loader python -m backend.engine.tests.verify
 ```
 
 The verifier respects `QDRANT_URL` and `EMBEDDING_URL`. It writes the cache; use
 the loader service, which mounts the persistent cache volume. Quality/latency
-artifacts are generated locally in `evaluation/results/`; frozen inputs live in
-`evaluation/data/` and package-relative paths in `evaluation/config/`. Run probe
+artifacts are generated locally in `backend/evaluation/results/`; frozen inputs live in
+`backend/evaluation/data/` and package-relative paths in `backend/evaluation/config/`. Run probe
 and evaluation sequentially without competing loads. Historical JSON measurements
-remain unchanged; fresh measurements use separate `*-latest.json` files. See [the recorded report](evaluation/REPORT.md)
+remain unchanged; fresh measurements use separate `*-latest.json` files. See [the recorded report](backend/evaluation/REPORT.md)
 for Recall@5 on 20 frozen RU/EN queries, comparison for ten source movies,
 first/subsequent request timings and limitations. This narrow evaluation does
 not guarantee better recommendations. Descriptions are short; there is no
 personalization, reranker, hybrid search or model training.
 
-Translations live in `engine/translations`. English source strings fall back
+Translations live in `backend/engine/translations`. English source strings fall back
 through gettext; reviewed Russian `.po` and compiled `.mo` files are committed:
 
 ```sh
-pybabel extract -F babel.cfg -k N_ -o engine/translations/messages.pot engine web
-pybabel update -i engine/translations/messages.pot -d engine/translations
+pybabel extract -F backend/api/babel.cfg -k N_ -o backend/engine/translations/messages.pot backend/engine backend/api
+pybabel update -i backend/engine/translations/messages.pot -d backend/engine/translations
 # Translate new entries and review fuzzy flags before compiling.
-pybabel compile -d engine/translations
+pybabel compile -d backend/engine/translations
 python -m unittest -v
 ```
 
@@ -359,35 +410,35 @@ Guests retain access to search and recommendations. `/register` accepts an email
 a password of 12–128 characters and its confirmation. Emails are normalized and
 remain reserved after soft deletion. Passwords use Argon2id. Registration signs
 in the new user; `/login` creates a seven-day session. The HttpOnly session cookie
-contains a random token; PostgreSQL stores only its SHA-256 hash. POST `/logout`
+contains a random token; PostgreSQL stores only its SHA-256 hash. POST `/api/logout`
 revokes the current session. Blocked and deleted users cannot sign in or use
-protected routes. Every modifying form, including search/import, requires CSRF.
+protected routes. Every modifying API request, including search/import, requires a CSRF header.
 
 `/account` shows Watched, Liked and Watchlist, with 20 movies per page. Movie cards
-provide forms that set the requested state, so repeating a POST is safe. Watched
+provide buttons that set the requested state, so repeating a POST is safe. Watched
 and Watchlist are mutually exclusive; Liked is independent. Server-validated
 bilingual snapshots are saved in PostgreSQL and survive restarts and Qdrant
-outages. Imported-card form references expire on server restart or cache eviction;
+outages. Imported-card references expire on server restart or cache eviction;
 search again if an unsaved card's reference expires. Saved cards remain usable.
-Changing a mark redirects back to the current search or account page, preserving
+Changing a mark updates the current search or account page in place, preserving
 query parameters and the result snapshot. Pagination controls appear only for
 lists containing more than one page. Lists do not change recommendation rankings.
 
 The search page reads the exact movie count from the active Qdrant collection on
-every visit, including after imports and snapshot refreshes. If Qdrant is
+every search result load, including after imports and snapshot refreshes. If Qdrant is
 unavailable, the count is shown as unavailable while saved results remain visible.
 
 PostgreSQL 18.1 has a separate `accounts-storage` volume and a readiness check.
-Compose runs the `migrate` service before web starts. Migrations are explicit;
+Compose runs the `migrate` service before backend starts. Migrations are explicit;
 the application factory and startup never apply schema changes. For local Python:
 
 ```sh
 docker compose --env-file env/.env -f docker/compose.yaml up -d postgres
 export DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies'
 export COOKIE_SECURE=false  # Explicit local HTTP setting; use true with HTTPS.
-python -m alembic upgrade head
-python -m web.create_admin --lang en
-python -m uvicorn web.app:create_app --factory --host 127.0.0.1 --port 18000
+python -m alembic -c backend/api/alembic.ini upgrade head
+python -m backend.api.create_admin --lang en
+python -m uvicorn backend.api.app:create_app --factory --host 127.0.0.1 --port 18000
 ```
 
 Use the credentials configured in `env/.env`; URL-encode special password
@@ -403,7 +454,7 @@ Create the first administrator interactively; passwords are never command-line
 arguments. In Docker:
 
 ```sh
-docker compose --env-file env/.env -f docker/compose.yaml exec web python -m web.create_admin --lang ru
+docker compose --env-file env/.env -f docker/compose.yaml exec backend python -m backend.api.create_admin --lang ru
 ```
 
 The command refuses if an active administrator already exists. `/admin/users`
@@ -439,7 +490,7 @@ set. Use a separate, disposable database, apply migrations, then run all tests:
 
 ```sh
 export TEST_DATABASE_URL='postgresql+psycopg://movies:movies@127.0.0.1:5432/movies_test'
-DATABASE_URL="$TEST_DATABASE_URL" python -m alembic upgrade head
+DATABASE_URL="$TEST_DATABASE_URL" python -m alembic -c backend/api/alembic.ini upgrade head
 python -m unittest -v
 ```
 

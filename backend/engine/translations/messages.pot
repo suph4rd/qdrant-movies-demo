@@ -1,0 +1,681 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-10 02:55+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: backend/engine/i18n.py:16
+msgid "Invalid imported movie metadata."
+msgstr ""
+
+#: backend/engine/i18n.py:17
+msgid "Movie ID conflict. The existing record was preserved."
+msgstr ""
+
+#: backend/engine/i18n.py:18
+#, python-format
+msgid "Added: %(title)s."
+msgstr ""
+
+#: backend/engine/i18n.py:19
+#, python-format
+msgid "Already saved: %(title)s."
+msgstr ""
+
+#: backend/engine/i18n.py:20
+#, python-format
+msgid "Could not process %(title)s: %(detail)s"
+msgstr ""
+
+#: backend/engine/i18n.py:21
+msgid ""
+"No saved movie found. Submit the form to search Wikidata and import exact"
+" matches."
+msgstr ""
+
+#: backend/engine/i18n.py:22 backend/api/templates/index.html:63
+#, python-format
+msgid "Description language: %(language)s"
+msgstr ""
+
+#: backend/engine/i18n.py:23 backend/api/templates/index.html:52 backend/api/templates/index.html:64
+msgid "Source: TMDB"
+msgstr ""
+
+#: backend/engine/i18n.py:24
+msgid "Movie not found in Wikidata."
+msgstr ""
+
+#: backend/engine/i18n.py:25
+msgid "Invalid Wikidata response or incomplete movie metadata."
+msgstr ""
+
+#: backend/engine/i18n.py:26
+msgid "Wikidata request limit reached. Try again later."
+msgstr ""
+
+#: backend/engine/i18n.py:27
+msgid "Wikidata is unavailable. Try again later."
+msgstr ""
+
+#: backend/engine/i18n.py:28
+#, python-format
+msgid "Skipped incomplete Wikidata movie %(id)s."
+msgstr ""
+
+#: backend/engine/i18n.py:29 backend/api/templates/index.html:50 backend/api/templates/index.html:64
+msgid "Source: Wikidata"
+msgstr ""
+
+#: backend/engine/i18n.py:30 backend/api/templates/index.html:64
+msgid "Short description from Wikidata"
+msgstr ""
+
+#: backend/engine/i18n.py:31 backend/api/templates/index.html:51
+msgid ""
+"Wikidata provides a short description, not a plot summary. Plot-based "
+"recommendations may be less precise."
+msgstr ""
+
+#: backend/engine/i18n.py:32 backend/api/templates/index.html:78
+msgid "Wikidata structured data is available under CC0. No API key is required."
+msgstr ""
+
+#: backend/engine/i18n.py:33 backend/api/templates/index.html:77
+msgid "Credits"
+msgstr ""
+
+#: backend/engine/i18n.py:35
+msgid "Choose movie or description search."
+msgstr ""
+
+#: backend/engine/i18n.py:36 backend/api/templates/index.html:19
+msgid "Search mode"
+msgstr ""
+
+#: backend/engine/i18n.py:37 backend/api/templates/index.html:22
+msgid "By movie"
+msgstr ""
+
+#: backend/engine/i18n.py:38 backend/api/templates/index.html:23
+msgid "By description"
+msgstr ""
+
+#: backend/engine/i18n.py:39 backend/api/templates/index.html:14
+msgid "Choose a movie or describe what you want to watch in English or Russian."
+msgstr ""
+
+#: backend/engine/i18n.py:40 backend/api/templates/index.html:25
+msgid "Movie title, ID, or description"
+msgstr ""
+
+#: backend/engine/i18n.py:41 backend/api/templates/index.html:28
+msgid "For example, The Matrix, 1, or an astronaut stranded on Mars"
+msgstr ""
+
+#: backend/engine/i18n.py:42 backend/api/templates/index.html:41
+msgid ""
+"In movie mode, enter a title or ID. In description mode, describe a plot "
+"or mood in English or Russian."
+msgstr ""
+
+#: backend/engine/i18n.py:43 backend/api/templates/index.html:49
+msgid "Movies matching your description"
+msgstr ""
+
+#: backend/engine/i18n.py:44 backend/api/templates/index.html:56
+msgid ""
+"Cosine similarity measures vector similarity, not the probability that "
+"you will like a movie."
+msgstr ""
+
+#: backend/engine/i18n.py:46
+msgid ""
+"Incompatible semantic index. Reindex into a new collection with the "
+"pinned model, revision, and text format."
+msgstr ""
+
+#: backend/engine/i18n.py:47
+#, python-format
+msgid "Cannot write the embedding cache (%(path)s)."
+msgstr ""
+
+#: backend/engine/i18n.py:48
+msgid "TEI embedding service URL"
+msgstr ""
+
+#: backend/engine/i18n.py:49
+msgid "Semantic collection name (movies is reserved)"
+msgstr ""
+
+#: backend/engine/i18n.py:50
+msgid "Embedding cache directory"
+msgstr ""
+
+#: backend/engine/i18n.py:52
+msgid "Enter a description in English or Russian."
+msgstr ""
+
+#: backend/engine/i18n.py:53
+#, python-format
+msgid "Cannot reach the embedding model (%(url)s). Check that TEI is ready."
+msgstr ""
+
+#: backend/engine/i18n.py:54
+msgid ""
+"Invalid embedding response: expected finite, nonzero 384-dimensional "
+"vectors."
+msgstr ""
+
+#: backend/engine/i18n.py:55
+msgid ""
+"TEI model configuration does not match the pinned model, revision, "
+"pooling, or dtype."
+msgstr ""
+
+#: backend/engine/i18n.py:57
+#, python-format
+msgid "Qdrant HTTP %(status)s: %(detail)s"
+msgstr ""
+
+#: backend/engine/i18n.py:58
+msgid "Invalid Qdrant response."
+msgstr ""
+
+#: backend/engine/i18n.py:59
+#, python-format
+msgid "Cannot connect to Qdrant (%(url)s): %(detail)s"
+msgstr ""
+
+#: backend/engine/i18n.py:60
+msgid ""
+"Incompatible movies collection: one unnamed 10-dimensional vector with "
+"Cosine distance is required. Existing data is unchanged."
+msgstr ""
+
+#: backend/engine/i18n.py:61
+msgid ""
+"The movies collection contains additional records; they are preserved. "
+"This demo expects 250."
+msgstr ""
+
+#: backend/engine/i18n.py:62
+#, python-format
+msgid "Unknown movie ID: %(id)s. See movies.json for IDs."
+msgstr ""
+
+#: backend/engine/i18n.py:63
+#, python-format
+msgid "Cannot read the movie catalog: %(detail)s"
+msgstr ""
+
+#: backend/engine/i18n.py:64
+msgid "JSON must contain exactly 250 movies."
+msgstr ""
+
+#: backend/engine/i18n.py:65
+msgid "Each movie must be an object."
+msgstr ""
+
+#: backend/engine/i18n.py:66
+#, python-format
+msgid "Invalid or duplicate ID: %(id)s"
+msgstr ""
+
+#: backend/engine/i18n.py:67
+#, python-format
+msgid "Movie %(id)s: a nonzero vector of 10 numbers in the range 0–1 is required."
+msgstr ""
+
+#: backend/engine/i18n.py:68
+#, python-format
+msgid ""
+"Movie %(id)s: title, description, and genres are required in both "
+"languages."
+msgstr ""
+
+#: backend/engine/i18n.py:69
+#, python-format
+msgid "Movie %(id)s: invalid year or genres."
+msgstr ""
+
+#: backend/engine/i18n.py:70
+msgid "ID must be an integer from 0 to 2^64−1."
+msgstr ""
+
+#: backend/engine/i18n.py:71
+msgid "Enter a movie title or ID."
+msgstr ""
+
+#: backend/engine/i18n.py:72
+msgid "Movie not found. Enter another title or ID."
+msgstr ""
+
+#: backend/engine/i18n.py:73
+#, python-format
+msgid "Multiple movies found. Please specify the title: %(titles)s."
+msgstr ""
+
+#: backend/engine/i18n.py:74
+msgid "The recommendation count must be an integer from 1 to 249."
+msgstr ""
+
+#: backend/engine/i18n.py:75
+msgid "Choose the number of similar movies: 5, 10, 20, or 50."
+msgstr ""
+
+#: backend/engine/i18n.py:76 backend/api/templates/base.html:6 backend/api/templates/index.html:6
+msgid "Your next movie"
+msgstr ""
+
+#: backend/engine/i18n.py:77 backend/api/templates/index.html:12
+msgid "MOVIE CATALOG · Count unavailable"
+msgstr ""
+
+msgid "MOVIE CATALOG · MOVIES: %(count)s"
+msgstr ""
+
+#: backend/engine/i18n.py:78 backend/api/templates/index.html:13
+msgid "What to watch next?"
+msgstr ""
+
+#: backend/engine/i18n.py:79
+msgid "Choose a familiar movie to find similar movies by mood and genre."
+msgstr ""
+
+#: backend/engine/i18n.py:80
+msgid "Movie title or ID"
+msgstr ""
+
+#: backend/engine/i18n.py:81
+msgid "For example, The Matrix or 1"
+msgstr ""
+
+#: backend/engine/i18n.py:82 backend/api/templates/index.html:29
+msgid "Find similar movies"
+msgstr ""
+
+#: backend/engine/i18n.py:83 backend/api/templates/index.html:31
+msgid "Number of similar movies"
+msgstr ""
+
+#: backend/engine/i18n.py:84 backend/api/templates/index.html:21 backend/api/templates/index.html:34
+#, python-format
+msgid "Invalid value: %(value)s"
+msgstr ""
+
+#: backend/engine/i18n.py:85
+msgid ""
+"You can enter part of a title in English or Russian. Matching ignores "
+"case."
+msgstr ""
+
+#: backend/engine/i18n.py:86 backend/api/templates/index.html:49
+#, python-format
+msgid "Similar to “%(title)s”"
+msgstr ""
+
+#: backend/engine/i18n.py:87
+msgid ""
+"Cosine similarity measures manually assigned vector similarity, not the "
+"probability that you will like a movie."
+msgstr ""
+
+#: backend/engine/i18n.py:88 backend/api/templates/index.html:66
+msgid "Cosine similarity"
+msgstr ""
+
+#: backend/engine/i18n.py:89 backend/api/templates/index.html:69
+msgid "No similar movies yet."
+msgstr ""
+
+#: backend/engine/i18n.py:90 backend/api/templates/index.html:75
+msgid "Start with a favorite movie. Recommendations will appear here."
+msgstr ""
+
+#: backend/engine/i18n.py:91
+msgid "Interface language"
+msgstr ""
+
+#: backend/engine/i18n.py:92
+#, python-format
+msgid "Loaded %(loaded)s movies. Total in collection: %(count)s."
+msgstr ""
+
+#: backend/engine/i18n.py:93
+#, python-format
+msgid "Error: %(detail)s"
+msgstr ""
+
+#: backend/engine/i18n.py:94
+msgid "Validate and load the movie catalog into Qdrant."
+msgstr ""
+
+#: backend/engine/i18n.py:95
+msgid "Qdrant REST URL"
+msgstr ""
+
+#: backend/engine/i18n.py:96
+msgid "Path to the JSON catalog of 250 movies"
+msgstr ""
+
+#: backend/engine/i18n.py:97
+msgid "Output language (default: en)"
+msgstr ""
+
+#: backend/engine/i18n.py:98
+msgid "Show this help message and exit"
+msgstr ""
+
+#: backend/engine/i18n.py:99
+msgid "usage: "
+msgstr ""
+
+#: backend/engine/i18n.py:100
+msgid "options"
+msgstr ""
+
+#: backend/engine/i18n.py:101
+#, python-format
+msgid "unrecognized arguments: %(value)s"
+msgstr ""
+
+#: backend/engine/i18n.py:102
+#, python-format
+msgid "argument %(value)s: expected one argument"
+msgstr ""
+
+#: backend/engine/i18n.py:103
+#, python-format
+msgid "argument %(argument)s: ignored explicit argument %(value)s"
+msgstr ""
+
+#: backend/engine/i18n.py:104
+#, python-format
+msgid "argument %(argument)s: invalid choice: %(value)s (choose from %(choices)s)"
+msgstr ""
+
+#: backend/api/messages.py:5 backend/api/templates/navigation.html:13
+msgid "Register"
+msgstr ""
+
+#: backend/api/messages.py:6 backend/api/templates/navigation.html:12
+msgid "Log in"
+msgstr ""
+
+#: backend/api/messages.py:7 backend/api/templates/navigation.html:9
+msgid "Log out"
+msgstr ""
+
+#: backend/api/messages.py:8 backend/api/templates/auth.html:8
+msgid "Email"
+msgstr ""
+
+#: backend/api/messages.py:9 backend/api/templates/auth.html:10
+msgid "Password"
+msgstr ""
+
+#: backend/api/messages.py:10 backend/api/templates/auth.html:14
+msgid "Repeat password"
+msgstr ""
+
+#: backend/api/messages.py:11 backend/api/templates/auth.html:13
+msgid "Use 12–128 characters."
+msgstr ""
+
+#: backend/api/messages.py:12
+msgid "Enter a valid email address."
+msgstr ""
+
+#: backend/api/messages.py:13
+msgid "Password must contain 12–128 characters."
+msgstr ""
+
+#: backend/api/messages.py:14
+msgid "Passwords do not match."
+msgstr ""
+
+#: backend/api/messages.py:15
+msgid "This email is already registered."
+msgstr ""
+
+#: backend/api/messages.py:16
+msgid "Invalid email or password."
+msgstr ""
+
+#: backend/api/messages.py:17
+msgid "Administrator created."
+msgstr ""
+
+#: backend/api/messages.py:18
+msgid "An active administrator already exists."
+msgstr ""
+
+#: backend/api/messages.py:19
+msgid "Account creation cancelled."
+msgstr ""
+
+#: backend/api/messages.py:20 backend/api/templates/account.html:2 backend/api/templates/account.html:4
+#: backend/api/templates/marks.html:2
+msgid "My account"
+msgstr ""
+
+#: backend/api/messages.py:21
+msgid "Watched"
+msgstr ""
+
+#: backend/api/messages.py:22
+msgid "Liked"
+msgstr ""
+
+#: backend/api/messages.py:23
+msgid "Watchlist"
+msgstr ""
+
+#: backend/api/messages.py:24 backend/api/templates/account.html:20
+msgid "No movies in this list yet."
+msgstr ""
+
+#: backend/api/messages.py:25
+#, python-format
+msgid "Add to %(list)s"
+msgstr ""
+
+#: backend/api/messages.py:26
+#, python-format
+msgid "Remove from %(list)s"
+msgstr ""
+
+#: backend/api/messages.py:27 backend/api/templates/account.html:24
+#: backend/api/templates/admin_user.html:42 backend/api/templates/admin_users.html:34
+msgid "Previous"
+msgstr ""
+
+#: backend/api/messages.py:28 backend/api/templates/account.html:26
+#: backend/api/templates/admin_user.html:43 backend/api/templates/admin_users.html:35
+msgid "Next"
+msgstr ""
+
+#: backend/api/messages.py:29 backend/api/templates/account.html:25
+#, python-format
+msgid "Page %(page)s"
+msgstr ""
+
+#: backend/api/messages.py:30
+msgid "Invalid movie selection. Search for the movie again."
+msgstr ""
+
+#: backend/api/messages.py:31
+msgid "Invalid movie mark."
+msgstr ""
+
+#: backend/api/messages.py:32
+msgid "Invalid page number."
+msgstr ""
+
+#: backend/api/messages.py:33 backend/api/templates/admin_user.html:41
+#: backend/api/templates/admin_users.html:2 backend/api/templates/admin_users.html:4
+#: backend/api/templates/admin_users.html:33 backend/api/templates/navigation.html:5
+msgid "Users"
+msgstr ""
+
+#: backend/api/messages.py:34 backend/api/templates/admin_users.html:7
+msgid "Search email"
+msgstr ""
+
+#: backend/api/messages.py:35 backend/api/templates/admin_users.html:9
+msgid "Role"
+msgstr ""
+
+#: backend/api/messages.py:36 backend/api/templates/admin_users.html:15
+msgid "State"
+msgstr ""
+
+#: backend/api/messages.py:37
+msgid "All"
+msgstr ""
+
+#: backend/api/messages.py:38 backend/api/templates/admin_user.html:5
+#: backend/api/templates/admin_users.html:27
+msgid "User"
+msgstr ""
+
+#: backend/api/messages.py:39 backend/api/templates/admin_user.html:5
+#: backend/api/templates/admin_users.html:27
+msgid "Administrator"
+msgstr ""
+
+#: backend/api/messages.py:40
+msgid "Active"
+msgstr ""
+
+#: backend/api/messages.py:41
+msgid "Blocked"
+msgstr ""
+
+#: backend/api/messages.py:42
+msgid "Deleted"
+msgstr ""
+
+#: backend/api/messages.py:43 backend/api/templates/admin_users.html:21
+#: backend/api/templates/navigation.html:2
+msgid "Search"
+msgstr ""
+
+#: backend/api/messages.py:44 backend/api/templates/admin_users.html:30
+msgid "No users found."
+msgstr ""
+
+#: backend/api/messages.py:45 backend/api/templates/admin_user.html:6
+msgid "Created"
+msgstr ""
+
+#: backend/api/messages.py:46 backend/api/templates/admin_user.html:7
+msgid "Deleted at"
+msgstr ""
+
+#: backend/api/messages.py:47 backend/api/templates/admin_user.html:17
+msgid "Block"
+msgstr ""
+
+#: backend/api/messages.py:48 backend/api/templates/admin_user.html:17
+msgid "Unblock"
+msgstr ""
+
+#: backend/api/messages.py:49 backend/api/templates/admin_user.html:18
+msgid "Make administrator"
+msgstr ""
+
+#: backend/api/messages.py:50 backend/api/templates/admin_user.html:18
+msgid "Remove administrator role"
+msgstr ""
+
+#: backend/api/messages.py:51 backend/api/templates/admin_user.html:11
+msgid "Restore as blocked"
+msgstr ""
+
+#: backend/api/messages.py:52 backend/api/templates/admin_user.html:26
+msgid "Delete user"
+msgstr ""
+
+#: backend/api/messages.py:53 backend/api/templates/admin_user.html:23
+msgid "Confirm deletion by entering the user email."
+msgstr ""
+
+#: backend/api/messages.py:54 backend/api/templates/admin_user.html:25
+msgid "Deletion preserves the email and movie lists."
+msgstr ""
+
+#: backend/api/messages.py:55
+msgid "You cannot block, delete, or demote yourself."
+msgstr ""
+
+#: backend/api/messages.py:56
+msgid "The last active administrator must be preserved."
+msgstr ""
+
+#: backend/api/messages.py:57
+msgid "The confirmation email does not match."
+msgstr ""
+
+#: backend/api/messages.py:58
+msgid "Invalid user action."
+msgstr ""
+
+#: backend/api/messages.py:59
+msgid "User not found."
+msgstr ""
+
+#: backend/api/messages.py:60
+msgid "Administrator access required"
+msgstr ""
+
+#: backend/api/messages.py:61
+msgid "Authentication required"
+msgstr ""
+
+#: backend/api/messages.py:62
+msgid "Invalid page."
+msgstr ""
+
+#: backend/api/messages.py:63
+msgid "Invalid user filters."
+msgstr ""
+
+#: backend/api/messages.py:64 backend/api/templates/admin_user.html:37
+msgid "This list is empty."
+msgstr ""
+
+#: backend/api/messages.py:65 backend/api/templates/admin_user.html:30
+msgid "Movie lists are read-only for administrators."
+msgstr ""
+
+#: backend/api/messages.py:66
+msgid "Invalid CSRF token"
+msgstr ""
+
+#: backend/api/messages.py:67
+msgid "Invalid origin"
+msgstr ""
+
+#: backend/api/messages.py:68 backend/api/templates/navigation.html:1
+msgid "Navigation"
+msgstr ""
+
+#: backend/api/messages.py:69 backend/api/templates/navigation.html:4
+msgid "Account"
+msgstr ""
+
