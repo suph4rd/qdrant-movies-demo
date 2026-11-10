@@ -1,5 +1,40 @@
 name: qdrant-movies-demo
 services:
+  kafka:
+    image: apache/kafka:4.1.2@sha256:5cc2a2fd93fa2687b44015eee04fb2c3edd9e526bd64bf8bec5ff1e268772e0e
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${KAFKA_PORT:-19092}:19092"
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:19092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://127.0.0.1:${KAFKA_PORT:-19092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-storage:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 20
+  kafka-init:
+    image: apache/kafka:4.1.2@sha256:5cc2a2fd93fa2687b44015eee04fb2c3edd9e526bd64bf8bec5ff1e268772e0e
+    restart: "no"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: ["/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:9092", "--create", "--if-not-exists", "--topic", "movie-search.requests.v1", "--partitions", "3", "--replication-factor", "1", "--config", "retention.ms=604800000"]
   postgres:
     image: postgres:18.1-alpine@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
     restart: unless-stopped
@@ -20,14 +55,14 @@ services:
     image: qdrant-movies-demo-app:local
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: backend/api/Dockerfile
     restart: "no"
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://movies:movies@postgres:5432/movies}
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["python", "-m", "alembic", "upgrade", "head"]
+    command: ["python", "-m", "alembic", "-c", "backend/api/alembic.ini", "upgrade", "head"]
   tei:
     image: ${TEI_IMAGE:-ghcr.io/huggingface/text-embeddings-inference:cpu-arm64-1.9@sha256:798cd7615e060a72ccbdf19aa0ada52289c6a0147490195bafaece6ce04d70f1}
     restart: unless-stopped
@@ -56,7 +91,7 @@ services:
     image: qdrant-movies-demo-app:local
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: backend/api/Dockerfile
     restart: "no"
     environment:
       QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
@@ -70,12 +105,12 @@ services:
         condition: service_healthy
       qdrant:
         condition: service_started
-    command: ["/bin/sh", "docker/scripts/start-loader.sh"]
-  web:
+    command: ["/bin/sh", "backend/scripts/start-loader.sh"]
+  backend:
     image: qdrant-movies-demo-app:local
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: backend/api/Dockerfile
     restart: unless-stopped
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://movies:movies@postgres:5432/movies}
@@ -84,21 +119,76 @@ services:
       EMBEDDING_URL: ${EMBEDDING_URL:-http://tei:18080}
       MOVIES_COLLECTION: ${MOVIES_COLLECTION:-movies_semantic_v1}
       EMBEDDING_CACHE: /home/app/.cache/embeddings
-    ports:
-      - "127.0.0.1:${WEB_PORT:-18000}:18000"
+    expose:
+      - "18000"
     depends_on:
       migrate:
         condition: service_completed_successfully
       loader:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "python", "docker/scripts/healthcheck.py"]
+      test: ["CMD", "python", "backend/scripts/healthcheck.py"]
       interval: 10s
       timeout: 5s
       start_period: 10s
+      retries: 3
+  publisher:
+    image: qdrant-movies-demo-app:local
+    build:
+      context: ..
+      dockerfile: backend/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://movies:movies@postgres:5432/movies}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      kafka-init:
+        condition: service_completed_successfully
+    command: ["python", "-m", "backend.api.queue.publisher"]
+  worker:
+    image: qdrant-movies-demo-app:local
+    build:
+      context: ..
+      dockerfile: backend/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://movies:movies@postgres:5432/movies}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      EMBEDDING_URL: ${EMBEDDING_URL:-http://tei:18080}
+      MOVIES_COLLECTION: ${MOVIES_COLLECTION:-movies_semantic_v1}
+      EMBEDDING_CACHE: /home/app/.cache/embeddings
+    volumes:
+      - embedding-cache:/home/app/.cache/embeddings
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      kafka-init:
+        condition: service_completed_successfully
+      loader:
+        condition: service_completed_successfully
+    command: ["python", "-m", "backend.api.queue.worker"]
+  frontend:
+    image: qdrant-movies-demo-frontend:local
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${WEB_PORT:-18000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
       retries: 3
 volumes:
   movies-storage:
   model-weights:
   embedding-cache:
   accounts-storage:
+  kafka-storage:

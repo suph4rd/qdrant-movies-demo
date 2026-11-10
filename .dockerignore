@@ -1,0 +1,24 @@
+.git
+.venv
+venv
+env
+.idea
+.vscode
+.env
+.env.*
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage*
+htmlcov
+.DS_Store
+Thumbs.db
+.cache
+
+# Vue client build artifacts
+**/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
